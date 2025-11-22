@@ -1,0 +1,82 @@
+/* NAVBAR CONTAINER */
+.navbar {
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 40px;
+
+   background: #f8f9fc; /*soft white shade */
+ 
+  border-bottom: 3px solid rgba(0, 0, 0, 0.05);
+
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  backdrop-filter: blur(5px); /* makes it classy */
+}
+
+/* LOGO */
+.nav-logo {
+  margin: 0;
+  font-size: 22px;
+  color: #3454d1;
+  font-weight: 700;
+}
+
+/* LINKS */
+.nav-links a {
+  margin: 0 18px;
+  text-decoration: none;
+  color: #333;
+  font-size: 18px;
+  position: relative;
+
+  transition: color 0.2s ease;
+}
+
+/* Hover animation (small underline) */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: #3454d1;
+  transition: width 0.25s ease;
+}
+
+.nav-links a:hover {
+  color: #3454d1;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* RIGHT SIDE BUTTONS */
+.nav-right button {
+  margin-left: 12px;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* OUTLINE BUTTON */
+.btn-outline {
+  background: transparent;
+  border: 1px solid #3454d1;
+  color: #3454d1;
+}
+
+/* PRIMARY BUTTON */
+.btn-primary {
+  background: #3454d1;
+  color: white;
+  border: 1px solid black;
+  
+}
