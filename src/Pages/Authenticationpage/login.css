@@ -1,66 +1,77 @@
-.login-container {
-  width: 100%;
-  min-height: 100vh;
+/* Full page background */
+.login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f7f5f0;
+  min-height: 85vh; 
+  background-color: #f5f5f5;
 }
 
+/* Login container box */
 .login-box {
-  width: 400px;
+  width: 430px;
   background: white;
-  padding: 30px 40px;
+  padding: 35px;
   border-radius: 12px;
-  box-shadow: 0px 4px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
 }
 
+/* Heading */
 .login-box h1 {
-  font-size: 36px;
+  text-align: center;
   margin-bottom: 10px;
+  font-size: 32px;
+  font-weight: 700;
 }
 
-.login-box p {
-  margin-bottom: 20px;
-}
-
-.login-box label {
-  font-weight: 600;
-  display: block;
-  margin-top: 10px;
-}
-
+/* Input fields */
 .login-box input {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
+  padding: 12px;
+  margin: 7px 0 16px 0;
+  border: 1px solid #ccc;
   border-radius: 6px;
-  border: 1px solid gray;
+  font-size: 15px;
 }
 
-.login-btn {
+/* Login button */
+.login-button {
   width: 100%;
-  margin-top: 20px;
   padding: 12px;
-  background: #007c89;
+  background-color: #007a77;
   color: white;
   border: none;
   border-radius: 6px;
-  font-size: 18px;
+  font-size: 17px;
+  font-weight: 600;
   cursor: pointer;
+  margin-top: 10px;
 }
 
-.login-btn:hover {
-  background: #055a60;
+.login-button:hover {
+  background-color: #00605c;
 }
 
-.links {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
+/* Links */
+.login-box a {
+  color: #0066cc;
+  font-size: 14px;
+  text-decoration: none;
 }
 
-.links a {
-  margin-top: 5px;
-  color: #007c89;
+.login-box a:hover {
+  text-decoration: underline;
 }
+
+/* Forgot links section */
+.forgot-links {
+  margin-top: 15px;
+  text-align: center;  /* Center the links */
+  font-size: 14px;
+}
+
+/* Signup link below forgot links */
+.signup-link {
+  margin-top: 8px;
+}
+

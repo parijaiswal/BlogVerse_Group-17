@@ -3,25 +3,27 @@ import "./login.css";
 
 const Login = () => {
   return (
-    <div className="login-container">
+    <div className="login-page">
       <div className="login-box">
-        <h1>Log in</h1>
 
-        <p>Need an account? <a href="/register">Create an account</a></p>
+        <h1>Log in</h1>
 
         <label>Username or Email</label>
         <input type="text" placeholder="Enter email" />
-
         <label>Password</label>
         <input type="password" placeholder="Enter password" />
 
-        <button className="login-btn">Log in</button>
+        <button className="login-button">Log in</button>
 
-        <div className="links">
-          <a href="#">Forgot username?</a>
-          <a href="#">Forgot password?</a>
-          <a href="#">Can’t log in?</a>
+        <div className="forgot-links">
+          <span>
+            <a href="/forgot-password">Forgot username or password?</a>
+          </span>
+          <div className="signup-link">
+            Need an account? <a href="/register">Sign up</a>
+          </div>
         </div>
+
       </div>
     </div>
   );

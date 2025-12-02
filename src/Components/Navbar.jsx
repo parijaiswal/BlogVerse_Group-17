@@ -18,9 +18,12 @@ function Navbar() {
       </div>
 
       <div className="nav-right">
-        <button className="btn-outline" >Login</button>
+        <Link to="/login">
+          <button className="btn-outline">Login</button>
+        </Link>
+
         <Link to="/register">
-        <button className="btn-primary">Register</button>
+          <button className="btn-primary">Register</button>
         </Link>
       </div>
 
