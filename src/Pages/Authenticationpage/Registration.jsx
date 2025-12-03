@@ -74,99 +74,103 @@ function Registration() {
   };
 
   return (
-    <div className="form-container">
-      <h2>Registration Form</h2>
+    <div className="auth-wrapper">
 
-      <form onSubmit={handleSubmit}>
-        
-        <div className="form-group">
-          <label>Username:</label>
-          <input 
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-          />
-          {errors.username && <p className="error">{errors.username}</p>}
-        </div>
+      <div className="form-container">
+        <h2>Registration Form</h2>
 
-        <div className="form-group">
-          <label>Email:</label>
-          <input 
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {errors.email && <p className="error">{errors.email}</p>}
-        </div>
+        <form onSubmit={handleSubmit}>
+          
+          <div className="form-group">
+            <label>Username:</label>
+            <input 
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+            />
+            {errors.username && <p className="error">{errors.username}</p>}
+          </div>
 
-        <div className="form-group">
-          <label>Gender:</label>
-          <select 
-            name="gender" 
-            value={formData.gender}
-            onChange={handleChange}
-          >
-            <option value="">-- Select --</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-          {errors.gender && <p className="error">{errors.gender}</p>}
-        </div>
+          <div className="form-group">
+            <label>Email:</label>
+            <input 
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {errors.email && <p className="error">{errors.email}</p>}
+          </div>
 
-        <div className="form-group">
-          <label>Contact No:</label>
-          <input 
-            type="text"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-          />
-          {errors.contact && <p className="error">{errors.contact}</p>}
-        </div>
+          <div className="form-group">
+            <label>Gender:</label>
+            <select 
+              name="gender" 
+              value={formData.gender}
+              onChange={handleChange}
+            >
+              <option value="">-- Select --</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+            {errors.gender && <p className="error">{errors.gender}</p>}
+          </div>
 
-        <div className="form-group">
-       <label>User Role:</label>
-      <select
-        name="role"
-        value={formData.role}
-        onChange={handleChange}
-      >
-       <option value="">-- Select Role --</option>
-       <option value="Member">Member</option>
-        <option value="Client">Client</option>
-      </select>
-       {errors.role && <p className="error">{errors.role}</p>}
+          <div className="form-group">
+            <label>Contact No:</label>
+            <input 
+              type="text"
+              name="contact"
+              value={formData.contact}
+              onChange={handleChange}
+            />
+            {errors.contact && <p className="error">{errors.contact}</p>}
+          </div>
+
+          <div className="form-group">
+            <label>User Role:</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option value="">-- Select Role --</option>
+              <option value="Member">Member</option>
+              <option value="Client">Client</option>
+            </select>
+            {errors.role && <p className="error">{errors.role}</p>}
+          </div>
+
+          <div className="form-group">
+            <label>Password:</label>
+            <input 
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+            {errors.password && <p className="error">{errors.password}</p>}
+          </div>
+
+          <div className="form-group">
+            <label>Re-Enter Password:</label>
+            <input 
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
+            {errors.confirmPassword && (
+              <p className="error">{errors.confirmPassword}</p>
+            )}
+          </div>
+
+          <button type="submit" className="btn">Register</button>
+        </form>
       </div>
 
-        <div className="form-group">
-          <label>Password:</label>
-          <input 
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {errors.password && <p className="error">{errors.password}</p>}
-        </div>
-
-        <div className="form-group">
-          <label>Re-Enter Password:</label>
-          <input 
-            type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-          />
-          {errors.confirmPassword && (
-            <p className="error">{errors.confirmPassword}</p>
-          )}
-        </div>
-
-        <button type="submit" className="btn">Register</button>
-      </form>
     </div>
   );
 }
