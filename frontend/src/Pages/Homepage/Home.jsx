@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbar from "../../Components/Navbar";
+//import Navbar from "../../Components/Navbar";
 import HeroImage from "../../Images/heromain1.png";
 import Footer from '../../Components/footer';
 import "./Home.css";
@@ -7,7 +7,7 @@ import "./Home.css";
 function Home() {
   return (
     <div>
-      <Navbar />
+     
      {/* Main section of the homepage */}
       <section className="hero">
   <div className="hero-left">
@@ -32,11 +32,12 @@ function Home() {
 </section>
    
 {/* LATEST BLOGS SECTION */}
-<section className="latest-section">
+<section className="latest-section" id="latest-cards">
   <h2>Latest from BlogVerse</h2>
   <p className="latest-subtitle">
     Recently published blogs on branding, media intelligence and marketing.
   </p>
+  {/* search bar */}
    <div className="hero-search">
       {/* <span className="search-icon"></span> */}
       <input type="text" placeholder="Search Latest blogs" />
@@ -116,7 +117,7 @@ function Home() {
 
 
 {/* Want to publish section */}
-<section className="publish-cta-section">
+<section className="publish-cta-section" id="publish-cta">
   <div className="publish-container">
     <div className="publish-left">
       <h2>Want to publish your blog on BlogVerse?</h2>
