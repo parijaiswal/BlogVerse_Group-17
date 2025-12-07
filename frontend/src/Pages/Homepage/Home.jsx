@@ -1,5 +1,4 @@
 import React from 'react'
-//import Navbar from "../../Components/Navbar";
 import HeroImage from "../../Images/heromain1.png";
 import Footer from '../../Components/footer';
 import "./Home.css";
@@ -7,7 +6,6 @@ import "./Home.css";
 function Home() {
   return (
     <div>
-     
      {/* Main section of the homepage */}
       <section className="hero">
   <div className="hero-left">
