@@ -7,16 +7,22 @@ import ForgotPassword from "./Pages/Authenticationpage/ForgotPassword";
 import ResetPassword from "./Pages/Authenticationpage/ResetPassword";
 import Navbar from "./Components/Navbar";
 
+// ⭐ Import your Member Page
+import Member from "./Pages/MemberPage/Member";
 const App = () => {
   return (
     <Router>
       <Navbar />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+        {/* ⭐ Member Page Route */}
+        <Route path="/member" element={<Member />} />
       </Routes>
     </Router>
   );
