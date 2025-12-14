@@ -1,8 +1,12 @@
 import React from "react";
 import "./Navbar.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useLocation } from "react-router-dom";
+
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const hideAuthButtons = location.pathname.startsWith("/Client");
+
   return (
     
     <nav className="navbar">
@@ -18,15 +22,18 @@ function Navbar() {
         <a href="#publish-cta">For Brands</a>
       </div>
 
-      <div className="nav-right">
-        <button className="btn-outline" onClick={() => navigate("/login")}>
-          Login
-        </button>
+      {!hideAuthButtons && (
+    <div className="nav-right">
+      <button className="btn-outline" onClick={() => navigate("/login")}>
+         Login
+      </button>
 
-        <button className="btn-primary" onClick={() => navigate("/register")}>
-          Register
-        </button>
-      </div>
+      <button className="btn-primary" onClick={() => navigate("/register")}>
+         Register
+      </button>
+  </div>
+)}
+
 
     </nav>
   );

@@ -9,10 +9,13 @@ import Navbar from "./Components/Navbar";
 
 // ⭐ Import your Member Page
 import Member from "./Pages/MemberPage/Member";
+import Client from "./Pages/ClientPage/Client";
+
 const App = () => {
+
   return (
     <Router>
-      <Navbar />
+      {<Navbar />}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -21,11 +24,15 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-        {/* ⭐ Member Page Route */}
+        //⭐ Member Page Route 
         <Route path="/member" element={<Member />} />
+
+         // Client Page 
+        <Route path="/client" element={<Client />} />
+
+
       </Routes>
     </Router>
   );
 };
-
 export default App;
