@@ -102,7 +102,7 @@ h1, h2, h3, p, .desc, .stat-label, .stat-val {
   align-items:center;
   gap:20px;
   margin-bottom: 18px;
-  padding: 14px;
+  padding: 14px 20px;
   border-radius: 12px;
   background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
   border: 1px solid rgba(255,255,255,0.06);
@@ -419,7 +419,9 @@ h1, h2, h3, p, .desc, .stat-label, .stat-val {
   padding: 20px;
 }
 
-.profile-header {
+.profile-header {/* ============================= */
+/* ADD BLOG MODAL – CLEAN EDITOR */
+/* ============================= */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -579,4 +581,57 @@ h1, h2, h3, p, .desc, .stat-label, .stat-val {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 16px;
+}
+/* ========================= */
+/* FORCE ADD BLOG FIX (FINAL) */
+/* ========================= */
+
+.add-blog-modal {
+  display: block !important;
+  width: 750px !important;
+  max-width: 95% !important;
+  background: #ffffff !important;
+  padding: 24px !important;
+  border-radius: 16px !important;
+}
+
+/* FORCE vertical layout */
+.add-blog-modal > * {
+  display: block !important;
+  width: 100% !important;
+  margin-bottom: 14px !important;
+}
+
+/* FORCE inputs */
+.add-blog-modal input {
+  display: block !important;
+  width: 100% !important;
+  padding: 12px 14px !important;
+  font-size: 15px !important;
+}
+
+/* FORCE textarea BIG */
+.add-blog-modal textarea {
+  display: block !important;
+  width: 100% !important;
+  min-height: 280px !important;
+  padding: 14px !important;
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+  resize: vertical !important;
+}
+
+/* Button */
+.add-blog-modal button {
+  width: 100% !important;
+  padding: 12px !important;
+  font-size: 16px !important;
+}
+.nav-left {
+  display: flex;
+  flex-direction: column;  /* BlogVerse on top, C below */
+  align-items: flex-start;
+}
+.nav-left .avatar {
+  margin-top: 8px;   /* 👈 space between BlogVerse and C */
 }

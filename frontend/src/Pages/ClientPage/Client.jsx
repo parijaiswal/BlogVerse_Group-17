@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Member.css";
+import "./Client.css";
 
 /**
  * Extended blogData: added category, createdAt, downloads, free (boolean), popularity score
@@ -41,9 +41,9 @@ const Client = () => {
   const [sortBy, setSortBy] = useState("latest");
   const [categoryFilter, setCategoryFilter] = useState("All");
 
-  const [likes, setLikes] = useState(() => JSON.parse(localStorage.getItem("member_likes") || "{}"));
-  const [comments, setComments] = useState(() => JSON.parse(localStorage.getItem("member_comments") || "{}"));
-  const [downloads, setDownloads] = useState(() => JSON.parse(localStorage.getItem("member_downloads") || "{}"));
+  const [likes, setLikes] = useState(() => JSON.parse(localStorage.getItem("client_likes") || "{}"));
+  const [comments, setComments] = useState(() => JSON.parse(localStorage.getItem("client_comments") || "{}"));
+  const [downloads, setDownloads] = useState(() => JSON.parse(localStorage.getItem("client_downloads") || "{}"));
   const [input, setInput] = useState({});
 
   const [profileOpen, setProfileOpen] = useState(false);
@@ -51,9 +51,9 @@ const Client = () => {
   const [paymentModalFor, setPaymentModalFor] = useState(null);
   const [toasts, setToasts] = useState([]);
 
-  const [profile, setProfile] = useState(() => JSON.parse(localStorage.getItem("member_profile")) || {
-    name: "Member",
-    email: "member@example.com",
+  const [profile, setProfile] = useState(() => JSON.parse(localStorage.getItem("client_profile")) || {
+    name: "Client",
+    email: "client@example.com",
     avatarLetter: "C",
     bio: "I love reading & writing.",
   });
@@ -177,6 +177,7 @@ const Client = () => {
             <div className="logo-glow">B</div>
             <div className="brand-text">BlogVerse</div>
           </div>
+           <div className="avatar" onClick={avatarClick}>{profile.avatarLetter || "C"}</div>
         </div>
         <div className="nav-right">
           <div className="activity-mini">
@@ -184,7 +185,6 @@ const Client = () => {
             <div>💬 {activityStats.commentsPosted}</div>
             <div>⬇️ {activityStats.downloadsCount}</div>
           </div>
-          <div className="avatar" onClick={avatarClick}>{profile.avatarLetter || "C"}</div>
         </div>
       </header>
       {profileOpen && (
@@ -285,7 +285,7 @@ const Client = () => {
       {/* ADD BLOG MODAL */}
       {addBlogOpen && (
         <div className="modal-overlay" onClick={() => setAddBlogOpen(false)}>
-          <div className="modal glass" onClick={(e) => e.stopPropagation()}>
+          <div className="modal add-blog-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Add Your Blog</h3>
             <input placeholder="Title" value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} />
             <input placeholder="Short Description" value={newBlog.desc} onChange={(e) => setNewBlog({ ...newBlog, desc: e.target.value })} />
