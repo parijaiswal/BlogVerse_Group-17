@@ -1,0 +1,57 @@
+.admin-form {
+  width: 100%;
+  max-width: 650px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  margin: 0; 
+  color: #242c6f;
+  font-size: 19px;
+}
+
+.admin-form h2 {
+  margin-bottom: 20px;
+}
+.admin-form label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+  color: #374151;
+}
+
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.admin-form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.admin-form button {
+  width: 100%;
+  padding: 10px;
+  background: #03315f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+
+}
+.admin-form button:hover {
+  background: #1e40af;
+}
+
+.admin-form select {
+  background-color: #fff;
+}

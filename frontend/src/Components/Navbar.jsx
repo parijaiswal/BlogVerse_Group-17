@@ -1,16 +1,19 @@
 import React from "react";
 import "./Navbar.css";
-import { Link, useNavigate,useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const hideAuthButtons = location.pathname.startsWith("/Client");
+   if (location.pathname.startsWith("/Admin")) {
+
+    return null;
+  }
+
 
   return (
-    
     <nav className="navbar">
-
       <div className="nav-left">
         <h2 className="nav-logo">BlogVerse</h2>
       </div>
@@ -23,20 +26,18 @@ function Navbar() {
       </div>
 
       {!hideAuthButtons && (
-    <div className="nav-right">
-      <button className="btn-outline" onClick={() => navigate("/login")}>
-         Login
-      </button>
-
-      <button className="btn-primary" onClick={() => navigate("/register")}>
-         Register
-      </button>
-  </div>
-)}
-
-
+        <div className="nav-right">
+          <button className="btn-primary" onClick={() => navigate("/login")}>
+            Login
+          </button>
+          <button className="btn-primary" onClick={() => navigate("/register")}>
+            Register
+          </button>
+        </div>
+      )}
     </nav>
   );
 }
 
 export default Navbar;
+

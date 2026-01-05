@@ -1,0 +1,47 @@
+/* Wrapper for profile page */
+.profile-wrapper {
+  max-width: 720px;
+  margin: 20px 0 auto;
+}
+
+/* Individual cards */
+.profile-card {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+/* Headings */
+.profile-card h2 {
+  margin-bottom: 20px;
+  color: #1e3a8a;
+  font-size: 22px;
+}
+
+/* Inputs & select */
+.profile-card input,
+.profile-card select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Buttons */
+.profile-card button {
+  width: 100%;
+  padding: 10px;
+  background: #03315f;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.profile-card button:hover {
+  background: #1e40af;
+}

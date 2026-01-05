@@ -1,0 +1,143 @@
+/* Top Bar */
+.admin-topbar {
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-logo {
+  font-size: 25px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.logout-btn {
+  background: #03315f;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #1e40af;
+}
+
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+.admin-main {
+  flex: 1;
+  padding: 40px 80px;  
+}
+/* Sidebar */
+.admin-sidebar {
+  width: 240px;
+  background: #03315f;
+  padding: 24px;
+  border-right: 1px solid #e5e7eb;
+
+
+}
+
+.admin-sidebar h2 {
+  margin-bottom: 30px;
+  color: #dce1ef;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar li {
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  color: #e1e3ea;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.admin-sidebar li:hover {
+  background: #e0e7ff;
+  color: #1e40af;
+}
+
+/*Below is the styling for the view users table*/
+/* View Users */
+.admin-users {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  /* margin: 20px 0; */
+  margin-top: 20px;
+}
+
+.admin-users h2 {
+  margin-bottom: 10px;
+  color:#242c6f;
+  font-size: 19px;
+}
+
+.admin-subtitle {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+/* Users Table */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #e5e7eb;
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.users-table th {
+  background: #f1f5f9;
+  font-weight: 650;
+  border-bottom: 2px solid #e5e7eb;
+  font-size: 16px;
+}
+
+.users-table td {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.users-table tr:hover {
+  background: #f8fafc;
+}
+
+.admin-card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  max-width: 900px;
+}
+

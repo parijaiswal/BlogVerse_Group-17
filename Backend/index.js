@@ -1,21 +1,22 @@
-
 //This is the main backend file: index.js please don't change anything in it
-
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-
+const blogRoutes = require("./routes/BlogsRoutes");
+const adminRoutes = require("./routes/AdminRoutes");
+const profileRoutes = require("./routes/ProfileRoutes");
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// 1) CONNECT TO DATABASE
-
+app.use("/api/blogs", blogRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/profile", profileRoutes);
+//This will be used to connect to the database
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',          // change if your MySQL user is different
-  password: 'Mysql1234',          // put your MySQL password here ('' if empty)
-  database: 'blogverse'  // exactly same as in Workbench
+  user: 'root',         
+  password: 'Mysql1234',          
+  database: 'blogverse' 
 });
 
 db.connect((err) => {
@@ -71,7 +72,7 @@ app.post('/api/register', (req, res) => {
     );
 });
 
-//Login user testing
+//This is the code for testing the user information during login
 // LOGIN USER
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
@@ -115,11 +116,54 @@ app.post("/api/login", (req, res) => {
     });
   });
 });
+//This is the route to get all users for admin view in the admin dashboard
+app.get("/api/admin/users", (req, res) => {
+  const sql = "SELECT UserId, Username, Email, User_Role FROM users";
 
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error("Fetch users error:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
 
+    res.json(rows);
+  });
+});
+//==============================================================================
+//This is the code for adding subscription plans from admin panel
+app.post("/api/admin/add-subscription", (req, res) => {
+  const { subName, subDuration, subPrice, description, visibility } = req.body;
+
+  if (!subName || !subDuration || !subPrice) {
+    return res.status(400).json({ message: "Required fields missing" });
+  }
+
+  const sql = `
+    INSERT INTO SubscriptionTable
+    (SubName, SubDuration, SubPrice, Description, Visibility)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    sql,
+    [subName, subDuration, subPrice, description, visibility || "active"],
+    (err, result) => {
+      if (err) {
+        console.error("Add subscription error:", err);
+        return res.status(500).json({ message: "Database error" });
+      }
+
+      res.json({
+        success: true,
+        message: "Subscription added successfully",
+      });
+    }
+  );
+});
 
 //------------------------------------------------------------------------
-// 3) START SERVER
+// check server running
 app.listen(5000, () => {
   console.log('Server running on http://localhost:5000');
 });
+
