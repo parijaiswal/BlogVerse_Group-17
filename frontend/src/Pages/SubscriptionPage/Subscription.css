@@ -1,0 +1,144 @@
+/* PAGE */
+.subscription-page {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #0f172a 0%,
+    #111827 50%,
+    #1f2933 100%
+  );
+  padding: 80px 20px;
+  color: #ffffff; /* 👈 MAIN FIX */
+  text-align: center;
+}
+.subscription-page h1 {
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.subscription-page p {
+  color: #d1d5db;
+  font-size: 16px;
+}
+
+/* TITLES */
+.subscription-title {
+  color: #ffffff !important;
+  font-size: 44px;
+  font-weight: 700;
+}
+
+.subscription-subtitle {
+  color: #e5e7eb !important;
+  font-size: 17px;
+  margin-bottom: 60px;
+}
+
+
+/* PLANS GRID */
+.plans-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 35px;
+  max-width: 1050px;
+  margin: auto;
+}
+
+/* CARD BASE */
+.plan-card {
+  padding: 32px 26px;
+  border-radius: 20px;
+  position: relative;
+  background: #ffffff;
+  color: #1e1e1e;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* PLAN HEADINGS */
+.plan-card h2 {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.price {
+  font-size: 2.3rem;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+/* FEATURES */
+.plan-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 22px 0;
+}
+
+.plan-card ul li {
+  margin: 10px 0;
+  color: #444;
+}
+
+/* BUTTON */
+.plan-btn {
+  padding: 12px 28px;
+  border-radius: 30px;
+  border: none;
+  background: #1c1f26;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.3s ease, transform 0.2s ease;
+}
+
+.plan-btn:hover {
+  background: #000;
+  transform: scale(1.05);
+}
+
+/* ACCENTS */
+.plan-1 {
+  border-top: 6px solid #4f8cff; /* Blue */
+}
+
+.plan-6 {
+  border-top: 6px solid #ffd369; /* Gold */
+}
+
+.plan-12 {
+  border-top: 6px solid #7ed957; /* Green */
+}
+
+/* POPULAR */
+.popular {
+  transform: scale(1.07);
+  background: linear-gradient(180deg, #ffffff, #fdf7e3);
+}
+
+.badge {
+  position: absolute;
+  top: -14px;
+  right: 18px;
+  background: #ffd369;
+  color: #000;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+.subscription-hero {
+  max-width: 900px;
+  margin: 0 auto 60px;
+  padding: 50px 40px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+}

@@ -7,6 +7,10 @@ import Login from "./Pages/Authenticationpage/LoginTemp";
 import ForgotPassword from "./Pages/Authenticationpage/ForgotPassword";
 import ResetPassword from "./Pages/Authenticationpage/ResetPassword";
 import Admin from "./Pages/AdminPage/Admin";
+import Navbar from "./Components/Navbar";
+import Subscription from "./Pages/SubscriptionPage/Subscription";
+
+import Member from "./Pages/MemberPage/Member";
 import Client from "./Pages/ClientPage/Client";
 import Member from "./Pages/MemberPage/Member";
 
@@ -35,6 +39,9 @@ const AppLayout = () => {
         <Route path="/admin" element={<Admin />} />
         <Route path="/client" element={<Client />} />
         <Route path="/member" element={<Member />} />
+
+      <Route path="/Subscription" element={<Subscription />} />
+        
       </Routes>
     </>
   );
