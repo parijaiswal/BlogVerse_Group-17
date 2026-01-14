@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./AddBlogs.css";
 
-const AddBlog = ({ editBlog, onSuccess }) => {
+const AddBlog = ({ editBlog, onSuccess, isClient }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState("public");
 
-  // Prefill when editing
   useEffect(() => {
     if (editBlog) {
       setTitle(editBlog.Title);
@@ -18,9 +17,11 @@ const AddBlog = ({ editBlog, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const url = editBlog
-      ? `http://localhost:5000/api/blogs/${editBlog.BlogId}`
-      : "http://localhost:5000/api/blogs/add-blog";
+    const url = isClient
+  ? "http://localhost:5000/api/admin/add-blog"        // client blog (subscription + approval)
+  : editBlog
+  ? `http://localhost:5000/api/blogs/${editBlog.BlogId}` // admin edit
+  : "http://localhost:5000/api/admin/admin-add-blog"; // admin new blog
 
     const method = editBlog ? "PUT" : "POST";
 
@@ -31,55 +32,53 @@ const AddBlog = ({ editBlog, onSuccess }) => {
         title,
         content,
         visibility,
-        userId: 1, // only used for add
+        userId: localStorage.getItem("userId"),
       }),
     });
+const data = await res.json();
 
-    const data = await res.json();
+if (res.status === 403) {
+  alert(data.message);
+  return;
+}
 
-    if (data.success || data.message) {
-      alert(editBlog ? "Blog updated" : "Blog added");
-      setTitle("");
-      setContent("");
-      setVisibility("public");
-      onSuccess();
-    } else {
-      alert("Something went wrong");
-    }
+if (data.success) {
+  alert(data.message);
+  setTitle("");
+  setContent("");
+  setVisibility("public");
+  onSuccess && onSuccess();
+} else {
+  alert(data.message || "Something went wrong");
+}
   };
-
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
-      <h2>{editBlog ? "Edit Blog" : "Add Blog"}</h2>
+      <h2>{editBlog ? "Edit Blog" : "Publish Blog"}</h2>
 
       <label>Title</label>
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
+      <input value={title} onChange={(e) => setTitle(e.target.value)} required />
 
       <label>Content</label>
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        required
-      />
+      <textarea value={content} onChange={(e) => setContent(e.target.value)} required />
 
       <label>Visibility</label>
-      <select
-        value={visibility}
-        onChange={(e) => setVisibility(e.target.value)}
-      >
+      <select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
         <option value="public">Public</option>
         <option value="private">Private</option>
       </select>
 
       <button type="submit">
-        {editBlog ? "Update Blog" : "Publish Blog"}
-      </button>
+  {editBlog
+    ? "Update Blog"
+    : isClient
+    ? "Submit for Approval"
+    : "Publish Blog"}
+</button>
+
     </form>
   );
 };
 
 export default AddBlog;
+

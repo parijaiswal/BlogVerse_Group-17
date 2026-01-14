@@ -2,15 +2,22 @@ const express = require("express");
 const router = express.Router();
 const db = require("../Database");
 
-//this is the code for edition and viewing of user profile
+/* ======================================================
+   GET USER PROFILE (VIEW PROFILE)
+====================================================== */
 router.get("/:userId", async (req, res) => {
   const { userId } = req.params;
 
   try {
     const [rows] = await db.query(
-      `SELECT Username, ContactNo, Gender 
-       FROM Users 
-       WHERE UserId = ?`,// it is used to fetch user details based on userId for displaying profile information
+      `SELECT 
+         Username,
+         Email,
+         ContactNo,
+         Gender,
+         User_Role
+       FROM Users
+       WHERE UserId = ?`,
       [userId]
     );
 
@@ -25,7 +32,9 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-
+/* ======================================================
+   UPDATE PROFILE (USERNAME / CONTACT / GENDER)
+====================================================== */
 router.put("/:userId", async (req, res) => {
   const { userId } = req.params;
   const { username, contact, gender } = req.body;
@@ -36,9 +45,9 @@ router.put("/:userId", async (req, res) => {
 
   try {
     await db.query(
-      `UPDATE Users 
+      `UPDATE Users
        SET Username = ?, ContactNo = ?, Gender = ?
-       WHERE UserId = ?`,// it is used to update user profile information based on userId
+       WHERE UserId = ?`,
       [username, contact, gender, userId]
     );
 
@@ -52,4 +61,49 @@ router.put("/:userId", async (req, res) => {
   }
 });
 
+/* ======================================================
+   CHANGE PASSWORD
+====================================================== */
+router.put("/change-password/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing fields" });
+  }
+
+  try {
+    const [rows] = await db.query(
+      "SELECT Password FROM Users WHERE UserId = ?",
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    if (rows[0].Password !== oldPassword) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Old password incorrect" });
+    }
+
+    await db.query(
+      "UPDATE Users SET Password = ? WHERE UserId = ?",
+      [newPassword, userId]
+    );
+
+    res.json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (err) {
+    console.error("Change password error:", err);
+    res.status(500).json({ success: false, message: "Database error" });
+  }
+});
 module.exports = router;

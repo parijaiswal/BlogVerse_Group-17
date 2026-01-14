@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Authentication.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("");       // we'll use email to login
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
@@ -19,17 +19,23 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
-      if (res.ok && data.success) {
-        alert("Login successful and data fetched from the users table");
-        // You can redirect the user or perform other actions here
+      if (data.success) {
+        // ✅ SAVE LOGIN INFO
+        localStorage.setItem("userId", data.user.id);
+        localStorage.setItem("role", data.user.role);
+        localStorage.setItem("username", data.user.username);
+
+        // ✅ REDIRECT BASED ON ROLE
+        if (data.user.role === "admin") {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/client";
+        }
       } else {
         alert(data.message || "Invalid email or password");
       }
@@ -44,11 +50,12 @@ const Login = () => {
       <div className="auth-card">
         <h1 className="auth-title">Log in</h1>
 
-        <form onSubmit={handleSubmit} >
+        <form onSubmit={handleSubmit}>
           <label className="auth-label">Email</label>
           <input
             type="text"
-            placeholder="Enter email" className="auth-input"
+            placeholder="Enter email"
+            className="auth-input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -56,7 +63,8 @@ const Login = () => {
           <label className="auth-label">Password</label>
           <input
             type="password"
-            placeholder="Enter password" className="auth-input"
+            placeholder="Enter password"
+            className="auth-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -67,17 +75,19 @@ const Login = () => {
         </form>
 
         <div className="auth-footer-text">
-          <span>
-            <a href="/forgot-password" className="
-            auth-link">Forgot Password?</a>
-          </span>
+          <a href="/forgot-password" className="auth-link">
+            Forgot Password?
+          </a>
+
           <div className="signup-text">
-            Don't have an Account? <a href="/register" className="auth-link">Sign up</a>
+            Don't have an Account?{" "}
+            <a href="/register" className="auth-link">
+              Sign up
+            </a>
           </div>
         </div>
       </div>
     </div>
   );
 };
-
 export default Login;

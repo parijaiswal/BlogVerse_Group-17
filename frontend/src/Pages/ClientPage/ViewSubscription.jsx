@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "../AdminPage/Admin.css";
 const ViewSubscription = () => {
-//   const userId = localStorage.getItem("userId");
-const userId =3;
+  const userId = localStorage.getItem("userId");
   const [subscription, setSubscription] = useState(null);
   const formatDate = (date) => {
     return new Date(date).toISOString().split("T")[0];
   };
-
-
   useEffect(() => {
     if (!userId) return;
 

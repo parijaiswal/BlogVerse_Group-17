@@ -65,7 +65,7 @@ app.post('/api/register', (req, res) => {
 
             res.json({
                 success: true,
-                message: "Registration successful ✅",
+                message: "Registration successfully completed",
                 userId: result.insertId
             });
         }

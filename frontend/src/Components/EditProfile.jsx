@@ -1,44 +1,42 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./EditProfile.css";
+
 const EditProfile = () => {
-  // const userId = localStorage.getItem(1); 
-  const userId = 1;
+  const userId = localStorage.getItem("userId");
+
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
   const [gender, setGender] = useState("");
+  const [role, setRole] = useState("");
+
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  
+
+  /* ================= FETCH PROFILE ================= */
   useEffect(() => {
-  if (!userId) {
-    console.log("No userId in localStorage");
-    return;
-  }
+    if (!userId) return;
 
-  fetch(`http://localhost:5000/api/admin/profile/${userId}`)
-    .then((res) => {
-      if (!res.ok) throw new Error("Profile fetch failed");
-      return res.json();
-    })
-    .then((data) => {
-      setUsername(data.Username || "");
-      setContact(data.ContactNo || "");
-      setGender(data.Gender || "");
-    })
-    .catch((err) => {
-      console.error("Profile fetch error:", err.message);
-    });
-}, [userId]);
+    fetch(`http://localhost:5000/api/profile/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setUsername(data.Username || "");
+        setEmail(data.Email || "");
+        setContact(data.ContactNo || "");
+        setGender(data.Gender || "");
+        setRole(data.User_Role || "");
+      })
+      .catch((err) => console.error(err));
+  }, [userId]);
 
-/*This is for the editing the profile*/
+  /* ================= UPDATE PROFILE ================= */
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/admin/update-profile", {
+    const res = await fetch(`http://localhost:5000/api/profile/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        userId,
         username,
         contact,
         gender,
@@ -46,62 +44,60 @@ const EditProfile = () => {
     });
 
     const data = await res.json();
-    alert(data.message);
+    alert(data.message || "Profile updated");
   };
 
- /*This is for changing the password*/
+  /* ================= CHANGE PASSWORD ================= */
   const handlePasswordChange = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/api/admin/change-password", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId,
-        oldPassword,
-        newPassword,
-      }),
-    });
+    const res = await fetch(
+      `http://localhost:5000/api/profile/change-password/${userId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ oldPassword, newPassword }),
+      }
+    );
 
     const data = await res.json();
     alert(data.message);
+
+    if (data.success) {
+      setOldPassword("");
+      setNewPassword("");
+    }
   };
 
   return (
     <div className="profile-wrapper">
-
-      {/* ===== EDIT PROFILE CARD ===== */}
+      {/* ===== EDIT PROFILE ===== */}
       <div className="profile-card">
         <h2>Edit Profile</h2>
 
         <form onSubmit={handleProfileUpdate}>
+          <input value={username} onChange={(e) => setUsername(e.target.value)} />
+
+          <input value={email} disabled />
+
           <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Contact Number"
             value={contact}
             onChange={(e) => setContact(e.target.value)}
-            required
           />
-          <select
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            required>
+
+          <select value={gender} onChange={(e) => setGender(e.target.value)}>
             <option value="">Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
+
+          <input value={role} disabled />
+
           <button type="submit">Save Profile</button>
         </form>
       </div>
 
-      {/* ===== CHANGE PASSWORD CARD ===== */}
+      {/* ===== CHANGE PASSWORD ===== */}
       <div className="profile-card">
         <h2>Change Password</h2>
 
@@ -111,14 +107,13 @@ const EditProfile = () => {
             placeholder="Old Password"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
-            required
           />
+
           <input
             type="password"
             placeholder="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            required
           />
           <button type="submit">Change Password</button>
         </form>

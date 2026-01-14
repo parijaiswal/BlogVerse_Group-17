@@ -57,10 +57,18 @@ router.post("/add-blog", (req, res) => {
 // ===================================================
 router.get("/", (req, res) => {
   const sql = `
-    SELECT BlogId, Title, Content, Visibility, Create_Date
-    FROM BlogTable
-    ORDER BY Create_Date DESC
+    SELECT 
+      b.BlogId,
+      b.Title,
+      b.Visibility,
+      b.Create_Date,
+      u.User_Role
+    FROM BlogTable b
+    JOIN Users u ON b.Userid = u.UserId
+    ORDER BY b.Create_Date DESC
   `;
+  
+//==============================================================
 
   db.query(sql, (err, rows) => {
     if (err) {
@@ -106,5 +114,7 @@ router.put("/:id", (req, res) => {
     }
   );
 });
+
+
 
 module.exports = router;

@@ -1,22 +1,22 @@
 /* === FIX: PROFILE MODAL TEXT VISIBLE ON WHITE BACKGROUND === */
-.profile-modal,
+/* .profile-modal,
 .profile-modal * {
-  color: #111 !important;                   /* black text */
+  color: #111 !important;                   
 }
 
 .profile-body input,
 .profile-body textarea {
-  background: #f1f5f9 !important;           /* light grey input */
-  border: 1px solid #cbd5e1 !important;     /* visible border */
-  color: #111 !important;                   /* black text */
+  background: #f1f5f9 !important;           
+  border: 1px solid #cbd5e1 !important;     
+  color: #111 !important;                   
 }
 
 .profile-actions .btn {
-  color: #fff !important;                   /* keep button text white */
+  color: #fff !important;                  
 }
 
 .profile-actions .btn.ghost {
-  color: #1e3c72 !important;                /* ghost button dark text */
+  color: #1e3c72 !important;                
   border: 1px solid #1e3c72 !important;
 }
 
@@ -53,13 +53,13 @@ h1, h2, h3, p, .desc, .stat-label, .stat-val {
 
 .read-btn,
 .download-btn {
-  color: #1e3c72 !important;      /* visible on white */
+  color: #1e3c72 !important;     
   font-weight: 600;
 }
 
 .read-btn:hover,
 .download-btn:hover {
-  color: #7e22ce !important;      /* purple on hover */
+  color: #7e22ce !important;      
   transform: scale(1.05);
   transition: 0.2s ease;
 }
@@ -75,28 +75,28 @@ h1, h2, h3, p, .desc, .stat-label, .stat-val {
   --glass-shadow: 0 6px 20px rgba(30,60,114,0.12);
 }
 
-/* Page background */
+
 .member-page {
   min-height: 100vh;
   padding: 20px;
-  background: white;    /* <<< FULL WHITE BACKGROUND */
-  color: #1e1e1e;       /* <<< DARK TEXT for visibility */
+  background: white;    
+  color: #1e1e1e;       
   font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
+} */
 
 
 /* NAVBAR */
 /* ==== NAVBAR FIX ==== */
-.navbar, .navbar * {
-  color: #1e3c72 !important;   /* Deep blue */
-}
+/* .navbar, .navbar * {
+  color: #1e3c72 !important;   
+} */
 
-.logo {
+/* .logo {
   color: #1e3c72 !important;
   font-weight: 700;
-}
+} */
 
-.member-nav{
+/* .member-nav{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -107,9 +107,9 @@ h1, h2, h3, p, .desc, .stat-label, .stat-val {
   background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
   border: 1px solid rgba(255,255,255,0.06);
   backdrop-filter: blur(var(--glass-blur));
-}
+} */
 
-.brand{
+/* .brand{
   display:flex;
   align-items:center;
   gap:10px;
@@ -121,30 +121,30 @@ h1, h2, h3, p, .desc, .stat-label, .stat-val {
   box-shadow: 0 6px 24px rgba(120, 85, 151, 0.25);
   color: white;
   font-size: 20px;
-}
-.brand-text{
+} */
+/* .brand-text{
   font-weight:700;font-size:18px;color: #00060c;
-}
+} */
 
 /* live stats */
-.live-stats{ display:flex; gap:12px; margin-left:20px; align-items:center; }
+/* .live-stats{ display:flex; gap:12px; margin-left:20px; align-items:center; }
 .stat{ text-align:center; padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03); }
 .stat-val{ font-weight:700; font-size:16px; }
-.stat-label{ font-size:12px; color: #e6eefc; opacity:0.85; }
+.stat-label{ font-size:12px; color: #e6eefc; opacity:0.85; } */
 
 /* avatar */
-.avatar {
+/* .avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #7247ce; /* <-- change this */
-  color: white;      /* <-- text color */
+  background: #7247ce; 
+  color: white;    
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   font-weight: bold;
-}
+} */
 
 
 /* hero */
