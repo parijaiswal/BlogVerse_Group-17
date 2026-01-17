@@ -1,5 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
+import "./AddBlogs.css"; // reuse admin-form styling
 
 const ViewSub = ({ onEdit }) => {
  const [subs, setSubs] = useState([]);
@@ -33,7 +34,7 @@ const ViewSub = ({ onEdit }) => {
               <td>{sub.SubName}</td>
               <td>{sub.SubDuration}</td>
               <td>{sub.SubPrice}</td>
-              <td>{sub.Visibility}</td>
+              <td className="status" style={{ color: sub.Visibility === 'inactive' ? 'red' : 'green', fontWeight: 600 }}>{sub.Visibility}</td>
               <td>
                 <button onClick={() => onEdit(sub)} className="logout-btn">Edit</button>
               </td>

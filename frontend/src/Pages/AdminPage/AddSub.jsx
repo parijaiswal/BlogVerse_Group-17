@@ -8,6 +8,8 @@ const AddSubscription = ({ editSub, onSuccess }) => {
   const [subPrice, setSubPrice] = useState("");
   const [description, setDescription] = useState("");
   const [visibility, setVisibility] = useState("active");
+  const [message, setMessage] = useState("");
+
 
   useEffect(() => {
     if (editSub) {
@@ -42,10 +44,22 @@ const AddSubscription = ({ editSub, onSuccess }) => {
 
     const data = await res.json();
 
-    if (data.success) {
-      alert(editSub ? "Subscription updated" : "Subscription added");
+  if (data.success) {
+  setMessage(
+    editSub
+      ? "Subscription updated successfully"
+      : "Subscription added successfully"
+  );
+
+  // allow message to render first
+  setTimeout(() => {
+    if (onSuccess) {
       onSuccess();
     }
+  }, 1000); // 1 second is enough
+} else {
+  setMessage("Error: " + data.message);
+}
   };
 
   return (
@@ -69,6 +83,7 @@ const AddSubscription = ({ editSub, onSuccess }) => {
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
+      {message && <p className="message">{message}</p>}
 
       <button type="submit">
         {editSub ? "Update Subscription" : "Add Subscription"}

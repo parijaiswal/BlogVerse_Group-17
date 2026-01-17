@@ -9,10 +9,12 @@ import { useNavigate } from "react-router-dom";
 import EditProfile from "../../Components/EditProfile";
 import AllBlogs from "./Allblogs";
 import hello_2 from "../../Images/hello_2.png";
+import EditMyBlogs from "./EditMyblogs";
 const AdminDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [editBlog, setEditBlog] = useState(null);
   const [editSub, setEditSub] = useState(null);
+  
 
   const navigate = useNavigate();
 
@@ -38,9 +40,9 @@ const AdminDashboard = () => {
 
   // When Edit is clicked from ViewBlogs
   const handleEditBlog = (blog) => {
-    setEditBlog(blog);
-    setActivePage("addBlog");
-  };
+  setEditBlog(blog);
+  setActivePage("addBlog");
+};
 
   // After Add / Update success
   const resetBlogForm = () => {
@@ -58,6 +60,7 @@ const resetSubForm = () => {
   setEditSub(null);
   setActivePage("viewSubscriptions");
 };
+
 
   const renderContent = () => {
     switch (activePage) {
@@ -85,6 +88,8 @@ const resetSubForm = () => {
 
       case "editProfile":
         return <EditProfile />;
+      case "myBlogs":
+      return <EditMyBlogs onEdit={handleEditBlog} />;
       default:
         return (
           <>
@@ -162,6 +167,7 @@ const resetSubForm = () => {
           <li onClick={() => setActivePage("viewBlogs")}>
             All Blogs
           </li>
+          <li onClick={() => setActivePage("myBlogs")}>My Blogs</li>
           <li onClick={() => setActivePage("viewUsers")}>
             View Users
           </li>

@@ -3,7 +3,6 @@ import "./EditProfile.css";
 
 const EditProfile = () => {
   const userId = localStorage.getItem("userId");
-
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
@@ -12,6 +11,8 @@ const EditProfile = () => {
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   /* ================= FETCH PROFILE ================= */
   useEffect(() => {
@@ -44,7 +45,7 @@ const EditProfile = () => {
     });
 
     const data = await res.json();
-    alert(data.message || "Profile updated");
+    setMessage(data.message);
   };
 
   /* ================= CHANGE PASSWORD ================= */
@@ -61,11 +62,14 @@ const EditProfile = () => {
     );
 
     const data = await res.json();
-    alert(data.message);
+    setMessage(data.message);
 
     if (data.success) {
       setOldPassword("");
       setNewPassword("");
+    }
+    else {
+      setError(data.message);
     }
   };
 
@@ -92,7 +96,8 @@ const EditProfile = () => {
           </select>
 
           <input value={role} disabled />
-
+          <p className="success-message">{message}</p>
+          <p className="error-message">{error}</p>
           <button type="submit">Save Profile</button>
         </form>
       </div>

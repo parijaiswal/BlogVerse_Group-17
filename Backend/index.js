@@ -11,6 +11,9 @@ app.use(express.json());
 app.use("/api/blogs", blogRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/uploads", express.static("uploads"));// serve static files from 'uploads' directory
+app.get("/favicon.ico", (req, res) => res.status(204));
+
 //This will be used to connect to the database
 const db = mysql.createConnection({
   host: 'localhost',

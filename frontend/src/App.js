@@ -7,12 +7,9 @@ import Login from "./Pages/Authenticationpage/LoginTemp";
 import ForgotPassword from "./Pages/Authenticationpage/ForgotPassword";
 import ResetPassword from "./Pages/Authenticationpage/ResetPassword";
 import Admin from "./Pages/AdminPage/Admin";
-import Navbar from "./Components/Navbar";
 import Subscription from "./Pages/SubscriptionPage/Subscription";
-
 import Member from "./Pages/MemberPage/Member";
 import Client from "./Pages/ClientPage/Client";
-import Member from "./Pages/MemberPage/Member";
 
 // Main App Layout with conditional Navbar
 const AppLayout = () => {

@@ -31,7 +31,7 @@ const AllBlogs = () => {
               <tr key={blog.BlogId}>
                 <td>{blog.BlogId}</td>
                 <td>{blog.Title}</td>
-                <td>{blog.Visibility}</td>
+                <td className="status" style={{ color: blog.Visibility === 'private' ? 'red' : 'green', fontWeight: 600 }}>{blog.Visibility}</td>
                 <td>{blog.Create_Date?.split("T")[0]}</td>
                 <td>{blog.User_Role}</td>
               </tr>

@@ -5,56 +5,75 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState("public");
+  const [image, setImage] = useState(null);
+  const [existingImage, setExistingImage] = useState(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (editBlog) {
-      setTitle(editBlog.Title);
-      setContent(editBlog.Content);
-      setVisibility(editBlog.Visibility);
+      setTitle(editBlog.Title || "");
+      setContent(editBlog.Content || "");
+      setVisibility(editBlog.Visibility || "public");
+      setExistingImage(editBlog.Image_path || null);
     }
   }, [editBlog]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setError("");
 
-    const url = isClient
-  ? "http://localhost:5000/api/admin/add-blog"        // client blog (subscription + approval)
-  : editBlog
-  ? `http://localhost:5000/api/blogs/${editBlog.BlogId}` // admin edit
-  : "http://localhost:5000/api/admin/admin-add-blog"; // admin new blog
+    const url = editBlog
+      ? `http://localhost:5000/api/admin/edit-blog/${editBlog.BlogId}`
+      : isClient
+      ? "http://localhost:5000/api/admin/add-blog"
+      : "http://localhost:5000/api/admin/admin-add-blog";
 
     const method = editBlog ? "PUT" : "POST";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        content,
-        visibility,
-        userId: localStorage.getItem("userId"),
-      }),
-    });
-const data = await res.json();
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("visibility", visibility);
+    formData.append("userId", localStorage.getItem("userId"));
 
-if (res.status === 403) {
-  alert(data.message);
-  return;
-}
+    if (image) {
+      formData.append("image", image);
+    }
 
-if (data.success) {
-  alert(data.message);
-  setTitle("");
-  setContent("");
-  setVisibility("public");
-  onSuccess && onSuccess();
-} else {
-  alert(data.message || "Something went wrong");
-}
+    try {
+      const res = await fetch(url, {
+        method,
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Something went wrong");
+        return;
+      }
+
+      setMessage(data.message || "Success");
+
+      if (onSuccess) {
+        setTimeout(() => onSuccess(), 1000);
+      }
+    } catch {
+      setError("Server error");
+    }
   };
+
   return (
     <form className="admin-form" onSubmit={handleSubmit}>
-      <h2>{editBlog ? "Edit Blog" : "Publish Blog"}</h2>
+      <h2>
+        {editBlog
+          ? "Edit Blog"
+          : isClient
+          ? "Submit Blog for Approval"
+          : "Publish Blog"}
+      </h2>
 
       <label>Title</label>
       <input value={title} onChange={(e) => setTitle(e.target.value)} required />
@@ -68,17 +87,33 @@ if (data.success) {
         <option value="private">Private</option>
       </select>
 
-      <button type="submit">
-  {editBlog
-    ? "Update Blog"
-    : isClient
-    ? "Submit for Approval"
-    : "Publish Blog"}
-</button>
+      {/* Existing image preview */}
+      {existingImage && (
+        <div style={{ marginBottom: "15px" }}>
+          <p className="current-image-label"><strong>Current Image:</strong></p>
+          <img
+  src={`http://localhost:5000${existingImage}`}
+  alt="Blog"
+  style={{ width: "200px", borderRadius: "8px" }}
+/>
 
+        </div>
+      )}
+
+      <label>{editBlog ? "Replace Image (optional)" : "Blog Image"}</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setImage(e.target.files[0])}
+      />
+
+      {message && <p className="success-msg">{message}</p>}
+      {error && <p className="error-msg">{error}</p>}
+
+      <button type="submit">
+        {editBlog ? "Update Blog" : isClient ? "Submit for Approval" : "Publish Blog"}
+      </button>
     </form>
   );
 };
-
 export default AddBlog;
-
