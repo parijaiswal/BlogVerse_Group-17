@@ -51,25 +51,36 @@ const EditProfile = () => {
   /* ================= CHANGE PASSWORD ================= */
   const handlePasswordChange = async (e) => {
     e.preventDefault();
+    setMessage("");
+    setError("");
 
-    const res = await fetch(
-      `http://localhost:5000/api/profile/change-password/${userId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ oldPassword, newPassword }),
-      }
-    );
-
-    const data = await res.json();
-    setMessage(data.message);
-
-    if (data.success) {
-      setOldPassword("");
-      setNewPassword("");
+    if (!oldPassword || !newPassword) {
+      setError("Please fill in both fields");
+      return;
     }
-    else {
-      setError(data.message);
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/profile/change-password/${userId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ oldPassword, newPassword }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setMessage(data.message);
+        setOldPassword("");
+        setNewPassword("");
+      } else {
+        setError(data.message || "Failed to update password");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong");
     }
   };
 
@@ -120,6 +131,12 @@ const EditProfile = () => {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
+          {/* Only show messages here if they relate to password change. 
+              Ideally we'd have separate state variables for profile vs password messages. 
+              But given the implementation, we clear them on submit, so it should be fine. */}
+          {message && <p className="success-message">{message}</p>}
+          {error && <p className="error-message">{error}</p>}
+          
           <button type="submit">Change Password</button>
         </form>
       </div>

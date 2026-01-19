@@ -3,22 +3,32 @@ import "../AdminPage/Admin.css";
 
 const MyBlogs = () => {
   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     if (!userId) return;
 
     fetch(`http://localhost:5000/api/admin/client-blogs/${userId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load blogs");
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           setBlogs(data);
         } else {
           setBlogs([]);
         }
+        setLoading(false);
       })
-      .catch(() => setBlogs([]));
+      .catch(() => {
+        setBlogs([]);
+        setLoading(false);
+      });
   }, [userId]);
+
+  if (loading) return <div className="loading-spinner">Loading my blogs...</div>;
 
   return (
     <div className="admin-users">
@@ -66,3 +76,4 @@ const MyBlogs = () => {
   );
 };
 export default MyBlogs;
+

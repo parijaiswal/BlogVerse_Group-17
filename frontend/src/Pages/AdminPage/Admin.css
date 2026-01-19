@@ -39,10 +39,12 @@
   min-height: 100vh;
   background: #f8fafc;
 }
+
 .admin-main {
   flex: 1;
-  padding: 40px 80px;  
+  padding: 40px 80px;
 }
+
 /* Sidebar */
 .admin-sidebar {
   width: 240px;
@@ -96,7 +98,7 @@
 
 .admin-users h2 {
   margin-bottom: 10px;
-  color:#242c6f;
+  color: #242c6f;
   font-size: 19px;
 }
 
@@ -140,13 +142,14 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   max-width: 900px;
 }
+
 .stat-box {
   flex: 1;
   min-width: 180px;
   background: #ffffff;
   padding: 22px;
   border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
 
@@ -161,8 +164,23 @@
   color: #484d56;
   font-weight: 500;
 }
+
 .stat-box:hover {
   transform: translateY(-6px);
   transition: 0.2s ease;
 }
 
+.button {
+  background: #03315f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.button:hover {
+  background: #1e40af;
+}

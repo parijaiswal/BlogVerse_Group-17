@@ -10,6 +10,8 @@ import EditProfile from "../../Components/EditProfile";
 import AllBlogs from "./Allblogs";
 import hello_2 from "../../Images/hello_2.png";
 import EditMyBlogs from "./EditMyblogs";
+import ViewRejected from "./ViewRejected";
+
 const AdminDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [editBlog, setEditBlog] = useState(null);
@@ -76,6 +78,9 @@ const resetSubForm = () => {
         return <AllBlogs onEdit={handleEditBlog} />;
       case "blogApproval":
        return <ViewBlogs />;
+      
+      case "viewRejected":
+        return <ViewRejected />;
 
       case "viewUsers":
         return <ViewUsers  />;
@@ -102,22 +107,22 @@ const resetSubForm = () => {
             </div>
              {/* Stats Cards */}
             <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-              <div className="stat-box">
+              <div className="stat-box" onClick={() => setActivePage("viewBlogs")} style={{ cursor: "pointer" }}>
                 <h3>{stats.total}</h3>
                 <p>Total Blogs</p>
               </div>
 
-              <div className="stat-box approved">
+              <div className="stat-box approved" onClick={() => setActivePage("viewBlogs")} style={{ cursor: "pointer" }}>
                 <h3>{stats.approved}</h3>
                 <p>Approved</p>
               </div>
 
-              <div className="stat-box pending">
+              <div className="stat-box pending" onClick={() => setActivePage("blogApproval")} style={{ cursor: "pointer" }}>
                 <h3>{stats.pending}</h3>
                 <p>Pending</p>
               </div>
 
-              <div className="stat-box rejected">
+              <div className="stat-box rejected" onClick={() => setActivePage("viewRejected")} style={{ cursor: "pointer" }}>
                 <h3>{stats.rejected}</h3>
                 <p>Rejected</p>
               </div>
@@ -150,10 +155,12 @@ const resetSubForm = () => {
       <div className="admin-layout">
         {/* Sidebar */}
         <div className="admin-sidebar">
-          <h2>Admin Panel</h2>
+          <h2 onClick={() => setActivePage("dashboard")} 
+            style={{ cursor: "pointer" }}>Admin Panel</h2>
 
           <ul>
           <li
+            className={activePage === "addBlog" ? "active" : ""}
             onClick={() => {
               setEditBlog(null);
               setActivePage("addBlog");
@@ -161,20 +168,40 @@ const resetSubForm = () => {
           >
             Add Blog
           </li>
-          <li onClick={() => setActivePage("blogApproval")}>
+          <li 
+            className={activePage === "blogApproval" ? "active" : ""}
+            onClick={() => setActivePage("blogApproval")}
+          >
             Blog Approvals
           </li>
-          <li onClick={() => setActivePage("viewBlogs")}>
+          <li 
+            className={activePage === "viewBlogs" ? "active" : ""}
+            onClick={() => setActivePage("viewBlogs")}
+          >
             All Blogs
           </li>
-          <li onClick={() => setActivePage("myBlogs")}>My Blogs</li>
-          <li onClick={() => setActivePage("viewUsers")}>
+          <li 
+            className={activePage === "myBlogs" ? "active" : ""}
+            onClick={() => setActivePage("myBlogs")}
+          >
+            My Blogs
+          </li>
+          <li 
+            className={activePage === "viewUsers" ? "active" : ""}
+            onClick={() => setActivePage("viewUsers")}
+          >
             View Users
           </li>
-          <li onClick={() => setActivePage("addSubscription")}>
+          <li 
+            className={activePage === "addSubscription" ? "active" : ""}
+            onClick={() => setActivePage("addSubscription")}
+          >
             Add Subscription
           </li>
-          <li onClick={() => setActivePage("viewSubscriptions")}>
+          <li 
+            className={activePage === "viewSubscriptions" ? "active" : ""}
+            onClick={() => setActivePage("viewSubscriptions")}
+          >
             View Subscriptions
           </li>
         </ul>

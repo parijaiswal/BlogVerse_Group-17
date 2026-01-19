@@ -110,11 +110,29 @@ const ClientDashboard = () => {
       <div className="admin-layout">
         {/* SIDEBAR */}
         <div className="admin-sidebar">
-          <h2>Client Panel</h2>
+          <h2 
+            onClick={() => setActivePage("dashboard")} 
+            style={{ cursor: "pointer" }}
+          >
+            Client Panel
+          </h2>
           <ul>
-            <li onClick={() => setActivePage("addBlog")}>Add Blog</li>
-            <li onClick={() => setActivePage("myBlogs")}>My Blogs</li>
-            <li onClick={() => setActivePage("ViewSub")}>
+            <li 
+              className={activePage === "addBlog" ? "active" : ""}
+              onClick={() => setActivePage("addBlog")}
+            >
+              Add Blog
+            </li>
+            <li 
+              className={activePage === "myBlogs" ? "active" : ""}
+              onClick={() => setActivePage("myBlogs")}
+            >
+              My Blogs
+            </li>
+            <li 
+              className={activePage === "ViewSub" ? "active" : ""}
+              onClick={() => setActivePage("ViewSub")}
+            >
               View Subscription
             </li>
           </ul>

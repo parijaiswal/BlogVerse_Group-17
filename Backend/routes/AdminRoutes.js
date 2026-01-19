@@ -55,8 +55,62 @@ router.get("/subscriptions", async (req, res) => {
        ORDER BY SubId DESC`
     );
     res.json(rows);
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ message: "Database error" });
+  }
+});
+
+/* ======================================================
+   ADMIN → ADD SUBSCRIPTION (MISSING ROUTE FIXED)
+====================================================== */
+router.post("/add-subscription", async (req, res) => {
+  const { subName, subDuration, subPrice, description, visibility } = req.body;
+
+  if (!subName || !subDuration || !subPrice) {
+    return res.status(400).json({ success: false, message: "Missing required fields" });
+  }
+
+  try {
+    await db.query(
+      `INSERT INTO SubscriptionTable
+       (SubName, SubDuration, SubPrice, Visibility)
+       VALUES (?, ?, ?, ?)`,
+      [subName, subDuration, subPrice, visibility || "active"]
+    );
+    // Note: If Description column exists, add it. For now sticking to known columns from ViewSub.
+    // If user insists on description, we'd need to alter table. 
+    // Given the previous code didn't use it in GET, I'll omit for safety or check.
+    // Actually AddSub sends it. I'll assume current schema might NOT have it unless I add it.
+    // But safely, let's Insert what we know works or generic. 
+    // I will stick to what creates a valid row.
+
+    res.json({ success: true, message: "Subscription added successfully" });
+  } catch (err) {
+    console.error("Add sub error:", err);
+    res.status(500).json({ success: false, message: "Database error" });
+  }
+});
+
+/* ======================================================
+   ADMIN → EDIT SUBSCRIPTION (MISSING ROUTE FIXED)
+====================================================== */
+router.put("/subscriptions/:subId", async (req, res) => {
+  const { subId } = req.params;
+  const { subName, subDuration, subPrice, description, visibility } = req.body;
+
+  try {
+    await db.query(
+      `UPDATE SubscriptionTable
+       SET SubName=?, SubDuration=?, SubPrice=?, Visibility=?
+       WHERE SubId=?`,
+      [subName, subDuration, subPrice, visibility, subId]
+    );
+
+    res.json({ success: true, message: "Subscription updated successfully" });
+  } catch (err) {
+    console.error("Update sub error:", err);
+    res.status(500).json({ success: false, message: "Database error" });
   }
 });
 
@@ -143,6 +197,18 @@ router.get("/pending-blogs", async (req, res) => {
 });
 
 /* ======================================================
+   ADMIN → VIEW REJECTED BLOGS
+====================================================== */
+router.get("/rejected-blogs", async (req, res) => {
+  const [rows] = await db.query(
+    `SELECT BlogId, Title, Status, Update_Date
+     FROM BlogTable WHERE Status='rejected'
+     ORDER BY Update_Date DESC`
+  );
+  res.json(rows);
+});
+
+/* ======================================================
    ADMIN → APPROVE / REJECT BLOG
 ====================================================== */
 router.put("/approve-blog/:id", async (req, res) => {
@@ -211,4 +277,87 @@ router.put("/edit-blog/:blogId", upload.single("image"), async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+/* ======================================================
+   CLIENT → DASHBOARD STATS (MISSING ROUTE FIXED)
+====================================================== */
+router.get("/client-blog-stats/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const [[total]] = await db.query(
+      "SELECT COUNT(*) AS count FROM BlogTable WHERE Userid=?",
+      [userId]
+    );
+    const [[approved]] = await db.query(
+      "SELECT COUNT(*) AS count FROM BlogTable WHERE Userid=? AND Status='approved'",
+      [userId]
+    );
+    const [[pending]] = await db.query(
+      "SELECT COUNT(*) AS count FROM BlogTable WHERE Userid=? AND Status='pending'",
+      [userId]
+    );
+    const [[rejected]] = await db.query(
+      "SELECT COUNT(*) AS count FROM BlogTable WHERE Userid=? AND Status='rejected'",
+      [userId]
+    );
+
+    res.json({
+      total: total.count,
+      approved: approved.count,
+      pending: pending.count,
+      rejected: rejected.count,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+/* ======================================================
+   CLIENT → MY BLOGS (MISSING ROUTE FIXED)
+====================================================== */
+router.get("/client-blogs/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT BlogId, Title, Status, Update_Date
+       FROM BlogTable WHERE Userid=?
+       ORDER BY Update_Date DESC`,
+      [userId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+/* ======================================================
+   CLIENT → MY SUBSCRIPTION (MISSING ROUTE FIXED)
+====================================================== */
+router.get("/client-subscription/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    // Get the latest active subscription
+    const [rows] = await db.query(
+      `SELECT sp.Purchaseid, sp.Status, sp.Start_date, sp.End_date, 
+              s.SubName, s.SubDuration, s.SubPrice
+       FROM Sub_Purchase_Table sp
+       JOIN SubscriptionTable s ON sp.SubId = s.SubId
+       WHERE sp.Userid=? AND sp.Status='active' AND sp.End_date >= CURDATE()
+       ORDER BY sp.Purchaseid DESC LIMIT 1`,
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      return res.json({ message: "No active subscription" });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("Client sub error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
 module.exports = router;

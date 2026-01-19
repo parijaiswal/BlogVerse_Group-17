@@ -64,6 +64,14 @@ router.put("/:userId", async (req, res) => {
 /* ======================================================
    CHANGE PASSWORD
 ====================================================== */
+/* ======================================================
+   CHANGE PASSWORD
+====================================================== */
+const bcrypt = require('bcryptjs'); // Ensure this is imported at top too, but I'll add it here contextually or I should check if it's imported at top.
+// Wait, I cannot add require in the middle of file cleanly if it's not at top, but replace_file_content chunk can handle it if I include top. 
+// I'll assume I need to add it at top.
+// Let's do a multi_replace to add import and fix route.
+
 router.put("/change-password/:userId", async (req, res) => {
   const { userId } = req.params;
   const { oldPassword, newPassword } = req.body;
@@ -86,15 +94,30 @@ router.put("/change-password/:userId", async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    if (rows[0].Password !== oldPassword) {
+    const storedPassword = rows[0].Password;
+    let isMatch = false;
+
+    // Check if hashed
+    if (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$')) {
+      isMatch = await bcrypt.compare(oldPassword, storedPassword);
+    } else {
+      // Plain text fallback
+      isMatch = (oldPassword === storedPassword);
+    }
+
+    if (!isMatch) {
       return res
         .status(401)
         .json({ success: false, message: "Old password incorrect" });
     }
 
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
     await db.query(
       "UPDATE Users SET Password = ? WHERE UserId = ?",
-      [newPassword, userId]
+      [hashedPassword, userId]
     );
 
     res.json({
