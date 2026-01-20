@@ -24,6 +24,9 @@ const db = mysql.createConnection({
   user: 'root',
   password: 'Mysql1234',
   database: 'blogverse'
+  user: 'root',         
+  password: 'aangi05',          
+  database: 'blogverse' 
 });
 
 db.connect((err) => {

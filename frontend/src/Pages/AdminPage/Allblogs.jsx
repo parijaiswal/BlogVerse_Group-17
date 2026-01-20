@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AllBlogs = () => {
   const [blogs, setBlogs] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:5000/api/blogs")
@@ -24,6 +26,7 @@ const AllBlogs = () => {
               <th>Visibility</th>
               <th>Date</th>
               <th>Written by</th>
+               <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -34,6 +37,19 @@ const AllBlogs = () => {
                 <td className="status" style={{ color: blog.Visibility === 'private' ? 'red' : 'green', fontWeight: 600 }}>{blog.Visibility}</td>
                 <td>{blog.Create_Date?.split("T")[0]}</td>
                 <td>{blog.User_Role}</td>
+                <td>
+                   <span
+                      onClick={() =>
+                      navigate(`/blog/${blog.BlogId}`)}
+                style={{
+                  color: "#1a73e8",
+                  cursor: "pointer",
+                  fontWeight: 500,
+               }}
+              >
+                  View
+                </span>
+                </td>
               </tr>
             ))}
           </tbody>

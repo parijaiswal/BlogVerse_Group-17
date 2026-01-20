@@ -6,7 +6,7 @@ const router = express.Router();
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Mysql1234",
+  password: "aangi05",
   database: "blogverse",
 });
 
@@ -60,11 +60,11 @@ router.get("/", (req, res) => {
     SELECT 
       b.BlogId,
       b.Title,
+      b.Content,
       b.Visibility,
-      b.Create_Date,
-      u.User_Role
+      b.Create_Date
     FROM BlogTable b
-    JOIN Users u ON b.Userid = u.UserId
+    WHERE b.Visibility ='public'
     ORDER BY b.Create_Date DESC
   `;
   
@@ -80,6 +80,119 @@ router.get("/", (req, res) => {
   });
 });
 
+// ===================================================
+// LIKE BLOG
+// ===================================================
+router.post("/:id/like", (req, res) => {
+  const blogId = req.params.id;
+
+  db.query(
+    "UPDATE BlogTable SET Like_count = Like_count + 1 WHERE BlogId = ?",
+    [blogId],
+    (err) => {
+      if (err) {
+        console.error("Like error:", err);
+        return res.status(500).json({ message: "Database error" });
+      }
+      res.json({ success: true });
+    }
+  );
+});
+
+router.get("/:id/likes", (req, res) => {
+  const blogId = req.params.id;
+
+  db.query(
+    "SELECT Like_count FROM BlogTable WHERE BlogId = ?",
+    [blogId],
+    (err, rows) => {
+      if (err) {
+        console.error("Get likes error:", err);
+        return res.status(500).json({ message: "Database error" });
+      }
+
+      // 🔥 FIX IS HERE
+      if (!rows.length) {
+        return res.json({ likes: 0 });
+      }
+
+      res.json({ likes: rows[0].Like_count || 0 });
+    }
+  );
+});
+
+
+// ===================================================
+// ADD COMMENT
+// ===================================================
+router.post("/:id/comment", (req, res) => {
+  const { Userid,  Comment_text } = req.body;
+
+    if (!Userid || !Comment_text) {
+    return res.status(400).json({ message: "Userid or Comment_text missing" });
+  }
+
+  db.query(
+    "INSERT INTO comment_table (Blogid, Userid, Comment_text) VALUES (?, ?, ?)",
+    [req.params.id, Userid, Comment_text],
+     (err) => {
+     if (err) {
+        console.error("Insert comment error:", err); // 🔥 check this
+        return res.status(500).json({ message: "Database error" });
+      }
+
+      // Increment comment count in BlogTable
+      db.query(
+        "UPDATE BlogTable SET Comment_count = Comment_count + 1 WHERE Blogid = ?",
+        [req.params.id],
+        (err2) => {
+          if (err2) console.error("Increment comment_count error:", err2);
+          res.json({ success: true });
+        }
+      );
+    }
+  );
+});
+
+
+router.get("/:id/comments", (req, res) => {
+  db.query(
+    "SELECT * FROM comment_table WHERE Blogid = ? ORDER BY Comment_date DESC",
+    [req.params.id],
+    (err, rows) => {
+      if (err) {
+        console.error("Fetch comments error:", err);
+        return res.status(500).json({ message: "Database error" });
+      }
+      res.json(rows); // 👈 this is enough
+    }
+  );
+});
+
+
+// GET single blog by ID
+router.get("/:id", (req, res) => {
+  const blogId = req.params.id;
+
+  const sql = `
+    SELECT BlogId, Title, Content, Visibility, Create_Date
+    FROM BlogTable
+    WHERE BlogId = ? AND Visibility = 'public'
+  `;
+
+  db.query(sql, [blogId], (err, rows) => {
+    if (err) {
+      console.error("Fetch single blog error:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    if (!rows.length) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    res.json(rows[0]);
+  });
+});
 
 // ===================================================
 // UPDATE BLOG (Admin only – frontend controlled)

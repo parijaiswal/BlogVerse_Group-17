@@ -36,7 +36,8 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
     formData.append("title", title);
     formData.append("content", content);
     formData.append("visibility", visibility);
-    formData.append("userId", localStorage.getItem("userId"));
+    formData.append("userId", 1); // admin user id from Users table
+   // formData.append("userId", localStorage.getItem("userId"));
 
     if (image) {
       formData.append("image", image);

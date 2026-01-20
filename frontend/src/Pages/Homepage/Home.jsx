@@ -1,9 +1,25 @@
 import React from 'react'
 import HeroImage from "../../Images/heromain1.png";
-import Footer from '../../Components/footer';
 import "./Home.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
 
 function Home() {
+  const navigate = useNavigate();
+  const [blogs, setBlogs] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/blogs")
+      .then((res) => {
+      console.log("API response:", res.data); // check here
+      setBlogs(res.data);
+    })
+      .catch((err) => console.error("API error:",err));
+  }, []);
+
   return (
     <div>
      {/* Main section of the homepage */}
@@ -14,12 +30,7 @@ function Home() {
     <p>
       CultureX's blogging platform where brands and writers share
       content on media intelligence, marketing and digital trends.
-    </p>
-
-    {/* <div className="hero-search">
-      <span className="search-icon">🔍</span>
-      <input type="text" placeholder="Search What you want to read" />
-    </div> */}
+   </p>
 
     <button className="read-more-btn">Browse Blogs</button>
   </div>
@@ -42,76 +53,31 @@ function Home() {
       <button className="search-btn">Search</button>
     </div>
 
-  <div className="latest-cards">
-    {/* Card 1 */}
-    <div className="blog-card">
+     <div className="latest-cards">
+  {blogs.map((blog) => (
+    <div
+      className="blog-card"
+      key={blog.BlogId}
+      onClick={() => navigate(`/blog/${blog.BlogId}`)}
+      style={{ cursor: "pointer" }}
+    >
       <img
         src={require("../../Images/blog1.webp")}
-        alt="Blog 1"
+        alt={blog.Title}
         className="blog-img"
       />
-      <span className="blog-tag">#Branding</span>
-      <h3>Building a Strong Digital Brand</h3>
+      <span className="blog-tag">#Blog</span>
+      <h3>{blog.Title}</h3>
       <p>
-        How brands create a consistent identity across websites, social media
-        and online campaigns.
+        {blog.Content.length > 100
+          ? blog.Content.slice(0, 100) + "..."
+          : blog.Content}
       </p>
     </div>
+  ))}
+</div>
 
-    {/* Card 2 */}
-    <div className="blog-card">
-      <img
-        src={require("../../Images/blog2.webp")}
-        alt="Blog 2"
-        className="blog-img"
-      />
-      <span className="blog-tag">#MediaIntelligence</span>
-      <h3>Tracking Online Conversations</h3>
-      <p>
-        Learn how media intelligence tools help companies monitor trends and
-        understand audience behaviour.
-      </p>
-    </div>
-
-    {/* Card 3 */}
-    <div className="blog-card">
-      <img
-        src={require("../../Images/blog3.webp")}
-        alt="Blog 3"
-        className="blog-img"
-      />
-      <span className="blog-tag">#Analytics</span>
-      <h3>Using Data to Improve Campaigns</h3>
-      <p>
-        A simple guide on using analytics to measure performance and improve
-        marketing results.
-      </p>
-    </div>
-    {/* Card 4 */}
-  <div className="blog-card">
-    <img src={require("../../Images/blog3.webp")}  alt="Blog 4" className="blog-img" />
-    <span className="blog-tag">#SocialMedia</span>
-    <h3>Engaging Audiences on Social Platforms</h3>
-    <p>Simple tips to create posts that people actually interact with.</p>
-  </div>
-
-  {/* Card 5 */}
-  <div className="blog-card">
-    <img src={require("../../Images/blog1.webp")}  alt="Blog 5" className="blog-img" />
-    <span className="blog-tag">#Campaigns</span>
-    <h3>Designing Effective Ad Campaigns</h3>
-    <p>How to structure a campaign from idea to final performance report.</p>
-  </div>
-
-  {/* Card 6 */}
-  <div className="blog-card">
-    <img src={require("../../Images/blog2.webp")}  alt="Blog 6" className="blog-img" />
-    <span className="blog-tag">#Trends</span>
-    <h3>Top Digital Trends to Watch</h3>
-    <p>Key changes in digital media that marketers should keep an eye on.</p>
-  </div>
-  </div>
-</section>
+  </section>
 
 
 {/* Want to publish section */}
@@ -151,10 +117,9 @@ function Home() {
     </div>
   </div>
 </section>
-<Footer/>
-
-    </div>
+</div>
+    
   );
 }
 
-export default Home
+export default Home;
