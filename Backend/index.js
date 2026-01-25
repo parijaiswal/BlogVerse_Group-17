@@ -21,9 +21,6 @@ app.get("/favicon.ico", (req, res) => res.status(204));
 //This will be used to connect to the database
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',
-  password: 'Mysql1234',
-  database: 'blogverse'
   user: 'root',         
   password: 'aangi05',          
   database: 'blogverse' 

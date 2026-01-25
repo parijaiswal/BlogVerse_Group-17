@@ -2,6 +2,9 @@ import React, { useEffect, useState} from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { FaHeart, FaRegCommentDots } from "react-icons/fa";
+import jsPDF from "jspdf";
+import { FaDownload } from "react-icons/fa";
+
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -50,6 +53,35 @@ const BlogDetails = () => {
     })
     .then(res => setComments(res.data))
   };
+  const handleDownload = () => {
+  const doc = new jsPDF("p", "mm", "a4");
+
+  let y = 20;
+
+  // Title
+  doc.setFontSize(20);
+  doc.text(blog.Title, 105, y, { align: "center" });
+  y += 10;
+
+  // Meta
+  doc.setFontSize(11);
+  doc.text(`Author: ${blog.User_Role || "Admin"}`, 20, y);
+  y += 6;
+  doc.text(`Date: ${new Date(blog.Create_Date).toDateString()}`, 20, y);
+  y += 10;
+
+  // Content
+  doc.setFontSize(13);
+  const contentLines = doc.splitTextToSize(blog.Content, 170);
+  doc.text(contentLines, 20, y);
+
+  // Footer / watermark
+  doc.setFontSize(10);
+  doc.text("Downloaded from BlogVerse", 105, 290, { align: "center" });
+
+  doc.save(`${blog.Title}.pdf`);
+};
+
 
   return (
     <div style={{ padding: "40px", maxWidth: "800px", margin: "auto"  }}>
@@ -67,6 +99,10 @@ const BlogDetails = () => {
         >
           <FaRegCommentDots /> {comments.length}
         </div>
+
+        <div onClick={handleDownload} style={{ cursor: "pointer" }}>
+    <FaDownload /> Download
+  </div>
       </div>
 
       {/* COMMENT BOX (TOGGLE) */}
