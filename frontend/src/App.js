@@ -13,19 +13,20 @@ import Subscription from "./Pages/SubscriptionPage/Subscription";
 import Member from "./Pages/MemberPage/Member";
 import Client from "./Pages/ClientPage/Client";
 import BlogDetails from "./Pages/Homepage/BlogDetails";
+import Payment from "./Pages/Payment/Payment";
 
 // Main App Layout with conditional Navbar
 const AppLayout = () => {
   const location = useLocation();
 
-  const hideNavbar =
+  const isPanelPage =
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/client") ||
     location.pathname.startsWith("/member");
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {!isPanelPage && <Navbar />}
 
       <Routes>
         {/* Public pages */}
@@ -33,12 +34,12 @@ const AppLayout = () => {
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/payment" element={<Payment />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-      
+
         {/* Dashboards */}
         <Route path="/admin" element={<Admin />} />
         <Route path="/client" element={<Client />} />
@@ -47,6 +48,7 @@ const AppLayout = () => {
         <Route path="/Subscription" element={<Subscription />} />
 
       </Routes>
+      {!isPanelPage && <Footer />}
     </>
   );
 };
@@ -55,7 +57,6 @@ const App = () => {
   return (
     <Router>
       <AppLayout />
-     <Footer />
     </Router>
   );
 };

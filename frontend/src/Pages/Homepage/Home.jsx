@@ -10,6 +10,12 @@ import { useNavigate } from "react-router-dom";
 function Home() {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Check login status
+  const role = localStorage.getItem("role");
+  const validRoles = ["admin", "client", "member"];
+  const isLoggedIn = role && validRoles.includes(role.toLowerCase());
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/blogs")
@@ -19,6 +25,24 @@ function Home() {
     })
       .catch((err) => console.error("API error:",err));
   }, []);
+
+  // Filter blogs based on search query
+  const filteredBlogs = blogs.filter((blog) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      blog.Title?.toLowerCase().includes(query) ||
+      blog.Content?.toLowerCase().includes(query) ||
+      blog.Username?.toLowerCase().includes(query)
+    );
+  });
+
+  const handleCTAClick = () => {
+    if (isLoggedIn) {
+      navigate(`/${role.toLowerCase()}`);
+    } else {
+      navigate("/register");
+    }
+  };
 
   return (
     <div>
@@ -48,31 +72,44 @@ function Home() {
   </p>
   {/* search bar */}
    <div className="hero-search">
-      {/* <span className="search-icon"></span> */}
-      <input type="text" placeholder="Search Latest blogs" />
+      <input 
+        type="text" 
+        placeholder="Search Latest blogs" 
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       <button className="search-btn">Search</button>
     </div>
 
-     <div className="latest-cards">
-  {blogs.map((blog) => (
+      <div className="latest-cards">
+  {filteredBlogs.slice(0, 6).map((blog) => (
     <div
       className="blog-card"
       key={blog.BlogId}
       onClick={() => navigate(`/blog/${blog.BlogId}`)}
       style={{ cursor: "pointer" }}
     >
-      <img
-        src={require("../../Images/blog1.webp")}
-        alt={blog.Title}
-        className="blog-img"
-      />
-      <span className="blog-tag">#Blog</span>
-      <h3>{blog.Title}</h3>
-      <p>
-        {blog.Content.length > 100
-          ? blog.Content.slice(0, 100) + "..."
-          : blog.Content}
-      </p>
+      <div className="blog-img-container">
+        <img
+          src={blog.Image_path ? `http://localhost:5000${blog.Image_path}` : require("../../Images/blog1.webp")}
+          alt={blog.Title}
+          className="blog-img"
+        />
+      </div>
+      
+      <div className="blog-content">
+        <h3>{blog.Title}</h3>
+        <p className="blog-snippet">
+          {blog.Content.length > 80
+            ? blog.Content.slice(0, 80) + "..."
+            : blog.Content}
+        </p>
+        
+        <div className="blog-meta">
+          <span className="blog-author">{blog.Username ? `By ${blog.Username}` : ""}</span>
+          <span className="blog-date">{new Date(blog.Create_Date).toLocaleDateString()}</span>
+        </div>
+      </div>
     </div>
   ))}
 </div>
@@ -89,7 +126,9 @@ function Home() {
         Brand clients and registered members can publish blogs on BlogVerse.<br />
         Share sponsored articles, case studies or your own insights on media, branding and marketing.
       </p>
-      <button className="learn-more-btn">Learn more</button>
+      <button className="learn-more-btn" onClick={handleCTAClick}>
+        {isLoggedIn ? "Write a Blog" : "Register Now"}
+      </button>
     </div>
 
     <div className="publish-right">

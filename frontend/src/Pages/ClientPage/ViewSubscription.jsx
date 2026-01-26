@@ -53,15 +53,49 @@ const ViewSubscription = () => {
   }
 
   return (
-    <div className="admin-card">
-      <h2 className="admin-card-title">My Subscription</h2>
+    <div className="client-sub-wrapper">
+      <div className="client-sub-card">
+        <div className="client-sub-header">
+          <h3>Current Plan Details</h3>
+          <span className={`status-badge ${subscription.Status === "Active" ? "active" : "expired"}`}>
+            {subscription.Status}
+          </span>
+        </div>
+        
+        <div className="client-sub-body">
+          <div className="sub-detail-item">
+            <span className="sub-label">Plan Name</span>
+            <span className="sub-value highlight">{subscription.SubName}</span>
+          </div>
+          
+          <div className="sub-detail-item">
+            <span className="sub-label">Price</span>
+            <span className="sub-value">₹{subscription.SubPrice}</span>
+          </div>
 
-      <p><strong>Plan:</strong> {subscription.SubName}</p>
-      <p><strong>Duration:</strong> {subscription.SubDuration} Months</p>
-      <p><strong>Price:</strong> ₹{subscription.SubPrice}</p>
-      <p><strong>Status:</strong> <span style={{color: 'green', fontWeight: 'bold'}}>{subscription.Status}</span></p>
-      <p><strong>Start Date:</strong> {formatDate(subscription.Start_date)}</p>
-      <p><strong>End Date:</strong> {formatDate(subscription.End_date)}</p>
+          <div className="sub-detail-item">
+            <span className="sub-label">Duration</span>
+            <span className="sub-value">{subscription.SubDuration} Months</span>
+          </div>
+
+          <div className="sub-detail-item">
+            <span className="sub-label">Start Date</span>
+            <span className="sub-value">{formatDate(subscription.Start_date)}</span>
+          </div>
+
+          <div className="sub-detail-item">
+            <span className="sub-label">End Date</span>
+            <span className="sub-value">{formatDate(subscription.End_date)}</span>
+          </div>
+        </div>
+
+        <div className="client-sub-footer">
+            <p className="renewal-text">Need to upgrade? Check out other plans.</p>
+            <button className="upgrade-btn" onClick={() => navigate("/Subscription")}>
+                View Plans
+            </button>
+        </div>
+      </div>
     </div>
   );
 };

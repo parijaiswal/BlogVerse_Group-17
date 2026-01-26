@@ -6,7 +6,7 @@ const router = express.Router();
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "aangi05",
+  password: "Mysql1234",
   database: "blogverse",
 });
 
@@ -55,6 +55,9 @@ router.post("/add-blog", (req, res) => {
 // ===================================================
 // GET ALL BLOGS (Admin + Member)
 // ===================================================
+// ===================================================
+// GET ALL BLOGS (Admin + Member)
+// ===================================================
 router.get("/", (req, res) => {
   const sql = `
     SELECT 
@@ -62,13 +65,16 @@ router.get("/", (req, res) => {
       b.Title,
       b.Content,
       b.Visibility,
-      b.Create_Date
+      b.Create_Date,
+      b.Image_path,
+      u.Username, 
+      u.User_Role
     FROM BlogTable b
-    WHERE b.Visibility ='public'
+    JOIN users u ON b.Userid = u.UserId
     ORDER BY b.Create_Date DESC
   `;
-  
-//==============================================================
+
+  //==============================================================
 
   db.query(sql, (err, rows) => {
     if (err) {
@@ -79,6 +85,8 @@ router.get("/", (req, res) => {
     res.json(rows);
   });
 });
+
+// ... (likes/comments routes remain changed but I am replacing the block containing GET / and GET /:id)
 
 // ===================================================
 // LIKE BLOG
@@ -126,17 +134,17 @@ router.get("/:id/likes", (req, res) => {
 // ADD COMMENT
 // ===================================================
 router.post("/:id/comment", (req, res) => {
-  const { Userid,  Comment_text } = req.body;
+  const { Userid, Comment_text } = req.body;
 
-    if (!Userid || !Comment_text) {
+  if (!Userid || !Comment_text) {
     return res.status(400).json({ message: "Userid or Comment_text missing" });
   }
 
   db.query(
     "INSERT INTO comment_table (Blogid, Userid, Comment_text) VALUES (?, ?, ?)",
     [req.params.id, Userid, Comment_text],
-     (err) => {
-     if (err) {
+    (err) => {
+      if (err) {
         console.error("Insert comment error:", err); // 🔥 check this
         return res.status(500).json({ message: "Database error" });
       }
@@ -175,9 +183,10 @@ router.get("/:id", (req, res) => {
   const blogId = req.params.id;
 
   const sql = `
-    SELECT BlogId, Title, Content, Visibility, Create_Date
-    FROM BlogTable
-    WHERE BlogId = ? AND Visibility = 'public'
+    SELECT b.BlogId, b.Title, b.Content, b.Visibility, b.Create_Date, b.Image_path, b.Like_count, u.Username, u.User_Role
+    FROM BlogTable b
+    JOIN users u ON b.Userid = u.UserId
+    WHERE b.BlogId = ?
   `;
 
   db.query(sql, [blogId], (err, rows) => {

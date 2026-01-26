@@ -1,0 +1,157 @@
+.blog-details-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: 'Inter', sans-serif;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.blog-header-img {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.blog-header-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.blog-title {
+    font-size: 42px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.blog-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #64748b;
+    margin-bottom: 40px;
+    font-size: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    /* added separator */
+    padding-bottom: 20px;
+}
+
+.blog-author-highlight {
+    font-weight: 700;
+    color: #2563eb;
+}
+
+.blog-text {
+    line-height: 1.9;
+    font-size: 18px;
+    color: #334155;
+    margin-bottom: 50px;
+}
+
+.blog-text p {
+    margin-bottom: 24px;
+}
+
+.interaction-bar {
+    display: flex;
+    gap: 30px;
+    padding: 24px 0;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.icon-wrapper {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #475569;
+    transition: color 0.2s;
+}
+
+.icon-wrapper:hover {
+    color: #2563eb;
+}
+
+.comment-section-box {
+    margin-top: 30px;
+}
+
+.comment-input {
+    width: 100%;
+    height: 120px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    font-size: 16px;
+    resize: none;
+    font-family: inherit;
+    margin-bottom: 12px;
+}
+
+.comment-input:focus {
+    outline: 2px solid #2563eb;
+    border-color: transparent;
+}
+
+.post-btn {
+    padding: 12px 28px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.2s;
+}
+
+.post-btn:hover {
+    background: #1d4ed8;
+}
+
+.comments-list {
+    margin-top: 50px;
+}
+
+.comment-item {
+    margin-bottom: 20px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+}
+
+.comment-user {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.comment-date {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-left: 10px;
+}
+
+.comment-text {
+    margin-top: 8px;
+    color: #475569;
+}

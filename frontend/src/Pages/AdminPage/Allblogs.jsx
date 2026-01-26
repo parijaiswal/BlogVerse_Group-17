@@ -36,7 +36,7 @@ const AllBlogs = () => {
                 <td>{blog.Title}</td>
                 <td className="status" style={{ color: blog.Visibility === 'private' ? 'red' : 'green', fontWeight: 600 }}>{blog.Visibility}</td>
                 <td>{blog.Create_Date?.split("T")[0]}</td>
-                <td>{blog.User_Role}</td>
+                <td>{blog.Username} <span style={{fontSize: "12px", color: "#666"}}>({blog.User_Role})</span></td>
                 <td>
                    <span
                       onClick={() =>

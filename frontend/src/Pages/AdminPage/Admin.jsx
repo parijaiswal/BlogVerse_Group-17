@@ -138,7 +138,7 @@ const resetSubForm = () => {
     <div className="admin-wrapper">
       {/* Top Bar */}
       <div className="admin-topbar">
-        <h2 className="admin-logo">BlogVerse</h2>
+        <h2 className="admin-logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>BlogVerse</h2>
         <div className="topbar-actions">
     <button
       className="logout-btn"
@@ -157,6 +157,8 @@ const resetSubForm = () => {
         <div className="admin-sidebar">
           <h2 onClick={() => setActivePage("dashboard")} 
             style={{ cursor: "pointer" }}>Admin Panel</h2>
+          
+
 
           <ul>
           <li
@@ -205,6 +207,31 @@ const resetSubForm = () => {
             View Subscriptions
           </li>
         </ul>
+
+
+        
+          <div style={{ marginTop: "auto", paddingTop: "20px" }}>
+            <button 
+               onClick={() => navigate("/")} 
+               style={{ 
+                 background: "rgba(255,255,255,0.1)", 
+                 border: "1px solid rgba(255,255,255,0.2)", 
+                 color: "white", 
+                 width: "100%", 
+                 padding: "12px", 
+                 borderRadius: "8px",
+                 cursor: "pointer",
+                 display: "flex",
+                 alignItems: "center",
+                 justifyContent: "center",
+                 gap: "8px",
+                 fontWeight: "500",
+                 transition: "0.2s"
+               }}
+            >
+               &larr; Return to Website
+            </button>
+          </div>
 
         </div>
 

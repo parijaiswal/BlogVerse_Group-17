@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { FaHeart, FaRegCommentDots } from "react-icons/fa";
 import jsPDF from "jspdf";
 import { FaDownload } from "react-icons/fa";
+import "./BlogDetails.css";
 
 
 const BlogDetails = () => {
@@ -65,7 +66,7 @@ const BlogDetails = () => {
 
   // Meta
   doc.setFontSize(11);
-  doc.text(`Author: ${blog.User_Role || "Admin"}`, 20, y);
+  doc.text(`Author: ${blog.User_Role || ""}`, 20, y);
   y += 6;
   doc.text(`Date: ${new Date(blog.Create_Date).toDateString()}`, 20, y);
   y += 10;
@@ -84,49 +85,75 @@ const BlogDetails = () => {
 
 
   return (
-    <div style={{ padding: "40px", maxWidth: "800px", margin: "auto"  }}>
-      <h1>{blog.Title}</h1>
-      <p>{blog.Content}</p>
+    <div className="blog-details-container">
+      {blog.Image_path && (
+        <div className="blog-header-img">
+          <img 
+            src={`http://localhost:5000${blog.Image_path}`} 
+            alt={blog.Title} 
+          />
+        </div>
+      )}
+
+      <h1 className="blog-title">{blog.Title}</h1>
+      
+      <div className="blog-info">
+        <span className="blog-author-highlight">{blog.Username}</span> 
+        <span>|</span>
+        <span>{new Date(blog.Create_Date).toDateString()}</span>
+         <span>|</span>
+        <span style={{ textTransform: "capitalize" }}>{blog.User_Role || "Member"}</span>
+      </div>
+
+      <div className="blog-text">
+        {blog.Content.split('\n').map((para, index) => (
+          <p key={index}>{para}</p>
+        ))}
+      </div>
+
       {/* ICON BAR */}
-      <div style={{ display: "flex", gap: "25px", margin: "20px 0" }}>
-        <div onClick={handleLike} style={{ cursor: "pointer" }}>
-          <FaHeart color={liked ? "red" : "gray"} /> {likes}
+      <div className="interaction-bar">
+        <div onClick={handleLike} className="icon-wrapper">
+          <FaHeart color={liked ? "#e91e63" : "currentColor"} size={22} /> <span style={{ fontWeight: 500 }}>{likes} Likes</span>
         </div>
 
-        <div
-          onClick={() => setShowCommentBox(!showCommentBox)}
-          style={{ cursor: "pointer" }}
-        >
-          <FaRegCommentDots /> {comments.length}
+        <div onClick={() => setShowCommentBox(!showCommentBox)} className="icon-wrapper">
+          <FaRegCommentDots size={22} /> <span style={{ fontWeight: 500 }}>{comments.length} Comments</span>
         </div>
 
-        <div onClick={handleDownload} style={{ cursor: "pointer" }}>
-    <FaDownload /> Download
-  </div>
+        <div onClick={handleDownload} className="icon-wrapper" style={{ marginLeft: "auto", color: "#2563eb" }}>
+          <FaDownload size={20} /> <span style={{ fontWeight: 600 }}>Download PDF</span>
+        </div>
       </div>
 
       {/* COMMENT BOX (TOGGLE) */}
       {showCommentBox && (
-        <>
+        <div className="comment-section-box">
           <textarea
             value={commentText}
             onChange={e => setCommentText(e.target.value)}
-            placeholder="Write a comment..."
-            style={{ width: "100%", height: "80px" }}
+            placeholder="Share your thoughts..."
+            className="comment-input"
           />
-          <button onClick={postComment} style={{ marginTop: "8px" }}>
-            Post
+          <button onClick={postComment} className="post-btn">
+            Post Comment
           </button>
-        </>
+        </div>
       )}
 
       {/* COMMENTS */}
-      {comments.map(c => (
-        <div key={c.Commentid} style={{ marginTop: "12px" }}>
-          <b>User {c.Userid}</b>
-          <p>{c.Comment_text}</p>
-        </div>
-      ))}
+      <div className="comments-list">
+        <h3 style={{ marginBottom: "20px", fontSize: "24px", color: "#1e293b" }}>Comments</h3>
+        {comments.length === 0 ? <p style={{ color: "#64748b" }}>No comments yet. Be the first to share!</p> : (
+             comments.map(c => (
+              <div key={c.Commentid} className="comment-item">
+                <b className="comment-user">User {c.Userid}</b>
+                 <span className="comment-date">{new Date(c.Comment_date).toLocaleDateString()}</span>
+                <p className="comment-text">{c.Comment_text}</p>
+              </div>
+            ))
+        )}
+      </div>
     </div>
   );
 };

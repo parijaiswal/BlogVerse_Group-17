@@ -25,16 +25,21 @@ const Login = () => {
       const data = await res.json();
 
       if (data.success) {
-        // ✅ SAVE LOGIN INFO
+        // SAVE LOGIN INFO
         localStorage.setItem("userId", data.user.id);
         localStorage.setItem("role", data.user.role);
         localStorage.setItem("username", data.user.username);
 
-        // ✅ REDIRECT BASED ON ROLE
-        if (data.user.role === "admin") {
+        // REDIRECT BASED ON ROLE
+        // REDIRECT BASED ON ROLE
+        const role = data.user.role.toLowerCase();
+        if (role === "admin") {
           window.location.href = "/admin";
-        } else {
+        } else if (role === "client") {
           window.location.href = "/client";
+        }
+        else if (role === "member") {
+          window.location.href = "/member";
         }
       } else {
         alert(data.message || "Invalid email or password");

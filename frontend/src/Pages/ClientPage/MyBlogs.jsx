@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../AdminPage/Admin.css";
 
-const MyBlogs = () => {
+const MyBlogs = ({ filterStatus = "all" }) => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem("userId");
@@ -28,14 +28,19 @@ const MyBlogs = () => {
       });
   }, [userId]);
 
+  const filteredBlogs =
+    filterStatus === "all"
+      ? blogs
+      : blogs.filter((b) => b.Status.toLowerCase() === filterStatus.toLowerCase());
+
   if (loading) return <div className="loading-spinner">Loading my blogs...</div>;
 
   return (
     <div className="admin-users">
-      <h2>My Blogs</h2>
+      <h2>My Blogs {filterStatus !== "all" && `(${filterStatus})`}</h2>
 
-      {blogs.length === 0 ? (
-        <p>You have not submitted any blogs yet.</p>
+      {filteredBlogs.length === 0 ? (
+        <p>No {filterStatus !== "all" ? filterStatus : ""} blogs found.</p>
       ) : (
         <table className="users-table">
           <thead>
@@ -47,7 +52,7 @@ const MyBlogs = () => {
             </tr>
           </thead>
           <tbody>
-            {blogs.map((blog) => (
+            {filteredBlogs.map((blog) => (
               <tr key={blog.BlogId}>
                 <td>{blog.BlogId}</td>
                 <td>{blog.Title}</td>

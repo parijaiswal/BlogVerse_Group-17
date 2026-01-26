@@ -51,8 +51,8 @@
   background: #03315f;
   padding: 24px;
   border-right: 1px solid #e5e7eb;
-
-
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-sidebar h2 {
@@ -79,6 +79,11 @@
 }
 
 .admin-sidebar li:hover {
+  background: #e0e7ff;
+  color: #1e40af;
+}
+
+.admin-sidebar li.active {
   background: #e0e7ff;
   color: #1e40af;
 }
