@@ -50,18 +50,54 @@ function Home() {
       <section className="hero">
   <div className="hero-left">
     <h1>BlogVerse</h1>  
-    <h3>Explore Brands Insights, Stories & Marketing Perspectives</h3>
+    <h3>Where Ideas Meet Influence</h3>
     <p>
-      CultureX's blogging platform where brands and writers share
-      content on media intelligence, marketing and digital trends.
+      Discover insightful content on branding, marketing, and digital trends. 
+      Join our community of writers and brands sharing stories that matter.
    </p>
 
-    <button className="read-more-btn">Browse Blogs</button>
+    <button className="read-more-btn" onClick={() => document.getElementById('latest-cards').scrollIntoView({ behavior: 'smooth' })}>
+      Explore Blogs
+    </button>
   </div>
 
  <div className="hero-right">
   <img src={HeroImage} alt="Blogging" className="hero-img" />
 </div>
+</section>
+
+{/* WHY BLOGVERSE SECTION */}
+<section className="features-section">
+  <h2>Why BlogVerse?</h2>
+  <p className="features-subtitle">
+    Everything you need to share your ideas with the world
+  </p>
+  
+  <div className="features-grid">
+    <div className="feature-card">
+      <div className="feature-icon">✍️</div>
+      <h4>Easy Publishing</h4>
+      <p>Simple and intuitive editor to write and publish your blogs in minutes.</p>
+    </div>
+    
+    <div className="feature-card">
+      <div className="feature-icon">🎯</div>
+      <h4>Reach Your Audience</h4>
+      <p>Get your content in front of readers interested in your niche.</p>
+    </div>
+    
+    <div className="feature-card">
+      <div className="feature-icon">📊</div>
+      <h4>Track Engagement</h4>
+      <p>See likes, comments, and how your content performs over time.</p>
+    </div>
+    
+    <div className="feature-card">
+      <div className="feature-icon">🏢</div>
+      <h4>Brand Friendly</h4>
+      <p>Perfect for businesses to share case studies and brand stories.</p>
+    </div>
+  </div>
 </section>
    
 {/* LATEST BLOGS SECTION */}
