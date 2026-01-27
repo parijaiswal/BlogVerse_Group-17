@@ -165,16 +165,51 @@ router.post("/:id/comment", (req, res) => {
 
 router.get("/:id/comments", (req, res) => {
   db.query(
-    "SELECT * FROM comment_table WHERE Blogid = ? ORDER BY Comment_date DESC",
+    `SELECT c.Commentid, c.Blogid, c.Userid, c.Comment_text, c.Comment_date, 
+            u.Username, u.User_Role 
+     FROM comment_table c 
+     JOIN users u ON c.Userid = u.UserId 
+     WHERE c.Blogid = ? 
+     ORDER BY c.Comment_date DESC`,
     [req.params.id],
     (err, rows) => {
       if (err) {
         console.error("Fetch comments error:", err);
         return res.status(500).json({ message: "Database error" });
       }
-      res.json(rows); // 👈 this is enough
+      res.json(rows);
     }
   );
+});
+
+
+// ===================================================
+// DELETE COMMENT
+// ===================================================
+router.delete("/comment/:commentId", (req, res) => {
+  const { commentId } = req.params;
+  const { userId, blogId } = req.body; // Need userId to verify ownership
+
+  // 1. Verify ownership (optional but recommended security)
+  db.query("SELECT Userid FROM comment_table WHERE Commentid = ?", [commentId], (err, rows) => {
+    if (err) return res.status(500).json({ message: "Database error" });
+    if (rows.length === 0) return res.status(404).json({ message: "Comment not found" });
+
+    // Allow if user matches 
+    if (rows[0].Userid != userId) {
+      return res.status(403).json({ message: "Unauthorized to delete this comment" });
+    }
+
+    // 2. Delete comment
+    db.query("DELETE FROM comment_table WHERE Commentid = ?", [commentId], (err2) => {
+      if (err2) return res.status(500).json({ message: "Delete failed" });
+
+      // 3. Decrement comment count
+      db.query("UPDATE BlogTable SET Comment_count = Comment_count - 1 WHERE BlogId = ?", [blogId], (err3) => {
+        res.json({ success: true, message: "Comment deleted" });
+      });
+    });
+  });
 });
 
 
@@ -238,5 +273,93 @@ router.put("/:id", (req, res) => {
 });
 
 
+
+// ===================================================
+// CHECK & INCREMENT PDF DOWNLOAD
+// ===================================================
+router.post("/download-pdf/:userId", (req, res) => {
+  const { userId } = req.params;
+
+  // First get user info
+  db.query(
+    "SELECT User_Role, Pdf_Download_Count FROM users WHERE UserId = ?",
+    [userId],
+    (err, users) => {
+      if (err || users.length === 0) {
+        return res.status(500).json({ allowed: false, message: "User not found" });
+      }
+
+      const user = users[0];
+      const role = user.User_Role?.toLowerCase();
+      const downloadCount = user.Pdf_Download_Count || 0;
+
+      // Admin - unlimited
+      if (role === "admin") {
+        db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
+        return res.json({ allowed: true });
+      }
+
+      // Client - check subscription
+      if (role === "client") {
+        db.query(
+          `SELECT * FROM Sub_Purchase_Table 
+           WHERE Userid = ? AND Status = 'active' AND End_date >= CURDATE() 
+           LIMIT 1`,
+          [userId],
+          (err2, subs) => {
+            if (err2 || subs.length === 0) {
+              return res.json({ allowed: false, message: "You need an active subscription to download" });
+            }
+            db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
+            return res.json({ allowed: true });
+          }
+        );
+        return;
+      }
+
+      // Member - only 2 free downloads
+      if (role === "member") {
+        if (downloadCount >= 2) {
+          return res.json({
+            allowed: false,
+            message: "You have used your 2 free downloads. Please subscribe to download more."
+          });
+        }
+        db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
+        return res.json({ allowed: true, remaining: 1 - downloadCount });
+      }
+
+      // Unknown role
+      return res.json({ allowed: false, message: "Please login to download" });
+    }
+  );
+});
+
+// ===================================================
+// DELETE BLOG (User deletes their own blog)
+// ===================================================
+router.delete("/:id", (req, res) => {
+  const blogId = req.params.id;
+  const { userId } = req.body; // Pass userId in body to verify
+
+  // 1. Verify ownership
+  db.query("SELECT Userid FROM BlogTable WHERE BlogId = ?", [blogId], (err, rows) => {
+    if (err) return res.status(500).json({ message: "Database error" });
+    if (rows.length === 0) return res.status(404).json({ message: "Blog not found" });
+
+    if (String(rows[0].Userid) !== String(userId)) {
+      return res.status(403).json({ message: "Unauthorized: You can only delete your own blogs" });
+    }
+
+    // 2. Delete the blog
+    db.query("DELETE FROM BlogTable WHERE BlogId = ?", [blogId], (err2) => {
+      if (err2) {
+        console.error("Delete blog failed:", err2);
+        return res.status(500).json({ message: "Delete failed" });
+      }
+      res.json({ success: true, message: "Blog deleted successfully" });
+    });
+  });
+});
 
 module.exports = router;

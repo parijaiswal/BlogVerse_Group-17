@@ -19,14 +19,26 @@ import Payment from "./Pages/Payment/Payment";
 const AppLayout = () => {
   const location = useLocation();
 
-  const isPanelPage =
+  // Hide navbar on dashboards
+  const hideNavbar =
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/client") ||
     location.pathname.startsWith("/member");
 
+  // Hide footer on dashboards AND auth pages
+  const hideFooter =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/client") ||
+    location.pathname.startsWith("/member") ||
+    location.pathname === "/login" ||
+    location.pathname === "/register" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname === "/verify-otp" ||
+    location.pathname === "/reset-password";
+
   return (
     <>
-      {!isPanelPage && <Navbar />}
+      {!hideNavbar && <Navbar />}
 
       <Routes>
         {/* Public pages */}
@@ -48,7 +60,7 @@ const AppLayout = () => {
         <Route path="/Subscription" element={<Subscription />} />
 
       </Routes>
-      {!isPanelPage && <Footer />}
+      {!hideFooter && <Footer />}
     </>
   );
 };

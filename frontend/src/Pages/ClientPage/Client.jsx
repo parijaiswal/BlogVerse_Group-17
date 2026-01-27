@@ -165,7 +165,7 @@ const ClientDashboard = () => {
             </li>
           </ul>
                
-          <div style={{ marginTop: "auto", paddingTop: "20px" }}>
+          <div style={{ marginTop: "30px" }}>
             <button 
               onClick={() => navigate("/")} 
               style={{ 

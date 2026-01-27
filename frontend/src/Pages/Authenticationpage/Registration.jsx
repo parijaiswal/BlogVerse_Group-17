@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Authentication.css";
 
 function Registration() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -67,176 +69,173 @@ function Registration() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // 1. Frontend validation
-  if (!validate()) return;
+    // 1. Frontend validation
+    if (!validate()) return;
 
-  // 2. Send data to backend
-  try {
-    const res = await fetch("http://localhost:5000/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: formData.username,
-        email: formData.email,
-        gender: formData.gender,
-        contact: formData.contact,
-        role: formData.role,
-        password: formData.password,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      alert("Registration successful ✅");
-
-      // 3. Clear the form after success
-      setFormData({
-        username: "",
-        email: "",
-        gender: "",
-        contact: "",
-        role: "",
-        password: "",
-        confirmPassword: "",
+    // 2. Send data to backend
+    try {
+      const res = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          gender: formData.gender,
+          contact: formData.contact,
+          role: formData.role,
+          password: formData.password,
+        }),
       });
-      setErrors({});
-      // later you can navigate to /login here
-    } else {
-      alert(data.message || "Something went wrong");
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Registration successful ✅");
+
+        // 3. Clear the form after success
+        setFormData({
+          username: "",
+          email: "",
+          gender: "",
+          contact: "",
+          role: "",
+          password: "",
+          confirmPassword: "",
+        });
+        setErrors({});
+        navigate("/login");
+      } else {
+        alert(data.message || "Something went wrong");
+      }
+    } catch (err) {
+      console.error("Error while registering:", err);
+      alert("Server error. Please try again later.");
     }
-  } catch (err) {
-    console.error("Error while registering:", err);
-    alert("Server error. Please try again later.");
-  }
-};
+  };
 
   return (
-  <div className="auth-page">
-    <div className="auth-card">
-      <h2 className="auth-title">Create your Account</h2>
-      {/* <p className="auth-subtitle">
-        Register to like blogs, post comments and access PDF downloads.
-      </p> */}
+    <div className="auth-page">
+      <div className="auth-card">
+        <h2 className="auth-title">Create Account</h2>
+        <p className="auth-subtitle">Join us to start your journey</p>
 
-      <form onSubmit={handleSubmit} className="auth-form">
-        <div className="form-group">
-          <label className="auth-label">Username</label>
-          <input
-            type="text"
-            name="username"
-            className="auth-input"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Enter your username"
-          />
-          {errors.username && <p className="error-text">{errors.username}</p>}
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label className="auth-label">Username</label>
+            <input
+              type="text"
+              name="username"
+              className="auth-input"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Enter your username"
+            />
+            {errors.username && <p className="error-text">{errors.username}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="auth-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              className="auth-input"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+            />
+            {errors.email && <p className="error-text">{errors.email}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="auth-label">Gender</label>
+            <select
+              name="gender"
+              className="auth-input"
+              value={formData.gender}
+              onChange={handleChange}
+            >
+              <option value="">-- Select --</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+            {errors.gender && <p className="error-text">{errors.gender}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="auth-label">Contact No.</label>
+            <input
+              type="text"
+              name="contact"
+              className="auth-input"
+              value={formData.contact}
+              onChange={handleChange}
+              placeholder="10 digit number"
+            />
+            {errors.contact && <p className="error-text">{errors.contact}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="auth-label">User Role</label>
+            <select
+              name="role"
+              className="auth-input"
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option value="">-- Select Role --</option>
+              <option value="Member">Member</option>
+              <option value="Client">Client</option>
+            </select>
+            {errors.role && <p className="error-text">{errors.role}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="auth-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              className="auth-input"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Create password"
+            />
+            {errors.password && <p className="error-text">{errors.password}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="auth-label">Re-enter Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              className="auth-input"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm password"
+            />
+            {errors.confirmPassword && (
+              <p className="error-text">{errors.confirmPassword}</p>
+            )}
+          </div>
+
+          <button type="submit" className="auth-button">
+            Register
+          </button>
+        </form>
+
+        <div className="auth-footer-text">
+          Already have an account?{" "}
+          <a href="/login" className="auth-link">
+            Login here
+          </a>
         </div>
-
-        <div className="form-group">
-          <label className="auth-label">Email</label>
-          <input
-            type="email"
-            name="email"
-            className="auth-input"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter your email address"
-          />
-          {errors.email && <p className="error-text">{errors.email}</p>}
-        </div>
-
-        <div className="form-group">
-          <label className="auth-label">Gender</label>
-          <select
-            name="gender"
-            className="auth-input"
-            value={formData.gender}
-            onChange={handleChange}
-          >
-            <option value="">-- Select --</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-          {errors.gender && <p className="error-text">{errors.gender}</p>}
-        </div>
-
-        <div className="form-group">
-          <label className="auth-label">Contact No.</label>
-          <input
-            type="text"
-            name="contact"
-            className="auth-input"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder="Enter 10 digit mobile number"
-          />
-          {errors.contact && <p className="error-text">{errors.contact}</p>}
-        </div>
-
-        <div className="form-group">
-          <label className="auth-label">User Role</label>
-          <select
-            name="role"
-            className="auth-input"
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <option value="">-- Select Role --</option>
-            <option value="Member">Member</option>
-            <option value="Client">Client</option>
-          </select>
-          {errors.role && <p className="error-text">{errors.role}</p>}
-        </div>
-
-        <div className="form-group">
-          <label className="auth-label">Password</label>
-          <input
-            type="password"
-            name="password"
-            className="auth-input"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Create a password"
-          />
-          {errors.password && <p className="error-text">{errors.password}</p>}
-        </div>
-
-        <div className="form-group">
-          <label className="auth-label">Re-enter Password</label>
-          <input
-            type="password"
-            name="confirmPassword"
-            className="auth-input"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="Re-enter your password"
-          />
-          {errors.confirmPassword && (
-            <p className="error-text">{errors.confirmPassword}</p>
-          )}
-        </div>
-
-        <button type="submit" className="auth-button">
-          Register
-        </button>
-      </form>
-
-      <p className="auth-footer-text">
-        Already have an account?{" "}
-        <a href="/login" className="auth-link">
-          Login here
-        </a>
-      </p>
+      </div>
     </div>
-  </div>
-);
-
+  );
 }
 
 export default Registration;

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Authentication.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +33,6 @@ const Login = () => {
         localStorage.setItem("username", data.user.username);
 
         // REDIRECT BASED ON ROLE
-        // REDIRECT BASED ON ROLE
         const role = data.user.role.toLowerCase();
         if (role === "admin") {
           window.location.href = "/admin";
@@ -51,28 +52,33 @@ const Login = () => {
   };
 
   return (
-    <div className="login-body auth-page">
+    <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Log in</h1>
+        <h1 className="auth-title">Welcome Back</h1>
+        <p className="auth-subtitle">Log in to your account to continue</p>
 
-        <form onSubmit={handleSubmit}>
-          <label className="auth-label">Email</label>
-          <input
-            type="text"
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label className="auth-label">Email</label>
+            <input
+              type="text"
             placeholder="Enter email"
-            className="auth-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+              className="auth-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-          <label className="auth-label">Password</label>
-          <input
-            type="password"
+          <div className="form-group">
+            <label className="auth-label">Password</label>
+            <input
+              type="password"
             placeholder="Enter password"
-            className="auth-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+              className="auth-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
           <button type="submit" className="auth-button">
             Log in

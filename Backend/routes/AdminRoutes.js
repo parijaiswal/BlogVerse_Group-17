@@ -55,7 +55,6 @@ router.get("/subscriptions", async (req, res) => {
        ORDER BY SubId DESC`
     );
     res.json(rows);
-    res.json(rows);
   } catch (err) {
     res.status(500).json({ message: "Database error" });
   }
