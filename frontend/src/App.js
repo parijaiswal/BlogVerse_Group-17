@@ -10,7 +10,8 @@ import VerifyOtp from "./Pages/Authenticationpage/VerifyOtp";
 import ResetPassword from "./Pages/Authenticationpage/ResetPassword";
 import Admin from "./Pages/AdminPage/Admin";
 import Subscription from "./Pages/SubscriptionPage/Subscription";
-import Member from "./Pages/MemberPage/Member";
+
+import MemberProfile from "./Pages/MemberPage/MemberProfile";
 import Client from "./Pages/ClientPage/Client";
 import BlogDetails from "./Pages/Homepage/BlogDetails";
 import Payment from "./Pages/Payment/Payment";
@@ -30,6 +31,7 @@ const AppLayout = () => {
     location.pathname.startsWith("/admin") ||
     location.pathname.startsWith("/client") ||
     location.pathname.startsWith("/member") ||
+
     location.pathname === "/login" ||
     location.pathname === "/register" ||
     location.pathname === "/forgot-password" ||
@@ -55,7 +57,8 @@ const AppLayout = () => {
         {/* Dashboards */}
         <Route path="/admin" element={<Admin />} />
         <Route path="/client" element={<Client />} />
-        <Route path="/member" element={<Member />} />
+        <Route path="/member" element={<MemberProfile />} />
+
 
         <Route path="/Subscription" element={<Subscription />} />
 

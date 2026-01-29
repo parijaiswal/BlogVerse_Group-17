@@ -8,6 +8,10 @@ const Subscription = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Get user role from localStorage
+  const role = localStorage.getItem("role")?.toLowerCase();
+  const isAdmin = role === "admin";
+
   // Icons based on duration or index
   const getIcon = (duration, index) => {
     if (duration <= 1) return "📅";
@@ -68,7 +72,7 @@ const Subscription = () => {
       return;
     }
     // Navigate to payment page with plan details
-    navigate("/payment", { state: { plan } });
+    navigate("/payment", { state: { plan, type: 'subscription' } });
   };
 
   if (loading) {
@@ -96,9 +100,14 @@ const Subscription = () => {
   return (
     <div className="subscription-page">
       <div className="subscription-header">
-        <h1 className="subscription-title">Choose Your Plan</h1>
+        <h1 className="subscription-title">
+          {isAdmin ? "Subscription Plans Overview" : "Choose Your Plan"}
+        </h1>
         <p className="subscription-subtitle">
-          Purchase a subscription plan and publish your ideas to the users.
+          {isAdmin 
+            ? "View all available subscription plans created for clients."
+            : "Purchase a subscription plan and publish your ideas to the users."
+          }
         </p>
       </div>
 
@@ -133,9 +142,22 @@ const Subscription = () => {
                 {plan.SubDuration == 6 ? <li>Can Publish 10 blogs</li> : null}
                 {plan.SubDuration == 12 ? <li>Can Publish 30 blogs</li> : null}
               </ul>
-              <button className="plan-btn" onClick={() => handleBuyNow(plan)}>
-                Get {plan.SubName}
-              </button>
+              {/* Hide buy button for admin - they can only view */}
+              {!isAdmin && (
+                <button className="plan-btn" onClick={() => handleBuyNow(plan)}>
+                  Get {plan.SubName}
+                </button>
+              )}
+              {isAdmin && (
+                <p className="admin-view-only" style={{ 
+                  color: "#666", 
+                  fontSize: "14px", 
+                  marginTop: "15px",
+                  fontStyle: "italic" 
+                }}>
+                  Admin View Only
+                </p>
+              )}
             </div>
           ))
         )}

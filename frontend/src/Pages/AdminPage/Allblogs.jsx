@@ -6,7 +6,7 @@ const AllBlogs = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/blogs")
+    fetch("http://localhost:5000/api/blogs/all")
       .then(res => res.json())
       .then(data => setBlogs(data));
   }, []);

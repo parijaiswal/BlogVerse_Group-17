@@ -5,13 +5,16 @@ import "./Authentication.css";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please enter email and password");
+      setMessage("Please enter email and password");
+      setIsError(true);
       return;
     }
 
@@ -38,16 +41,18 @@ const Login = () => {
           window.location.href = "/admin";
         } else if (role === "client") {
           window.location.href = "/client";
-        }
-        else if (role === "member") {
+        } else if (role === "member") {
+          // Members go to their profile page
           window.location.href = "/member";
         }
       } else {
-        alert(data.message || "Invalid email or password");
+        setMessage(data.message || "Invalid email or password");
+        setIsError(true);
       }
     } catch (err) {
       console.error("Login error:", err);
-      alert("Server error. Please try again later.");
+      setMessage("Server error. Please try again later.");
+      setIsError(true);
     }
   };
 
@@ -58,14 +63,21 @@ const Login = () => {
         <p className="auth-subtitle">Log in to your account to continue</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
+          {message && (
+            <p className={isError ? "error-text" : "success-text"}>{message}</p>
+          )}
+          
           <div className="form-group">
             <label className="auth-label">Email</label>
             <input
               type="text"
-            placeholder="Enter email"
+              placeholder="Enter email"
               className="auth-input"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setMessage("");
+              }}
             />
           </div>
 
@@ -73,10 +85,13 @@ const Login = () => {
             <label className="auth-label">Password</label>
             <input
               type="password"
-            placeholder="Enter password"
+              placeholder="Enter password"
               className="auth-input"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setMessage("");
+              }}
             />
           </div>
 

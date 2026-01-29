@@ -25,6 +25,8 @@ function Navbar() {
     }
   };
 
+  // Show subscription link for client and admin only (not for member)
+  const showSubscriptionLink = isLoggedIn && role && (role.toLowerCase() === "client" || role.toLowerCase() === "admin");
 
   return (
     <nav className="navbar">
@@ -36,6 +38,9 @@ function Navbar() {
         <Link to="/">Home</Link>
         <a href="#latest-cards">Blogs</a>
         <a href="#publish-cta">For Brands</a>
+        {showSubscriptionLink && (
+          <Link to="/subscription">Subscription</Link>
+        )}
       </div>
 
       {!hideAuthButtons && (

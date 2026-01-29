@@ -10,39 +10,31 @@ const Footer = () => {
         <div className="footer-column">
           <h3 className="footer-logo">BlogVerse</h3>
           <p>
-            BlogVerse is CultureX's blogging platform where brands and writers
-            share insights on media intelligence, branding and digital marketing.
+            A simple blogging platform for sharing insights and stories.
           </p>
         </div>
 
         {/* 2. Quick Links */}
-            <div className="footer-column">
+        <div className="footer-column">
           <h4>Quick Links</h4>
           <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#blogs">Blogs</a></li>
-            <li><a href="#categories">Categories</a></li>
-            <li><a href="#for-brands">For Brands</a></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/register">Register</a></li>
           </ul>
         </div>
 
         {/* 3. Contact us*/}
-
         <div className="footer-column">
-            <h4>Contact Us</h4>
-            <ul>
-            <li><a href="#">Instagram</a></li>
-            <li><a href="#">Linkedin</a></li>
-            <li><a href="#">Gmail</a></li>
-            </ul>
+          <h4>Contact Us</h4>
+          <ul>
+            <li><a href="mailto:blogverse@email.com">Email Us</a></li>
+          </ul>
         </div>
-        
-        
-       
       </div>
 
       <div className="footer-bottom">
-        © {new Date().getFullYear()} BlogVerse · A CultureX initiative
+        © {new Date().getFullYear()} BlogVerse
       </div>
     </footer>
   );

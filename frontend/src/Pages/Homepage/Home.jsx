@@ -50,10 +50,10 @@ function Home() {
       <section className="hero">
   <div className="hero-left">
     <h1>BlogVerse</h1>  
-    <h3>Where Ideas Meet Influence</h3>
+    <h3>Share Your Ideas and Insightful thoughts</h3>
     <p>
-      Discover insightful content on branding, marketing, and digital trends. 
-      Join our community of writers and brands sharing stories that matter.
+      A platform where you can read and write blogs. 
+      Create an account and start sharing your thoughts and ideas.
    </p>
 
     <button className="read-more-btn" onClick={() => document.getElementById('latest-cards').scrollIntoView({ behavior: 'smooth' })}>
@@ -68,43 +68,43 @@ function Home() {
 
 {/* WHY BLOGVERSE SECTION */}
 <section className="features-section">
-  <h2>Why BlogVerse?</h2>
+  <h2>Features BlogVerse Provides</h2>
   <p className="features-subtitle">
-    Everything you need to share your ideas with the world
+    What you can do on BlogVerse
   </p>
   
   <div className="features-grid">
     <div className="feature-card">
       <div className="feature-icon">✍️</div>
-      <h4>Easy Publishing</h4>
-      <p>Simple and intuitive editor to write and publish your blogs in minutes.</p>
+      <h4>Write Blogs</h4>
+      <p>Create and publish your own blog posts easily.</p>
     </div>
     
     <div className="feature-card">
-      <div className="feature-icon">🎯</div>
-      <h4>Reach Your Audience</h4>
-      <p>Get your content in front of readers interested in your niche.</p>
+      <div className="feature-icon">📖</div>
+      <h4>Read Content</h4>
+      <p>Browse blogs from different authors.</p>
     </div>
     
     <div className="feature-card">
-      <div className="feature-icon">📊</div>
-      <h4>Track Engagement</h4>
-      <p>See likes, comments, and how your content performs over time.</p>
+      <div className="feature-icon">💬</div>
+      <h4>Comment</h4>
+      <p>Share your thoughts on blog posts.</p>
     </div>
     
     <div className="feature-card">
-      <div className="feature-icon">🏢</div>
-      <h4>Brand Friendly</h4>
-      <p>Perfect for businesses to share case studies and brand stories.</p>
+      <div className="feature-icon">📥</div>
+      <h4>Download PDF</h4>
+      <p>Save blogs as PDFs for offline reading.</p>
     </div>
   </div>
 </section>
    
 {/* LATEST BLOGS SECTION */}
 <section className="latest-section" id="latest-cards">
-  <h2>Latest from BlogVerse</h2>
+  <h2>Explore the latest Blogs on our website</h2>
   <p className="latest-subtitle">
-    Recently published blogs on branding, media intelligence and marketing.
+    Check out the latest posts
   </p>
   {/* search bar */}
    <div className="hero-search">
@@ -142,7 +142,7 @@ function Home() {
         </p>
         
         <div className="blog-meta">
-          <span className="blog-author">{blog.Username ? `By ${blog.Username}` : ""}</span>
+          <span className="blog-author">{blog.Username ? `By ${blog.Username === "Admin user" ? "Admin" : blog.Username}` : ""}</span>
           <span className="blog-date">{new Date(blog.Create_Date).toLocaleDateString()}</span>
         </div>
       </div>
@@ -157,13 +157,12 @@ function Home() {
 <section className="publish-cta-section" id="publish-cta">
   <div className="publish-container">
     <div className="publish-left">
-      <h2>Want to publish your blog on BlogVerse?</h2>
+      <h2>Want to Write a Blog?</h2>
       <p className="subtitle">
-        Brand clients and registered members can publish blogs on BlogVerse.<br />
-        Share sponsored articles, case studies or your own insights on media, branding and marketing.
+        Register as a Client to publish your own blogs on BlogVerse.
       </p>
       <button className="learn-more-btn" onClick={handleCTAClick}>
-        {isLoggedIn ? "Write a Blog" : "Register Now"}
+        {isLoggedIn ? "Go to Dashboard" : "Register Now"}
       </button>
     </div>
 
@@ -171,22 +170,22 @@ function Home() {
       <div className="step">
         <div className="step-number">1</div>
         <div>
-          <h4>Register & log in</h4>
-          <p>Create your account on BlogVerse and become our client.</p>
+          <h4>Register</h4>
+          <p>Create your account as a Client.</p>
         </div>
       </div>
       <div className="step">
         <div className="step-number">2</div>
         <div>
-          <h4>Choose subscription</h4>
-          <p>Choose a subscription plan that fits your needs.</p>
+          <h4>Login</h4>
+          <p>Access your dashboard.</p>
         </div>
       </div>
       <div className="step">
         <div className="step-number">3</div>
         <div>
-          <h4>Publish your blog</h4>
-          <p>Write your ideas and share about your brand.</p>
+          <h4>Write</h4>
+          <p>Create and publish your blog.</p>
         </div>
       </div>
     </div>

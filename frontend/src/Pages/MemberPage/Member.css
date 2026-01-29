@@ -6,15 +6,18 @@
   background: white;
   border-bottom: 1px solid #e5e7eb;
 }
+
 .member-logo {
   font-size: 22px;
   font-weight: 700;
   color: #1e3a8a;
 }
+
 .member-actions {
   display: flex;
   gap: 10px;
 }
+
 .profile-btn {
   padding: 6px 14px;
   background: #dc2626;
@@ -23,6 +26,7 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
 .profile-btn:hover {
   background: blue;
 }
@@ -45,6 +49,7 @@
   background: #f8fafc;
   min-height: calc(100vh - 70px);
 }
+
 .member-card {
   background: white;
   padding: 40px;
@@ -52,4 +57,81 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   max-width: 900px;
   margin: auto;
+}
+
+/* Simple Member Profile Page */
+.member-profile-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fc 0%, #eef2ff 100%);
+}
+
+.member-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: 70px;
+  background: #010829;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.member-profile-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+.member-profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.member-profile-actions span {
+  font-size: 14px;
+  color: #e5e7eb;
+}
+
+.member-profile-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.member-profile-actions button:first-of-type {
+  background: white;
+  color: #020617;
+}
+
+.member-profile-actions button:first-of-type:hover {
+  background: #e5e7eb;
+}
+
+.member-profile-actions button:last-of-type {
+  background: #03315f;
+  color: white;
+}
+
+.member-profile-actions button:last-of-type:hover {
+  background: #1e40af;
+}
+
+.member-profile-content {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.member-profile-content h2 {
+  margin-bottom: 20px;
+  color: #1e293b;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
 }

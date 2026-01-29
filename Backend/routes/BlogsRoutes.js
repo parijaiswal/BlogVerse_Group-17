@@ -56,9 +56,41 @@ router.post("/add-blog", (req, res) => {
 // GET ALL BLOGS (Admin + Member)
 // ===================================================
 // ===================================================
-// GET ALL BLOGS (Admin + Member)
+// GET PUBLIC BLOGS (for home page - only public blogs)
 // ===================================================
 router.get("/", (req, res) => {
+  const sql = `
+    SELECT 
+      b.BlogId,
+      b.Title,
+      b.Content,
+      b.Visibility,
+      b.Create_Date,
+      b.Image_path,
+      u.Username, 
+      u.User_Role
+    FROM BlogTable b
+    JOIN users u ON b.Userid = u.UserId
+    WHERE b.Visibility = 'public'
+    ORDER BY b.Create_Date DESC
+  `;
+
+  //==============================================================
+
+  db.query(sql, (err, rows) => {
+    if (err) {
+      console.error("Fetch blogs error:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    res.json(rows);
+  });
+});
+
+// ===================================================
+// GET ALL BLOGS (Admin - includes private blogs)
+// ===================================================
+router.get("/all", (req, res) => {
   const sql = `
     SELECT 
       b.BlogId,
@@ -74,11 +106,9 @@ router.get("/", (req, res) => {
     ORDER BY b.Create_Date DESC
   `;
 
-  //==============================================================
-
   db.query(sql, (err, rows) => {
     if (err) {
-      console.error("Fetch blogs error:", err);
+      console.error("Fetch all blogs error:", err);
       return res.status(500).json({ message: "Database error" });
     }
 
@@ -279,6 +309,7 @@ router.put("/:id", (req, res) => {
 // ===================================================
 router.post("/download-pdf/:userId", (req, res) => {
   const { userId } = req.params;
+  const { blogId } = req.body; // Optional: for tracking which blog was downloaded
 
   // First get user info
   db.query(
@@ -293,7 +324,7 @@ router.post("/download-pdf/:userId", (req, res) => {
       const role = user.User_Role?.toLowerCase();
       const downloadCount = user.Pdf_Download_Count || 0;
 
-      // Admin - unlimited
+      // Admin - unlimited downloads
       if (role === "admin") {
         db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
         return res.json({ allowed: true });
@@ -308,7 +339,11 @@ router.post("/download-pdf/:userId", (req, res) => {
           [userId],
           (err2, subs) => {
             if (err2 || subs.length === 0) {
-              return res.json({ allowed: false, message: "You need an active subscription to download" });
+              return res.json({
+                allowed: false,
+                requiresSubscription: true,
+                message: "You need an active subscription to download"
+              });
             }
             db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
             return res.json({ allowed: true });
@@ -317,12 +352,14 @@ router.post("/download-pdf/:userId", (req, res) => {
         return;
       }
 
-      // Member - only 2 free downloads
+      // Member - 2 free downloads, then ₹50 per PDF
       if (role === "member") {
         if (downloadCount >= 2) {
           return res.json({
             allowed: false,
-            message: "You have used your 2 free downloads. Please subscribe to download more."
+            requiresPayment: true,
+            pdfPrice: 50,
+            message: "You have used your 2 free downloads. Pay ₹50 to download this PDF."
           });
         }
         db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);

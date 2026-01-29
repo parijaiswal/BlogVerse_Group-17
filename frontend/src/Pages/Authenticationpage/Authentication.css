@@ -135,3 +135,10 @@ body {
   margin-top: 6px;
   font-size: 15px;
 }
+
+.success-text {
+  margin-top: 6px;
+  font-size: 15px;
+  color: #2563eb;
+  text-align: center;
+}

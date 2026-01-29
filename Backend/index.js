@@ -5,6 +5,7 @@ const cors = require('cors');
 const blogRoutes = require("./routes/BlogsRoutes");
 const adminRoutes = require("./routes/AdminRoutes");
 const profileRoutes = require("./routes/ProfileRoutes");
+const razorPayRoutes = require("./routes/razorPayRoutes");
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -15,15 +16,16 @@ app.use(express.json());
 app.use("/api/blogs", blogRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/razorpay", razorPayRoutes);
 app.use("/uploads", express.static("uploads"));// serve static files from 'uploads' directory
 app.get("/favicon.ico", (req, res) => res.status(204));
 
 //This will be used to connect to the database
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',         
-  password: 'Mysql1234',          
-  database: 'blogverse' 
+  user: 'root',
+  password: 'Mysql1234',
+  database: 'blogverse'
 });
 
 db.connect((err) => {

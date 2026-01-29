@@ -74,7 +74,6 @@
 .read-more-btn:hover {
   background: #3b5bff;
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(76, 111, 255, 0.4);
 }
 
 /* RIGHT SIDE IMAGE */
@@ -396,7 +395,6 @@
 
 .learn-more-btn:hover {
   transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(76, 111, 255, 0.4);
 }
 
 /* Right side – steps */

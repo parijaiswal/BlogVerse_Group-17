@@ -16,10 +16,13 @@ const BlogDetails = () => {
   const [commentText, setCommentText] = useState("");
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [message, setMessage] = useState("");
-  const [showPurchase, setShowPurchase] = useState(false); // Show purchase button
+  const [showPurchase, setShowPurchase] = useState(false);
+  const [pdfPrice, setPdfPrice] = useState(50);
+  const [showSubscriptionBtn, setShowSubscriptionBtn] = useState(false);
 
   // Get logged-in user info from localStorage
   const userId = localStorage.getItem("userId");
+  const role = localStorage.getItem("role")?.toLowerCase();
   const isLoggedIn = !!userId;
 
   // Fetch blog details
@@ -42,7 +45,6 @@ const BlogDetails = () => {
   // Show message
   const showMessage = (msg, keepVisible = false) => {
     setMessage(msg);
-    setShowPurchase(false);
     if (!keepVisible) {
       setTimeout(() => setMessage(""), 3000);
     }
@@ -89,7 +91,10 @@ const BlogDetails = () => {
       showMessage("Comment posted successfully!");
       fetchComments();
     })
-    .then(res => setComments(res.data));
+    .catch((err) => {
+      console.error("Post comment error:", err);
+      showMessage("Failed to post comment");
+    });
   };
 
   // Handle delete comment
@@ -109,6 +114,32 @@ const BlogDetails = () => {
     });
   };
 
+  // Generate and download PDF
+  const generatePDF = () => {
+    const doc = new jsPDF("p", "mm", "a4");
+    let y = 20;
+
+    doc.setFontSize(20);
+    doc.text(blog.Title, 105, y, { align: "center" });
+    y += 10;
+
+    doc.setFontSize(11);
+    doc.text(`Author: ${blog.Username || ""}`, 20, y);
+    y += 6;
+    doc.text(`Date: ${new Date(blog.Create_Date).toDateString()}`, 20, y);
+    y += 10;
+
+    doc.setFontSize(13);
+    const contentLines = doc.splitTextToSize(blog.Content, 170);
+    doc.text(contentLines, 20, y);
+
+    doc.setFontSize(10);
+    doc.text("Downloaded from BlogVerse", 105, 290, { align: "center" });
+
+    doc.save(`${blog.Title}.pdf`);
+    showMessage("PDF downloaded successfully!");
+  };
+
   // Handle PDF download
   const handleDownload = () => {
     if (!isLoggedIn) {
@@ -116,46 +147,50 @@ const BlogDetails = () => {
       return;
     }
 
+    // Reset states
+    setShowPurchase(false);
+    setShowSubscriptionBtn(false);
+
     // Check if user can download
-    axios.post(`http://localhost:5000/api/blogs/download-pdf/${userId}`)
+    axios.post(`http://localhost:5000/api/blogs/download-pdf/${userId}`, { blogId: id })
       .then((res) => {
         if (!res.data.allowed) {
           setMessage(res.data.message);
-          // Show purchase button if member exceeded limit
-          if (res.data.message.includes("2 free downloads")) {
-            setMessage("You have used your 2 free downloads. Pay to download more.");
+          
+          // Member needs to pay per PDF
+          if (res.data.requiresPayment) {
+            setPdfPrice(res.data.pdfPrice || 50);
             setShowPurchase(true);
+            return;
+          }
+          
+          // Client needs subscription
+          if (res.data.requiresSubscription) {
+            setShowSubscriptionBtn(true);
+            return;
           }
           return;
         }
         
         // Generate and download PDF
-        const doc = new jsPDF("p", "mm", "a4");
-        let y = 20;
-
-        doc.setFontSize(20);
-        doc.text(blog.Title, 105, y, { align: "center" });
-        y += 10;
-
-        doc.setFontSize(11);
-        doc.text(`Author: ${blog.Username || ""}`, 20, y);
-        y += 6;
-        doc.text(`Date: ${new Date(blog.Create_Date).toDateString()}`, 20, y);
-        y += 10;
-
-        doc.setFontSize(13);
-        const contentLines = doc.splitTextToSize(blog.Content, 170);
-        doc.text(contentLines, 20, y);
-
-        doc.setFontSize(10);
-        doc.text("Downloaded from BlogVerse", 105, 290, { align: "center" });
-
-        doc.save(`${blog.Title}.pdf`);
-        showMessage("PDF downloaded successfully!");
+        generatePDF();
       })
       .catch(() => {
         showMessage("Error downloading PDF. Please try again.");
       });
+  };
+
+  // Handle pay for PDF (members)
+  const handlePayForPDF = () => {
+    navigate("/payment", { 
+      state: { 
+        type: 'pdf',
+        pdfPrice: pdfPrice,
+        blogId: id,
+        blogTitle: blog.Title,
+        blog: blog
+      } 
+    });
   };
 
   // Handle delete blog
@@ -241,8 +276,13 @@ const BlogDetails = () => {
             </button>
           )}
           {showPurchase && (
-            <button onClick={() => navigate("/payment")} className="login-link-btn">
-              Pay Now
+            <button onClick={handlePayForPDF} className="login-link-btn" style={{ backgroundColor: "#10b981" }}>
+              Pay ₹{pdfPrice} to Download
+            </button>
+          )}
+          {showSubscriptionBtn && (
+            <button onClick={() => navigate("/subscription")} className="login-link-btn">
+              Get Subscription
             </button>
           )}
         </div>

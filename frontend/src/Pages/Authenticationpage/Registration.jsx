@@ -15,6 +15,7 @@ function Registration() {
   });
 
   const [errors, setErrors] = useState({});
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -37,11 +38,6 @@ function Registration() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Enter a valid email";
     }
-
-    if (!formData.gender) {
-      newErrors.gender = "Please select gender";
-    }
-
     if (!formData.contact.trim()) {
       newErrors.contact = "Contact number is required";
     } else if (!/^[0-9]{10}$/.test(formData.contact)) {
@@ -94,8 +90,7 @@ function Registration() {
       const data = await res.json();
 
       if (data.success) {
-        alert("Registration successful ✅");
-
+        setMessage("Registration successful!");
         // 3. Clear the form after success
         setFormData({
           username: "",
@@ -107,13 +102,15 @@ function Registration() {
           confirmPassword: "",
         });
         setErrors({});
-        navigate("/login");
+        // Redirect after a short delay so user sees the message
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       } else {
-        alert(data.message || "Something went wrong");
+        setMessage(data.message || "Something went wrong");
       }
     } catch (err) {
-      console.error("Error while registering:", err);
-      alert("Server error. Please try again later.");
+      setMessage("Server error. Please try again later.");
     }
   };
 
@@ -221,7 +218,7 @@ function Registration() {
               <p className="error-text">{errors.confirmPassword}</p>
             )}
           </div>
-
+          {message && <p className="success-text">{message}</p>}
           <button type="submit" className="auth-button">
             Register
           </button>
