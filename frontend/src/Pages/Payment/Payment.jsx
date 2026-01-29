@@ -113,7 +113,7 @@ const Payment = () => {
         name: "BlogVerse",
         description: data.description,
         order_id: data.order_id,
-        handler: function (response) {
+        handler: async function (response) {
           // Payment successful
           if (paymentType === 'pdf') {
             alert("Payment Successful! Your PDF will download now.");
@@ -123,10 +123,46 @@ const Payment = () => {
             }
             navigate("/");
           } else {
-            alert("Subscription Payment Successful! Payment ID: " + response.razorpay_payment_id);
-            console.log("Payment Response:", response);
-            // You can save the subscription to database here
-            navigate("/");
+            // Save subscription to database
+            try {
+              const userId = localStorage.getItem("userId");
+              const subId = paymentData.plan?.SubId;
+              
+              if (!userId || !subId) {
+                alert("Payment successful but could not save subscription. Please contact support.");
+                console.error("Missing userId or subId:", { userId, subId });
+                navigate("/");
+                return;
+              }
+
+              const saveResponse = await fetch("http://localhost:5000/api/razorpay/save-subscription", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  userId,
+                  subId,
+                  paymentId: response.razorpay_payment_id,
+                  orderId: response.razorpay_order_id
+                }),
+              });
+
+              const saveData = await saveResponse.json();
+
+              if (saveData.success) {
+                alert("Subscription purchased successfully! You can now publish blogs.");
+                navigate("/client");
+              } else {
+                alert("Payment successful! " + (saveData.message || "Subscription activated."));
+                console.error("Save subscription response:", saveData);
+                navigate("/client");
+              }
+            } catch (saveError) {
+              console.error("Error saving subscription:", saveError);
+              alert("Payment successful! Your subscription will be activated shortly.");
+              navigate("/client");
+            }
           }
         },
         prefill: {
@@ -135,7 +171,7 @@ const Payment = () => {
           contact: "",
         },
         theme: {
-          color: "#6366f1",
+          color: "#1976d2",
         },
         modal: {
           ondismiss: function () {
@@ -172,12 +208,11 @@ const Payment = () => {
       <div className="left-box">
         <h2>{paymentType === 'pdf' ? 'Pay for PDF Download' : 'Complete Your Purchase'}</h2>
 
-        <p className="member-note">
-          {paymentType === 'pdf' 
-            ? 'You have used your 2 free downloads. Pay ₹50 to download this PDF.'
-            : 'You are purchasing a subscription to access premium features.'
-          }
-        </p>
+        {paymentType === 'pdf' && (
+          <p className="member-note">
+            You have used your 2 free downloads. Pay ₹29 to download this PDF.
+          </p>
+        )}
 
         <div className="pdf-info">
           {paymentType === 'pdf' ? (
@@ -196,17 +231,7 @@ const Payment = () => {
 
         <h3>Secure Payment via Razorpay</h3>
 
-        <div className="payment-methods">
-          <div className="pay-card">
-            <img src="https://img.icons8.com/color/96/visa.png" alt="Card" />
-            <p>Debit / Credit Card</p>
-          </div>
 
-          <div className="pay-card">
-            <img src="https://img.icons8.com/color/96/google-pay.png" alt="UPI" />
-            <p>UPI Payment</p>
-          </div>
-        </div>
 
         <button className="download-btn" onClick={handlePayment}>
           Pay ₹{paymentData.amount}

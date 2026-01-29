@@ -71,7 +71,7 @@ router.get("/", (req, res) => {
       u.User_Role
     FROM BlogTable b
     JOIN users u ON b.Userid = u.UserId
-    WHERE b.Visibility = 'public'
+    WHERE b.Visibility = 'public' AND b.Status = 'approved'
     ORDER BY b.Create_Date DESC
   `;
 
@@ -103,6 +103,7 @@ router.get("/all", (req, res) => {
       u.User_Role
     FROM BlogTable b
     JOIN users u ON b.Userid = u.UserId
+    WHERE b.Status = 'approved'
     ORDER BY b.Create_Date DESC
   `;
 
@@ -352,14 +353,14 @@ router.post("/download-pdf/:userId", (req, res) => {
         return;
       }
 
-      // Member - 2 free downloads, then ₹50 per PDF
+      // Member - 2 free downloads, then ₹29 per PDF
       if (role === "member") {
         if (downloadCount >= 2) {
           return res.json({
             allowed: false,
             requiresPayment: true,
-            pdfPrice: 50,
-            message: "You have used your 2 free downloads. Pay ₹50 to download this PDF."
+            pdfPrice: 29,
+            message: "You have used your 2 free downloads. Pay ₹29 to download this PDF."
           });
         }
         db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);

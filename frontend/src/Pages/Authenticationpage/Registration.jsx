@@ -29,8 +29,10 @@ function Registration() {
 
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
-    } else if (formData.username.length < 3) {
+    } else if (formData.username.length < 3 ) {
       newErrors.username = "Username must be at least 3 characters";
+    } else if (!/^[A-Za-z\s]+$/.test(formData.username)) {
+      newErrors.username = "Username can only contain letters";
     }
 
     if (!formData.email.trim()) {
@@ -102,10 +104,10 @@ function Registration() {
           confirmPassword: "",
         });
         setErrors({});
-        // Redirect after a short delay so user sees the message
+        
         setTimeout(() => {
           navigate("/login");
-        }, 1500);
+        }, 3500);
       } else {
         setMessage(data.message || "Something went wrong");
       }

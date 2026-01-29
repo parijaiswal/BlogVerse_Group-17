@@ -3,16 +3,18 @@
   margin: 50px auto;
   display: flex;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
   overflow: hidden;
 }
+
 /* Left */
 .left-box {
   width: 65%;
   padding: 30px;
   background: #ffffff;
 }
+
 .member-note {
   background: #e3f2fd;
   padding: 10px;
@@ -20,11 +22,13 @@
   color: #0d47a1;
   font-size: 14px;
 }
+
 .payment-methods {
   display: flex;
   gap: 25px;
   margin: 25px 0;
 }
+
 /* Payment Cards */
 .pay-card {
   width: 180px;
@@ -44,17 +48,28 @@
 /* Hover Effect */
 .pay-card:hover {
   transform: scale(1.08);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   background: #e3f2fd;
 }
 
 .download-btn {
   padding: 12px 30px;
-  background: #ff9800;
+  background: #1976d2;
+  color: white;
   border: none;
+  border-radius: 8px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  transition: background 0.3s ease;
+  display: block;
+  width: 100%;
+}
+
+.download-btn:hover {
+  background: #1565c0;
 }
 
 /* Right */
@@ -78,6 +93,7 @@
   font-weight: bold;
   margin-top: 20px;
 }
+
 hr {
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }

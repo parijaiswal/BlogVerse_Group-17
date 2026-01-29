@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./Admin.css";
 
 const AllBlogs = () => {
   const [blogs, setBlogs] = useState([]);

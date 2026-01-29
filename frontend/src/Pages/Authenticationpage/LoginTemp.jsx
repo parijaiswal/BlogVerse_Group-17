@@ -42,8 +42,8 @@ const Login = () => {
         } else if (role === "client") {
           window.location.href = "/client";
         } else if (role === "member") {
-          // Members go to their profile page
-          window.location.href = "/member";
+          // Members go to home page
+          window.location.href = "/";
         }
       } else {
         setMessage(data.message || "Invalid email or password");

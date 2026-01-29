@@ -11,8 +11,11 @@ const EditProfile = () => {
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  
+  // Separate message states for each form
+  const [profileMessage, setProfileMessage] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   /* ================= FETCH PROFILE ================= */
   useEffect(() => {
@@ -33,6 +36,7 @@ const EditProfile = () => {
   /* ================= UPDATE PROFILE ================= */
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+    setProfileMessage("");
 
     const res = await fetch(`http://localhost:5000/api/profile/${userId}`, {
       method: "PUT",
@@ -45,17 +49,17 @@ const EditProfile = () => {
     });
 
     const data = await res.json();
-    setMessage(data.message);
+    setProfileMessage(data.message);
   };
 
   /* ================= CHANGE PASSWORD ================= */
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    setMessage("");
-    setError("");
+    setPasswordMessage("");
+    setPasswordError("");
 
     if (!oldPassword || !newPassword) {
-      setError("Please fill in both fields");
+      setPasswordError("Please fill in both fields");
       return;
     }
 
@@ -72,15 +76,15 @@ const EditProfile = () => {
       const data = await res.json();
 
       if (data.success) {
-        setMessage(data.message);
+        setPasswordMessage(data.message);
         setOldPassword("");
         setNewPassword("");
       } else {
-        setError(data.message || "Failed to update password");
+        setPasswordError(data.message || "Failed to update password");
       }
     } catch (err) {
       console.error(err);
-      setError("Something went wrong");
+      setPasswordError("Something went wrong");
     }
   };
 
@@ -107,8 +111,7 @@ const EditProfile = () => {
           </select>
 
           <input value={role} disabled />
-          <p className="success-message">{message}</p>
-          <p className="error-message">{error}</p>
+          {profileMessage && <p className="success-message">{profileMessage}</p>}
           <button type="submit">Save Profile</button>
         </form>
       </div>
@@ -131,11 +134,8 @@ const EditProfile = () => {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
-          {/* Only show messages here if they relate to password change. 
-              Ideally we'd have separate state variables for profile vs password messages. 
-              But given the implementation, we clear them on submit, so it should be fine. */}
-          {message && <p className="success-message">{message}</p>}
-          {error && <p className="error-message">{error}</p>}
+          {passwordMessage && <p className="success-message">{passwordMessage}</p>}
+          {passwordError && <p className="error-message">{passwordError}</p>}
           
           <button type="submit">Change Password</button>
         </form>

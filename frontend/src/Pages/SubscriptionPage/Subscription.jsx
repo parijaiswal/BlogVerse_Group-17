@@ -140,7 +140,6 @@ const Subscription = () => {
                 <li>Like & Comment</li>
                 <li>Access All Blogs</li>
                 {plan.SubDuration == 6 ? <li>Can Publish 10 blogs</li> : null}
-                {plan.SubDuration == 12 ? <li>Can Publish 30 blogs</li> : null}
               </ul>
               {/* Hide buy button for admin - they can only view */}
               {!isAdmin && (
@@ -148,16 +147,7 @@ const Subscription = () => {
                   Get {plan.SubName}
                 </button>
               )}
-              {isAdmin && (
-                <p className="admin-view-only" style={{ 
-                  color: "#666", 
-                  fontSize: "14px", 
-                  marginTop: "15px",
-                  fontStyle: "italic" 
-                }}>
-                  Admin View Only
-                </p>
-              )}
+
             </div>
           ))
         )}
