@@ -195,12 +195,7 @@ app.post("/api/forgot-password", (req, res) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Email error:", error);
-        // Even if email fails, we might want to tell the user or just log it.
-        // For now, let's return success but log the error, 
-        // OR return an error so the frontend knows email failed.
-        // Given "keep it simple", maybe return error?
-        // But the OTP is generated in DB. 
-        // Let's log error and return 500 so they can try again.
+        //it is for checking the error in the email
         return res.status(500).json({ success: false, message: "Error sending email. Check server logs." });
       } else {
         console.log('Email sent: ' + info.response);
@@ -210,7 +205,7 @@ app.post("/api/forgot-password", (req, res) => {
   });
 });
 
-// VERIFY OTP
+//it is for verfiy the otp
 app.post("/api/verify-otp", (req, res) => {
   const { email, otp } = req.body;
 
@@ -241,9 +236,7 @@ app.post("/api/reset-password", (req, res) => {
     return res.status(400).json({ success: false, message: "All fields are required" });
   }
 
-  // In the split flow, the user might have already 'verified' the OTP in the previous step,
-  // but we still need to check it again to ensure security before changing the password.
-  // Note: Since we are not expiring the OTP on 'verify-otp' call, this check is still valid.
+  //it is for checking the otp and email
   const checkSql = "SELECT * FROM users WHERE Email = ? AND otp = ?";
 
   db.query(checkSql, [email, otp], (err, rows) => {
@@ -293,7 +286,6 @@ app.get("/api/admin/users", (req, res) => {
     res.json(rows);
   });
 });
-//==============================================================================
 //This is the code for adding subscription plans from admin panel
 app.post("/api/admin/add-subscription", (req, res) => {
   const { subName, subDuration, subPrice, description, visibility } = req.body;

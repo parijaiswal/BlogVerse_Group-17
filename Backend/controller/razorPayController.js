@@ -1,5 +1,5 @@
 const Razorpay = require('razorpay');
-require("dotenv").config();
+require("dotenv").config({ quiet: true });
 
 const razorpayInstance = new Razorpay({
     key_id: process.env.RAZORPAY_ID_KEY,
