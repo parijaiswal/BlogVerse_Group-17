@@ -39,6 +39,24 @@
   min-height: 120px;
 }
 
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+.draft-btn {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.draft-btn:hover {
+  background-color: #5a6268;
+}
+
 .admin-form button {
   width: 100%;
   padding: 10px;

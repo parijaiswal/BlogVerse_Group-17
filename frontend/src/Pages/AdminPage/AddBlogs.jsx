@@ -110,9 +110,28 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
       {message && <p className="success-msg">{message}</p>}
       {error && <p className="error-msg">{error}</p>}
 
-      <button type="submit">
-        {editBlog ? "Update Blog" : isClient ? "Submit for Approval" : "Publish Blog"}
-      </button>
+      <div className="button-group">
+  <button
+    type="submit"
+    onClick={(e) => handleSubmit(e, "published")}
+  >
+    {editBlog
+      ? "Update Blog"
+      : isClient
+      ? "Submit for Approval"
+      : "Publish Blog"}
+  </button>
+
+  {!editBlog && (
+    <button
+      type="button"
+      className="draft-btn"
+      onClick={(e) => handleSubmit(e, "draft")}
+    >
+      Save as Draft
+    </button>
+  )}
+</div>
     </form>
   );
 };

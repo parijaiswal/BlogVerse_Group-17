@@ -11,6 +11,7 @@ function Home() {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+ const [sortOrder, setSortOrder] = useState("latest");
 
   // Check login status
   const role = localStorage.getItem("role");
@@ -18,13 +19,13 @@ function Home() {
   const isLoggedIn = role && validRoles.includes(role.toLowerCase());
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/blogs")
+    axios.get(`http://localhost:5000/api/blogs?sort=${sortOrder}`)
       .then((res) => {
       console.log("API response:", res.data); // check here
       setBlogs(res.data);
     })
       .catch((err) => console.error("API error:",err));
-  }, []);
+  }, [sortOrder]);
 
   // Filter blogs based on search query
   const filteredBlogs = blogs.filter((blog) => {
@@ -34,6 +35,13 @@ function Home() {
       blog.Content?.toLowerCase().includes(query) ||
       blog.Username?.toLowerCase().includes(query)
     );
+  })
+  .sort((a, b) => {
+    if (sortOrder === "latest") {
+      return new Date(b.Create_Date) - new Date(a.Create_Date);
+    } else {
+      return new Date(a.Create_Date) - new Date(b.Create_Date);
+    }
   });
 
   const handleCTAClick = () => {
@@ -43,6 +51,9 @@ function Home() {
       navigate("/register");
     }
   };
+  const handleSort = () => {
+  setSortOrder(prev => prev === "latest" ? "oldest" : "latest");
+};
 
   return (
     <div>
@@ -107,15 +118,32 @@ function Home() {
     Check out the latest posts
   </p>
   {/* search bar */}
-   <div className="hero-search">
-      <input 
-        type="text" 
-        placeholder="Search Latest blogs" 
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <button className="search-btn">Search</button>
-    </div>
+   <div className="search-wrapper">
+  
+  {/* Capsule Search */}
+  <div className="hero-search">
+    <input 
+      type="text" 
+      placeholder="Search Latest blogs"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+    />
+
+    <button 
+      className="action-btn">
+      Search
+    </button>
+  </div>
+{/* Sort Dropdown Outside Capsule */}
+<select
+  className="action-btn sort-dropdown"
+  value={sortOrder}
+  onChange={(e) => setSortOrder(e.target.value)}
+>
+  <option value="latest">Latest</option>
+  <option value="oldest">Oldest</option>
+</select>
+</div>
 
       <div className="latest-cards">
   {filteredBlogs.slice(0, 6).map((blog) => (

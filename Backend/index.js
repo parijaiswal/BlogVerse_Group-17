@@ -1,4 +1,5 @@
 //This is the main backend file: index.js please don't change anything in it
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
@@ -8,8 +9,6 @@ const profileRoutes = require("./routes/ProfileRoutes");
 const razorPayRoutes = require("./routes/razorPayRoutes");
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -21,12 +20,21 @@ app.use("/uploads", express.static("uploads"));// serve static files from 'uploa
 app.get("/favicon.ico", (req, res) => res.status(204));
 
 //This will be used to connect to the database
-const db = mysql.createConnection({
+{/*const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'Mysql1234',
+  password: 'aangi05',
   database: 'blogverse'
+});*/}
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT
 });
+
+module.exports = db;
 
 db.connect((err) => {
   if (err) {

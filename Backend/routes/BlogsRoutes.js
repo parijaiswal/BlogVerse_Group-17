@@ -3,12 +3,17 @@ const mysql = require("mysql2");
 const router = express.Router();
 
 // DB connection
+require("dotenv").config();
+
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Mysql1234",
-  database: "blogverse",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT
 });
+
+module.exports = db;
 
 db.connect((err) => {
   if (err) {
@@ -59,6 +64,7 @@ router.post("/add-blog", (req, res) => {
 // GET PUBLIC BLOGS (for home page - only public blogs)
 // ===================================================
 router.get("/", (req, res) => {
+  const sortOrder = req.query.sort === "oldest" ? "ASC" : "DESC";
   const sql = `
     SELECT 
       b.BlogId,
@@ -72,7 +78,7 @@ router.get("/", (req, res) => {
     FROM BlogTable b
     JOIN users u ON b.Userid = u.UserId
     WHERE b.Visibility = 'public' AND b.Status = 'approved'
-    ORDER BY b.Create_Date DESC
+    ORDER BY b.Create_Date ${sortOrder}
   `;
 
   //==============================================================
