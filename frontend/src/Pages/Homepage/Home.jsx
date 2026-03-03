@@ -4,6 +4,7 @@ import "./Home.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FaPenNib, FaBookOpen, FaRegComments, FaFileDownload } from "react-icons/fa";
 
 
 
@@ -11,7 +12,8 @@ function Home() {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
- const [sortOrder, setSortOrder] = useState("latest");
+  const [sortOrder, setSortOrder] = useState("latest");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
 
   // Check login status
   const role = localStorage.getItem("role");
@@ -27,14 +29,16 @@ function Home() {
       .catch((err) => console.error("API error:",err));
   }, [sortOrder]);
 
-  // Filter blogs based on search query
+  // Filter blogs based on search query AND category
   const filteredBlogs = blogs.filter((blog) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      blog.Title?.toLowerCase().includes(query) ||
-      blog.Content?.toLowerCase().includes(query) ||
-      blog.Username?.toLowerCase().includes(query)
-    );
+    const queryMatch =
+      blog.Title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      blog.Content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      blog.Username?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    const categoryMatch = selectedCategory === "All Categories" || blog.Category === selectedCategory;
+
+    return queryMatch && categoryMatch;
   })
   .sort((a, b) => {
     if (sortOrder === "latest") {
@@ -86,25 +90,33 @@ function Home() {
   
   <div className="features-grid">
     <div className="feature-card">
-      <div className="feature-icon">✍️</div>
+      <div className="feature-icon" style={{ color: "#2563eb" }}>
+        <FaPenNib />
+      </div>
       <h4>Write Blogs</h4>
       <p>Create and publish your own blog posts easily.</p>
     </div>
     
     <div className="feature-card">
-      <div className="feature-icon">📖</div>
+      <div className="feature-icon" style={{ color: "#2563eb" }}>
+        <FaBookOpen />
+      </div>
       <h4>Read Content</h4>
       <p>Browse blogs from different authors.</p>
     </div>
     
     <div className="feature-card">
-      <div className="feature-icon">💬</div>
+      <div className="feature-icon" style={{ color: "#2563eb" }}>
+        <FaRegComments />
+      </div>
       <h4>Comment</h4>
       <p>Share your thoughts on blog posts.</p>
     </div>
     
     <div className="feature-card">
-      <div className="feature-icon">📥</div>
+      <div className="feature-icon" style={{ color: "#2563eb" }}>
+        <FaFileDownload />
+      </div>
       <h4>Download PDF</h4>
       <p>Save blogs as PDFs for offline reading.</p>
     </div>
@@ -143,6 +155,23 @@ function Home() {
   <option value="latest">Latest</option>
   <option value="oldest">Oldest</option>
 </select>
+
+{/* Category Filter Dropdown */}
+<select
+  className="action-btn category-dropdown"
+  style={{ marginLeft: "10px" }}
+  value={selectedCategory}
+  onChange={(e) => setSelectedCategory(e.target.value)}
+>
+  <option value="All Categories">All Categories</option>
+  <option value="Technology">Technology</option>
+  <option value="Education">Education</option>
+  <option value="Lifestyle">Lifestyle</option>
+  <option value="Health">Health</option>
+  <option value="Business">Business</option>
+  <option value="Entertainment">Entertainment</option>
+  <option value="General">General</option>
+</select>
 </div>
 
       <div className="latest-cards">
@@ -162,7 +191,20 @@ function Home() {
       </div>
       
       <div className="blog-content">
-        <h3>{blog.Title}</h3>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3>{blog.Title}</h3>
+          <span style={{
+            fontSize: "0.75rem",
+            backgroundColor: "#e0e7ff",
+            color: "#4f46e5",
+            padding: "3px 8px",
+            borderRadius: "12px",
+            fontWeight: "bold",
+            whiteSpace: "nowrap"
+          }}>
+            {blog.Category || "General"}
+          </span>
+        </div>
         <p className="blog-snippet">
           {blog.Content.length > 80
             ? blog.Content.slice(0, 80) + "..."

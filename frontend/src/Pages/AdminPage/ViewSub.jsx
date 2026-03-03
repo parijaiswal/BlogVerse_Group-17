@@ -57,9 +57,13 @@ const ViewSub = ({ onEdit }) => {
                 <td>{sub.SubName}</td>
                 <td>{sub.SubDuration}</td>
                 <td>{sub.SubPrice}</td>
-                <td className="status" style={{ color: sub.Visibility === 'inactive' ? 'red' : 'green', fontWeight: 600 }}>{sub.Visibility}</td>
                 <td>
-                  <button onClick={() => onEdit(sub)} className="logout-btn">Edit</button>
+                  <span className={`status-badge ${sub.Visibility.toLowerCase() === 'inactive' ? 'rejected' : 'approved'}`}>
+                    {sub.Visibility}
+                  </span>
+                </td>
+                <td>
+                  <button onClick={() => onEdit(sub)} className="edit-btn">Edit</button>
                 </td>
               </tr>
             ))}

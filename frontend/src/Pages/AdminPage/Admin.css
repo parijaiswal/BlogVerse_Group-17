@@ -20,7 +20,7 @@
   color: #1e40af;
 }
 
-.logout-btn {
+.topbar-logout-btn {
   background: #03315f;
   color: white;
   border: none;
@@ -29,8 +29,23 @@
   cursor: pointer;
 }
 
-.logout-btn:hover {
+.topbar-logout-btn:hover {
   background: #1e40af;
+}
+
+.topbar-profile-btn {
+  background: transparent;
+  color: #03315f;
+  border: 1px solid #03315f;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.topbar-profile-btn:hover {
+  background: #f1f5f9;
 }
 
 
@@ -76,6 +91,8 @@
   transition: background 0.2s ease;
   font-size: 16px;
   font-weight: 500;
+  display: flex;
+  align-items: center;
 }
 
 .admin-sidebar li:hover {
@@ -138,11 +155,63 @@
   background: #f8fafc;
 }
 
+.users-table button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.approve-btn {
+  background-color: #2ecc71;
+}
+
+.approve-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(46, 204, 113, 0.2);
+}
+
+.reject-btn {
+  background-color: #e74c3c;
+}
+
+.reject-btn:hover {
+  background-color: #c0392b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(231, 76, 60, 0.2);
+}
+
+.edit-btn {
+  background-color: #03315f;
+}
+
+.edit-btn:hover {
+  background-color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(3, 49, 95, 0.2);
+}
+
+.view-btn {
+  background-color: #3b82f6;
+}
+
+.view-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+}
+
 .admin-card {
-  background: #ffffff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  padding: 35px 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
   max-width: 900px;
 }
 
@@ -166,11 +235,31 @@
   font-size: 16px;
   color: #484d56;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .stat-box:hover {
   transform: translateY(-6px);
   transition: 0.2s ease;
+}
+
+.stat-box.approved h3 {
+  color: #2ecc71;
+}
+
+.stat-box.pending h3 {
+  color: #f39c12;
+}
+
+.stat-box.rejected h3 {
+  color: #e74c3c;
+}
+
+.stat-box.draft h3 {
+  color: #8e44ad;
 }
 
 .button {
@@ -186,4 +275,54 @@
 
 .button:hover {
   background: #1e40af;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.approved {
+  background-color: rgba(46, 204, 113, 0.15);
+  color: #27ae60;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.status-badge.pending {
+  background-color: rgba(243, 156, 18, 0.15);
+  color: #d68910;
+  border: 1px solid rgba(243, 156, 18, 0.3);
+}
+
+.status-badge.rejected {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: #c0392b;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.status-badge.draft {
+  background-color: rgba(142, 68, 173, 0.15);
+  color: #8e44ad;
+  border: 1px solid rgba(142, 68, 173, 0.3);
+}
+
+.status-badge.public {
+  background-color: rgba(52, 152, 219, 0.15);
+  /* Soft blue */
+  color: #2980b9;
+  border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.status-badge.private {
+  background-color: rgba(108, 117, 125, 0.15);
+  /* Grey */
+  color: #495057;
+  border: 1px solid rgba(108, 117, 125, 0.3);
 }

@@ -22,22 +22,24 @@ const upload = multer({ storage });
    ADMIN → ADD BLOG (DIRECT PUBLISH)
 ====================================================== */
 router.post("/admin-add-blog", upload.single("image"), async (req, res) => {
-  const { title, content, visibility, userId } = req.body;
+  const { title, content, visibility, userId, status, category } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
   if (!title || !content || !userId) {
     return res.status(400).json({ message: "Missing fields" });
   }
 
+  const blogStatus = status === 'draft' ? 'draft' : 'approved';
+
   try {
     await db.query(
       `INSERT INTO BlogTable
-       (Userid, Title, Content, Create_Date, Update_Date, Visibility, Status, Image_path)
-       VALUES (?, ?, ?, NOW(), NOW(), ?, 'approved', ?)`,
-      [userId, title, content, visibility || "public", imagePath]
+       (Userid, Title, Content, Create_Date, Update_Date, Visibility, Status, Category, Image_path)
+       VALUES (?, ?, ?, NOW(), NOW(), ?, ?, ?, ?)`,
+      [userId, title, content, visibility || "public", blogStatus, category || "General", imagePath]
     );
 
-    res.json({ success: true, message: "Blog published successfully" });
+    res.json({ success: true, message: blogStatus === 'draft' ? "Blog saved as draft" : "Blog published successfully" });
   } catch (err) {
     console.error("Admin add blog error:", err);
     res.status(500).json({ message: "Database error" });
@@ -128,12 +130,16 @@ router.get("/admin-blog-stats", async (req, res) => {
     const [[rejected]] = await db.query(
       "SELECT COUNT(*) AS count FROM BlogTable WHERE Status='rejected'"
     );
+    const [[drafts]] = await db.query(
+      "SELECT COUNT(*) AS count FROM BlogTable WHERE Status='draft'"
+    );
 
     res.json({
       total: total.count,
       approved: approved.count,
       pending: pending.count,
       rejected: rejected.count,
+      drafts: drafts.count,
     });
   } catch (err) {
     console.error(err);
@@ -142,15 +148,18 @@ router.get("/admin-blog-stats", async (req, res) => {
 });
 
 /* ======================================================
-   CLIENT → ADD BLOG (SUBSCRIPTION + APPROVAL)
+   CLIENT → ADD BLOG (SUBSCRIPTION + APPROVAL & DRAFT)
 ====================================================== */
 router.post("/add-blog", upload.single("image"), async (req, res) => {
-  const { title, content, visibility, userId } = req.body;
+  const { title, content, visibility, userId, status, category } = req.body;
   const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
   if (!title || !content || !userId) {
     return res.status(400).json({ message: "Missing fields" });
   }
+
+  const isDraft = status === 'draft';
+  const newStatus = isDraft ? 'draft' : 'pending';
 
   try {
     const [subs] = await db.query(
@@ -168,14 +177,14 @@ router.post("/add-blog", upload.single("image"), async (req, res) => {
 
     await db.query(
       `INSERT INTO BlogTable
-       (Userid, Title, Content, Create_Date, Update_Date, Visibility, Status, Image_path)
-       VALUES (?, ?, ?, NOW(), NOW(), ?, 'pending', ?)`,
-      [userId, title, content, visibility || "public", imagePath]
+       (Userid, Title, Content, Create_Date, Update_Date, Visibility, Status, Category, Image_path)
+       VALUES (?, ?, ?, NOW(), NOW(), ?, ?, ?, ?)`,
+      [userId, title, content, visibility || "public", newStatus, category || "General", imagePath]
     );
 
     res.json({
       success: true,
-      message: "Blog submitted for admin approval",
+      message: isDraft ? "Blog saved as draft" : "Blog submitted for admin approval",
     });
   } catch (err) {
     console.error(err);
@@ -246,31 +255,34 @@ router.get("/my-blogs/:adminId", async (req, res) => {
 });
 
 /* ======================================================
-   ADMIN → EDIT BLOG (FIXED IMAGE UPDATE)
+   ADMIN → EDIT BLOG (FIXED IMAGE UPDATE & DRAFT)
 ====================================================== */
 router.put("/edit-blog/:blogId", upload.single("image"), async (req, res) => {
   const { blogId } = req.params;
-  const { title, content, visibility } = req.body;
+  const { title, content, visibility, status, category } = req.body; // status might be draft or published
+
+  const isDraft = status === 'draft';
+  const newStatus = isDraft ? 'draft' : 'approved';
 
   try {
     if (req.file) {
       const imagePath = `/uploads/${req.file.filename}`;
       await db.query(
         `UPDATE BlogTable
-         SET Title=?, Content=?, Visibility=?, Image_path=?, Update_Date=NOW()
+         SET Title=?, Content=?, Visibility=?, Category=?, Image_path=?, Status=?, Update_Date=NOW()
          WHERE BlogId=?`,
-        [title, content, visibility, imagePath, blogId]
+        [title, content, visibility, category || "General", imagePath, newStatus, blogId]
       );
     } else {
       await db.query(
         `UPDATE BlogTable
-         SET Title=?, Content=?, Visibility=?, Update_Date=NOW()
+         SET Title=?, Content=?, Visibility=?, Category=?, Status=?, Update_Date=NOW()
          WHERE BlogId=?`,
-        [title, content, visibility, blogId]
+        [title, content, visibility, category || "General", newStatus, blogId]
       );
     }
 
-    res.json({ success: true, message: "Blog updated successfully" });
+    res.json({ success: true, message: isDraft ? "Blog saved as draft" : "Blog updated successfully" });
   } catch (err) {
     console.error("Edit blog error:", err);
     res.status(500).json({ message: "Server error" });
@@ -299,12 +311,17 @@ router.get("/client-blog-stats/:userId", async (req, res) => {
       "SELECT COUNT(*) AS count FROM BlogTable WHERE Userid=? AND Status='rejected'",
       [userId]
     );
+    const [[drafts]] = await db.query(
+      "SELECT COUNT(*) AS count FROM BlogTable WHERE Userid=? AND Status='draft'",
+      [userId]
+    );
 
     res.json({
       total: total.count,
       approved: approved.count,
       pending: pending.count,
       rejected: rejected.count,
+      drafts: drafts.count,
     });
   } catch (err) {
     console.error(err);

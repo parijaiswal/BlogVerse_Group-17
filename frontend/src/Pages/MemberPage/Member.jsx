@@ -42,12 +42,12 @@ const MemberDashboard = () => {
         <h2 className="admin-logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>BlogVerse</h2>
         <div className="topbar-actions">
           <button
-            className="logout-btn"
+            className="topbar-profile-btn"
             onClick={() => setActivePage("manageProfile")}
           >
             Profile
           </button>
-          <button className="logout-btn" onClick={handleLogout}>
+          <button className="topbar-logout-btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
@@ -70,29 +70,6 @@ const MemberDashboard = () => {
               Manage Profile
             </li>
           </ul>
-
-          <div style={{ marginTop: "auto", paddingTop: "20px" }}>
-            <button 
-              onClick={() => navigate("/")} 
-              style={{ 
-                background: "rgba(255,255,255,0.1)", 
-                border: "1px solid rgba(255,255,255,0.2)", 
-                color: "white", 
-                width: "100%", 
-                padding: "12px", 
-                borderRadius: "8px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                fontWeight: "500",
-                transition: "0.2s"
-              }}
-            >
-              &larr; Return to Website
-            </button>
-          </div>
         </div>
 
         {/* MAIN CONTENT */}

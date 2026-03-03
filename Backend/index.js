@@ -23,7 +23,7 @@ app.get("/favicon.ico", (req, res) => res.status(204));
 {/*const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'aangi05',
+  password: 'Mysql1234',
   database: 'blogverse'
 });*/}
 const db = mysql.createConnection({

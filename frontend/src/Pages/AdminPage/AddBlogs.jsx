@@ -5,6 +5,7 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState("public");
+  const [category, setCategory] = useState("Technology");
   const [image, setImage] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
   const [message, setMessage] = useState("");
@@ -15,11 +16,12 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
       setTitle(editBlog.Title || "");
       setContent(editBlog.Content || "");
       setVisibility(editBlog.Visibility || "public");
+      setCategory(editBlog.Category || "Technology");
       setExistingImage(editBlog.Image_path || null);
     }
   }, [editBlog]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, submitType) => {
     e.preventDefault();
     setMessage("");
     setError("");
@@ -36,7 +38,11 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
     formData.append("title", title);
     formData.append("content", content);
     formData.append("visibility", visibility);
+    formData.append("category", category);
     formData.append("userId", localStorage.getItem("userId"));
+    if (submitType) {
+        formData.append("status", submitType); // passes "draft" or "published"
+    }
 
     if (image) {
       formData.append("image", image);
@@ -85,6 +91,17 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
       <select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
         <option value="public">Public</option>
         <option value="private">Private</option>
+      </select>
+
+      <label>Category</label>
+      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+        <option value="Technology">Technology</option>
+        <option value="Education">Education</option>
+        <option value="Lifestyle">Lifestyle</option>
+        <option value="Health">Health</option>
+        <option value="Business">Business</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="General">General</option>
       </select>
 
       {/* Existing image preview */}

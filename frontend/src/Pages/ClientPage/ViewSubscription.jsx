@@ -91,7 +91,7 @@ const ViewSubscription = () => {
 
         <div className="client-sub-footer">
             <p className="renewal-text">Need to upgrade? Check out other plans.</p>
-            <button className="upgrade-btn" onClick={() => navigate("/Subscription")}>
+            <button className="button" style={{ background: "#ffffff", color: "#0f4c8a", border: "1px solid #e2e8f0" }} onClick={() => navigate("/Subscription")}>
                 View Plans
             </button>
         </div>

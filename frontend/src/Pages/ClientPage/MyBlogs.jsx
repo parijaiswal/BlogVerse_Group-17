@@ -57,17 +57,7 @@ const MyBlogs = ({ filterStatus = "all" }) => {
                 <td>{blog.BlogId}</td>
                 <td>{blog.Title}</td>
                 <td>
-                  <span
-                    style={{
-                      fontWeight: "bold",
-                      color:
-                        blog.Status === "approved"
-                          ? "green"
-                          : blog.Status === "rejected"
-                          ? "red"
-                          : "orange",
-                    }}
-                  >
+                  <span className={`status-badge ${blog.Status.toLowerCase()}`}>
                     {blog.Status}
                   </span>
                 </td>

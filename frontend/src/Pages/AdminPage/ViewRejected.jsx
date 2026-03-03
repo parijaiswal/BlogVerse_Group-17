@@ -54,11 +54,15 @@ const ViewRejected = () => {
               <tr key={blog.BlogId}>
                 <td>{blog.BlogId}</td>
                 <td>{blog.Title}</td>
-                <td style={{ color: "red", fontWeight: "bold" }}>{blog.Status}</td>
+                <td>
+                  <span className={`status-badge ${blog.Status.toLowerCase()}`}>
+                    {blog.Status}
+                  </span>
+                </td>
                 <td>{blog.Update_Date?.split("T")[0]}</td>
                 <td>
                   <button
-                    className="logout-btn"
+                    className="approve-btn"
                     onClick={() => updateStatus(blog.BlogId, "approve")}
                   >
                     Approve

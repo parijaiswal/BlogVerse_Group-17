@@ -35,21 +35,20 @@ const AllBlogs = () => {
               <tr key={blog.BlogId}>
                 <td>{blog.BlogId}</td>
                 <td>{blog.Title}</td>
-                <td className="status" style={{ color: blog.Visibility === 'private' ? 'red' : 'green', fontWeight: 600 }}>{blog.Visibility}</td>
+                <td>
+                  <span className={`status-badge ${blog.Visibility.toLowerCase() === 'private' ? 'private' : 'public'}`}>
+                    {blog.Visibility}
+                  </span>
+                </td>
                 <td>{blog.Create_Date?.split("T")[0]}</td>
                 <td>{blog.Username} <span style={{fontSize: "12px", color: "#666"}}>({blog.User_Role})</span></td>
                 <td>
-                   <span
-                      onClick={() =>
-                      navigate(`/blog/${blog.BlogId}`)}
-                style={{
-                  color: "#1a73e8",
-                  cursor: "pointer",
-                  fontWeight: 500,
-               }}
-              >
-                  View
-                </span>
+                  <button
+                    className="view-btn"
+                    onClick={() => navigate(`/blog/${blog.BlogId}`)}
+                  >
+                    View
+                  </button>
                 </td>
               </tr>
             ))}

@@ -2,7 +2,6 @@ const express = require("express");
 const mysql = require("mysql2");
 const router = express.Router();
 
-// DB connection
 require("dotenv").config();
 
 const db = mysql.createConnection({
@@ -12,8 +11,6 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT
 });
-
-module.exports = db;
 
 db.connect((err) => {
   if (err) {
@@ -71,6 +68,7 @@ router.get("/", (req, res) => {
       b.Title,
       b.Content,
       b.Visibility,
+      b.Category,
       b.Create_Date,
       b.Image_path,
       u.Username, 
@@ -103,6 +101,7 @@ router.get("/all", (req, res) => {
       b.Title,
       b.Content,
       b.Visibility,
+      b.Category,
       b.Create_Date,
       b.Image_path,
       u.Username, 
@@ -255,7 +254,7 @@ router.get("/:id", (req, res) => {
   const blogId = req.params.id;
 
   const sql = `
-    SELECT b.BlogId, b.Title, b.Content, b.Visibility, b.Create_Date, b.Image_path, b.Like_count, u.Username, u.User_Role
+    SELECT b.BlogId, b.Title, b.Content, b.Visibility, b.Category, b.Create_Date, b.Image_path, b.Like_count, u.Username, u.User_Role
     FROM BlogTable b
     JOIN users u ON b.Userid = u.UserId
     WHERE b.BlogId = ?

@@ -98,20 +98,3 @@
   color: #64748b;
   margin: 0;
 }
-
-.upgrade-btn {
-  background: white;
-  border: 1px solid #e2e8f0;
-  color: #0f4c8a;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.upgrade-btn:hover {
-  background: #0f4c8a;
-  color: white;
-  border-color: #0f4c8a;
-}
