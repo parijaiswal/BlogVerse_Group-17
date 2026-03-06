@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./AddBlogs.css";
 
-const AddBlog = ({ editBlog, onSuccess, isClient }) => {
+const AddBlog = ({ editBlog, onSuccess, isClient, editEndpoint }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState("public");
@@ -26,7 +26,9 @@ const AddBlog = ({ editBlog, onSuccess, isClient }) => {
     setMessage("");
     setError("");
 
-    const url = editBlog
+    const url = editEndpoint
+      ? editEndpoint
+      : editBlog
       ? `http://localhost:5000/api/admin/edit-blog/${editBlog.BlogId}`
       : isClient
       ? "http://localhost:5000/api/admin/add-blog"

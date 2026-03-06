@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaHeart, FaRegCommentDots, FaTrashAlt } from "react-icons/fa";
+import { FaHeart, FaRegCommentDots, FaTrashAlt, FaLock } from "react-icons/fa";
 import jsPDF from "jspdf";
 import { FaDownload } from "react-icons/fa";
 import "./BlogDetails.css";
@@ -242,11 +242,46 @@ const BlogDetails = () => {
         <span>{new Date(blog.Create_Date).toDateString()}</span>
       </div>
 
-      <div className="blog-text">
-        {blog.Content.split('\n').map((para, index) => (
-          <p key={index}>{para}</p>
-        ))}
-      </div>
+      {isLoggedIn ? (
+        <div className="blog-text">
+          {blog.Content.split('\n').map((para, index) => (
+            <p key={index}>{para}</p>
+          ))}
+        </div>
+      ) : (
+        <div className="blog-content-wrapper">
+          <div className="blog-text preview-text">
+            {blog.Content.split('\n').length > 0 && (
+              <p>{blog.Content.split('\n')[0]}</p>
+            )}
+          </div>
+          <div className="blurred-wrapper">
+            <div className="blog-text blurred-text">
+              {blog.Content.split('\n').slice(1).map((para, index) => (
+                <p key={index}>{para}</p>
+              ))}
+              {/* Fallback dummy text to ensure blur layout works even if content is extremely short */}
+              {blog.Content.split('\n').length <= 1 && (
+                <>
+                  <p>In addition to the above, reading detailed insights from top writers provides value...</p>
+                  <p>Join our platform today to get full access to articles, discussions, and our growing community.</p>
+                </>
+              )}
+            </div>
+            <div className="blur-overlay">
+              <h3 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <FaLock size={22} style={{ marginRight: '8px', color: '#0f172a' }} />
+                Keep Reading
+              </h3>
+              <p>To read the full article,please log in or create an account.</p>
+              <div className="blur-actions">
+                <button onClick={() => navigate("/login")} className="blur-login-btn">Login</button>
+                <button onClick={() => navigate("/register")} className="blur-register-btn">Register</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ICON BAR */}
       <div className="interaction-bar">

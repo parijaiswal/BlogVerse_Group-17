@@ -12,6 +12,7 @@ import { FaFileAlt, FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaRegEdit, Fa
 const ClientDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [editBlog, setEditBlog] = useState(null);
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId");
@@ -43,7 +44,13 @@ const ClientDashboard = () => {
 
   const handleCardClick = (status) => {
     setFilterStatus(status);
+    setEditBlog(null);
     setActivePage("myBlogs");
+  };
+
+  const handleEdit = (blog) => {
+    setEditBlog(blog);
+    setActivePage("editBlog");
   };
 
   const renderContent = () => {
@@ -51,8 +58,22 @@ const ClientDashboard = () => {
       case "addBlog":
         return <AddBlog isClient={true} />;
 
+      case "editBlog":
+        return (
+          <AddBlog
+            editBlog={editBlog}
+            isClient={true}
+            editEndpoint={`http://localhost:5000/api/admin/client-edit-blog/${editBlog?.BlogId}`}
+            onSuccess={() => {
+              setEditBlog(null);
+              setFilterStatus("all");
+              setActivePage("myBlogs");
+            }}
+          />
+        );
+
       case "myBlogs":
-        return <MyBlogs filterStatus={filterStatus} />;
+        return <MyBlogs filterStatus={filterStatus} onEdit={handleEdit} />;
 
       case "editProfile":
         return <EditProfile />;
@@ -133,7 +154,7 @@ const ClientDashboard = () => {
         <h2 className="admin-logo" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>BlogVerse</h2>
         <div className="topbar-actions">
           <button
-            className="profile-btn"
+            className="topbar-profile-btn"
             onClick={() => setActivePage("editProfile")}
           >
             Profile

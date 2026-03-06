@@ -11,10 +11,11 @@ import AllBlogs from "./Allblogs";
 import hello_2 from "../../Images/hello_2.png";
 import EditMyBlogs from "./EditMyblogs";
 import ViewRejected from "./ViewRejected";
+import AdminReport from "./AdminReport";
 import { 
   FaChevronDown, FaChevronUp, FaFileAlt, FaCheckCircle, 
   FaHourglassHalf, FaTimesCircle, FaRegEdit,
-  FaPlus, FaUsers, FaMoneyCheckAlt, FaPlusSquare, FaListUl
+  FaPlus, FaUsers, FaMoneyCheckAlt, FaPlusSquare, FaListUl, FaChartBar
 } from "react-icons/fa";
 
 const AdminDashboard = () => {
@@ -104,6 +105,8 @@ const resetSubForm = () => {
       return <EditMyBlogs onEdit={handleEditBlog} filterStatus="all" />;
       case "viewDrafts":
       return <EditMyBlogs onEdit={handleEditBlog} filterStatus="draft" />;
+      case "viewReports":
+        return <AdminReport />;
       default:
         return (
           <>
@@ -218,6 +221,12 @@ const resetSubForm = () => {
             onClick={() => setActivePage("viewDrafts")}
           >
             <FaRegEdit style={{ marginRight: "10px" }} /> View Drafts
+          </li>
+          <li 
+            className={activePage === "viewReports" ? "active" : ""}
+            onClick={() => setActivePage("viewReports")}
+          >
+            <FaChartBar style={{ marginRight: "10px" }} /> Reports
           </li>
           
           <li 

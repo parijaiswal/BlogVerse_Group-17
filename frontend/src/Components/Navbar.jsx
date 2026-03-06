@@ -38,6 +38,7 @@ function Navbar() {
         <Link to="/">Home</Link>
         <a href="#latest-cards">Blogs</a>
         <a href="#publish-cta">For Brands</a>
+        <Link to="/contact">Contact</Link>
         {showSubscriptionLink && (
           <Link to="/subscription">Subscription</Link>
         )}

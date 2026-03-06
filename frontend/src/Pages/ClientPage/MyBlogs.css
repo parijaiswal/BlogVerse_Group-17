@@ -1,0 +1,167 @@
+/* MyBlogs.css - Edit Modal Styles */
+
+.edit-blog-btn {
+  background: #03315f;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.edit-blog-btn:hover {
+  background: #0f4c8a;
+}
+
+/* Modal Overlay */
+.edit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Modal Box */
+.edit-modal {
+    background: #fff;
+    border-radius: 14px;
+    width: 680px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 14px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.edit-modal-header h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.modal-close-btn {
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+    cursor: pointer;
+    color: #64748b;
+    transition: background 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
+
+.edit-modal-body {
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.edit-modal-body label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.edit-modal-body input[type="text"],
+.edit-modal-body input,
+.edit-modal-body textarea,
+.edit-modal-body select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1e293b;
+    background: #f8fafc;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.edit-modal-body input:focus,
+.edit-modal-body textarea:focus,
+.edit-modal-body select:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: #fff;
+}
+
+.edit-modal-body textarea {
+    resize: vertical;
+    min-height: 160px;
+}
+
+.edit-modal-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.edit-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.submit-btn {
+  background: #03315f;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #0f4c8a;
+}
+
+.submit-btn:disabled,
+.draft-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.success-msg {
+    color: #10b981;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 4px 0 0;
+}
+
+.error-msg {
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 4px 0 0;
+}

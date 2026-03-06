@@ -336,7 +336,7 @@ router.get("/client-blogs/:userId", async (req, res) => {
   const { userId } = req.params;
   try {
     const [rows] = await db.query(
-      `SELECT BlogId, Title, Status, Update_Date
+      `SELECT BlogId, Title, Content, Visibility, Category, Image_path, Status, Update_Date
        FROM BlogTable WHERE Userid=?
        ORDER BY Update_Date DESC`,
       [userId]
@@ -344,6 +344,54 @@ router.get("/client-blogs/:userId", async (req, res) => {
     res.json(rows);
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+/* ======================================================
+   CLIENT → EDIT OWN BLOG (draft or pending only)
+====================================================== */
+router.put("/client-edit-blog/:blogId", upload.single("image"), async (req, res) => {
+  const { blogId } = req.params;
+  const { title, content, visibility, userId, category, status } = req.body;
+
+  if (!userId) return res.status(400).json({ message: "Missing userId" });
+
+  try {
+    // Security: Verify this blog belongs to the user AND is still editable
+    const [rows] = await db.query(
+      `SELECT BlogId, Status FROM BlogTable WHERE BlogId=? AND Userid=?`,
+      [blogId, userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(403).json({ message: "Blog not found or access denied" });
+    }
+
+    const blog = rows[0];
+    if (blog.Status !== "draft" && blog.Status !== "pending") {
+      return res.status(403).json({ message: "You can only edit blogs that are in draft or pending status" });
+    }
+
+    // Determine final status: if user clicks "Submit", set to pending; if "Save Draft", keep as draft
+    const newStatus = status === "draft" ? "draft" : "pending";
+
+    if (req.file) {
+      const imagePath = `/uploads/${req.file.filename}`;
+      await db.query(
+        `UPDATE BlogTable SET Title=?, Content=?, Visibility=?, Category=?, Image_path=?, Status=?, Update_Date=NOW() WHERE BlogId=?`,
+        [title, content, visibility || "public", category || "General", imagePath, newStatus, blogId]
+      );
+    } else {
+      await db.query(
+        `UPDATE BlogTable SET Title=?, Content=?, Visibility=?, Category=?, Status=?, Update_Date=NOW() WHERE BlogId=?`,
+        [title, content, visibility || "public", category || "General", newStatus, blogId]
+      );
+    }
+
+    res.json({ success: true, message: newStatus === "draft" ? "Blog saved as draft" : "Blog resubmitted for approval" });
+  } catch (err) {
+    console.error("Client edit blog error:", err);
     res.status(500).json({ message: "Database error" });
   }
 });

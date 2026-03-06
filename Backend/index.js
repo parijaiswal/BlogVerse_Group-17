@@ -3,29 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-const blogRoutes = require("./routes/BlogsRoutes");
-const adminRoutes = require("./routes/AdminRoutes");
-const profileRoutes = require("./routes/ProfileRoutes");
-const razorPayRoutes = require("./routes/razorPayRoutes");
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/api/blogs", blogRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/profile", profileRoutes);
-app.use("/api/razorpay", razorPayRoutes);
-app.use("/uploads", express.static("uploads"));// serve static files from 'uploads' directory
-app.get("/favicon.ico", (req, res) => res.status(204));
 
 //This will be used to connect to the database
-{/*const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'Mysql1234',
-  database: 'blogverse'
-});*/}
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -34,7 +19,7 @@ const db = mysql.createConnection({
   port: process.env.DB_PORT
 });
 
-module.exports = db;
+module.exports = db; // EXPORT DB FIRST
 
 db.connect((err) => {
   if (err) {
@@ -43,6 +28,21 @@ db.connect((err) => {
     console.log('MySQL connected');
   }
 });
+
+// Import Routes AFTER db is exported
+const blogRoutes = require("./routes/BlogsRoutes");
+const adminRoutes = require("./routes/AdminRoutes");
+const profileRoutes = require("./routes/ProfileRoutes");
+const razorPayRoutes = require("./routes/razorPayRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+
+app.use("/api/blogs", blogRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/razorpay", razorPayRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/uploads", express.static("uploads"));// serve static files from 'uploads' directory
+app.get("/favicon.ico", (req, res) => res.status(204));
 
 // 2) SIMPLE TEST ROUTE – GET ALL USERS
 app.get('/api/users-test', (req, res) => {

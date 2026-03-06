@@ -15,6 +15,7 @@ import MemberProfile from "./Pages/MemberPage/MemberProfile";
 import Client from "./Pages/ClientPage/Client";
 import BlogDetails from "./Pages/Homepage/BlogDetails";
 import Payment from "./Pages/Payment/Payment";
+import Contact from "./Pages/Homepage/Contact";
 
 // Main App Layout with conditional Navbar
 const AppLayout = () => {
@@ -52,6 +53,7 @@ const AppLayout = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/contact" element={<Contact />} />
 
 
         {/* Dashboards */}
