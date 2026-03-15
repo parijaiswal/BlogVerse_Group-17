@@ -8,7 +8,7 @@ import MyBlogs from "./MyBlogs";
 import SavedBlogs from "../../Components/SavedBlogs";
 import hello_2 from "../../Images/hello_2.png";
 import { useNavigate } from "react-router-dom";
-import { FaFileAlt, FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaRegEdit, FaPlus, FaMoneyCheckAlt } from "react-icons/fa";
+import { FaFileAlt, FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaRegEdit, FaPlus, FaMoneyCheckAlt, FaBookmark } from "react-icons/fa";
 import API_BASE from "../../config";
 
 const ClientDashboard = () => {
@@ -216,7 +216,7 @@ const ClientDashboard = () => {
             <li
               className={activePage === "savedBlogs" ? "active" : ""}
               onClick={() => setActivePage("savedBlogs")}>
-              Saved Blogs
+              <FaBookmark style={{ marginRight: "10px" }} /> Saved Blogs
           </li>
           </ul>
         </div>

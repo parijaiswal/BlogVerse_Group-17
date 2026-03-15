@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./AdminReport.css";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
 import { FaFileDownload, FaChartLine, FaRegMoneyBillAlt, FaUsers } from "react-icons/fa";
 import axios from "axios";
 import API_BASE from "../../config";
@@ -10,6 +8,8 @@ const AdminReport = () => {
   const [reportType, setReportType] = useState("top-blogs"); // 'top-blogs' | 'revenue'
   const [reportData, setReportData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isGeneratingChartPdf, setIsGeneratingChartPdf] = useState(false);
 
   // Fetch report data on component mount or report type change
   useEffect(() => {
@@ -33,108 +33,46 @@ const AdminReport = () => {
     }
   };
 
-  // Generate PDF dynamically based on report type
-  const generatePDF = () => {
-    const doc = new jsPDF("l", "mm", "a4"); 
+  // Request PDF from backend Puppeteer endpoint
+  const generatePDF = async (isChartOnly = false) => {
+    if (reportData.length === 0) return;
     
-    // Add Header
-    doc.setFontSize(22);
-    doc.setTextColor(15, 23, 42); 
-    doc.text("BlogVerse", 14, 20);
-    
-    doc.setFontSize(14);
-    doc.setTextColor(100, 116, 139); 
-    const title = reportType === "top-blogs" ? "Top Performing Blogs Report" : 
-                  reportType === "revenue" ? "Subscription Revenue Report" : 
-                  "Top Contributing Authors Report";
-    doc.text(title, 14, 30);
-    
-    // Add filtering context & date
-    doc.setFontSize(10);
-    const today = new Date().toLocaleDateString();
-    doc.text(`Generated on: ${today}`, 14, 38);
-
-    // Dynamic Columns and Rows
-    let tableColumn = [];
-    const tableRows = [];
-
-    if (reportType === "top-blogs") {
-      tableColumn = ["Rank", "Blog Title", "Author", "Category", "Likes", "Comments", "Publish Date"];
-      reportData.forEach((item, index) => {
-        tableRows.push([
-          `#${index + 1}`,
-          item.Title.length > 40 ? item.Title.substring(0, 40) + "..." : item.Title,
-          item.Author,
-          item.Category || "N/A",
-          item.Like_count || 0,
-          item.Comment_count || 0,
-          new Date(item.Create_Date).toLocaleDateString()
-        ]);
-      });
-    } else if (reportType === "revenue") {
-      tableColumn = ["Rank", "Plan Name", "Price per Plan", "Total Subscribers", "Total Revenue"];
-      reportData.forEach((item, index) => {
-        tableRows.push([
-          `#${index + 1}`,
-          item.PlanName,
-          `₹${item.Price}`,
-          item.TotalSubscribers,
-          `₹${item.TotalRevenue}`
-        ]);
-      });
-    } else if (reportType === "top-authors") {
-      tableColumn = ["Rank", "Author Name", "Role", "Total Blogs Published", "Total Likes Received"];
-      reportData.forEach((item, index) => {
-        tableRows.push([
-          `#${index + 1}`,
-          item.AuthorName,
-          item.Role,
-          item.TotalBlogsPublished,
-          item.TotalLikesReceived || 0
-        ]);
-      });
+    if (isChartOnly) {
+      setIsGeneratingChartPdf(true);
+    } else {
+      setIsGeneratingPdf(true);
     }
 
-    import("jspdf-autotable").then(({ default: autoTable }) => {
-      autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: 45,
-        theme: 'grid',
-        styles: { 
-          fontSize: 9, 
-          cellPadding: 4,
-          textColor: [51, 65, 85]
-        },
-        headStyles: { 
-          fillColor: [37, 99, 235], 
-          textColor: 255, 
-          fontStyle: 'bold' 
-        },
-        alternateRowStyles: { 
-          fillColor: [248, 250, 252] 
-        },
-        didDrawPage: function (data) {
-          doc.setDrawColor(226, 232, 240);
-          doc.line(14, doc.internal.pageSize.height - 15, doc.internal.pageSize.width - 14, doc.internal.pageSize.height - 15);
-          
-          doc.setFontSize(8);
-          doc.setTextColor(148, 163, 184); 
-          doc.text(
-            "BlogVerse Software Development Project 2026",
-            14,
-            doc.internal.pageSize.height - 8
-          );
-          doc.text(
-            `Page ${doc.internal.getNumberOfPages()}`,
-            doc.internal.pageSize.width - 25,
-            doc.internal.pageSize.height - 8
-          );
-        }
+    try {
+      // Send the report data AND the specific reportType AND the isChartOnly flag to the backend
+      const response = await axios.post(`${API_BASE}/api/reports/download-pdf`, {
+        reportType,
+        reportData,
+        isChartOnly
+      }, {
+        responseType: 'blob' // Important: Expect a binary blob in return
       });
 
-      doc.save(`BlogVerse_${reportType}_${today.replace(/\//g, '-')}.pdf`);
-    });
+      // Create a temporary URL for the received PDF blob and trigger download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `BlogVerse_${reportType}_${isChartOnly ? 'Chart' : 'Report'}_${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
+    } finally {
+      if (isChartOnly) {
+        setIsGeneratingChartPdf(false);
+      } else {
+        setIsGeneratingPdf(false);
+      }
+    }
   };
 
   const renderTopBlogsTable = () => (
@@ -236,11 +174,17 @@ const AdminReport = () => {
           <h2>Performance Reports</h2>
           <p>Analyze platform engagement and generate system revenue reports.</p>
         </div>
-        
-        <button className="download-pdf-btn" onClick={generatePDF} disabled={loading || reportData.length === 0}>
-          <FaFileDownload size={18} />
-          Download PDF
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button className="download-pdf-btn" onClick={() => generatePDF(false)} disabled={loading || isGeneratingPdf || isGeneratingChartPdf || reportData.length === 0}>
+            <FaFileDownload size={18} />
+            {isGeneratingPdf ? "Generating PDF..." : "Download Report"}
+          </button>
+          
+          <button className="download-pdf-btn" style={{ backgroundColor: '#10b981', borderColor: '#10b981' }} onClick={() => generatePDF(true)} disabled={loading || isGeneratingPdf || isGeneratingChartPdf || reportData.length === 0}>
+            <FaFileDownload size={18} />
+            {isGeneratingChartPdf ? "Generating..." : "Download Chart"}
+          </button>
+        </div>
       </div>
 
       <div className="report-controls">

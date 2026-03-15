@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const path = require("path");
+const fs = require("fs");
 
 // Use the shared DB pool from Database.js (same as AdminRoutes.js)
 const db = require("../Database");
+const generatePDF = require('../utils/pdfGenerator');
 
 
 // ===================================================
@@ -334,6 +337,161 @@ router.delete("/:id", async (req, res) => {
   } catch (err) {
     console.error("Delete blog failed:", err);
     res.status(500).json({ message: "Delete failed" });
+  }
+});
+
+/**
+ * GENERATE PDF FOR A SINGLE BLOG VIA PUPPETEER
+ * POST /api/blogs/generate-pdf
+ */
+router.post('/generate-pdf', async (req, res) => {
+  try {
+    const { blog } = req.body;
+    
+    if (!blog || !blog.Title || !blog.Content) {
+      return res.status(400).json({ message: "Invalid blog data" });
+    }
+
+    // Read and convert logo to base64
+    let logoBase64 = "";
+    try {
+      const logoPath = path.join(process.cwd(), "../frontend/src/assets/logo.png");
+      if (fs.existsSync(logoPath)) {
+        const logoData = fs.readFileSync(logoPath);
+        logoBase64 = `data:image/png;base64,${logoData.toString("base64")}`;
+      }
+    } catch (err) {
+      console.warn("Could not load logo for single blog PDF:", err);
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #334155;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+          }
+          .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #2563eb; /* BlogVerse Blue theme */
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+          }
+          .logo-company-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+          }
+          .logo {
+            width: 60px;
+            height: auto;
+          }
+          .company-info {
+            text-align: left;
+          }
+          .brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb; /* BlogVerse Blue */
+            margin: 0 0 5px 0;
+          }
+          .contact-details {
+            font-size: 10px;
+            color: #475569;
+            line-height: 1.4;
+          }
+          .report-title-wrapper {
+            text-align: right;
+          }
+          .doc-type {
+            font-size: 14px;
+            font-weight: bold;
+            color: #334155;
+            margin: 0 0 5px 0;
+          }
+          .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0f172a;
+            text-align: left;
+            margin-top: 10px;
+            margin-bottom: 10px;
+          }
+          .meta {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 5px;
+          }
+          h2, h3, h4, h5, h6 {
+            color: #1e293b;
+            margin-top: 24px;
+            margin-bottom: 12px;
+          }
+          p {
+            margin-bottom: 16px;
+          }
+          .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: right;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header-container">
+          <div class="logo-company-wrapper">
+            ${logoBase64 ? `<img src="${logoBase64}" class="logo" alt="BlogVerse Logo" />` : ``}
+            <div class="company-info">
+              <h1 class="brand">BlogVerse</h1>
+              <div class="contact-details">
+                Phone: 1234567899<br>
+                Email: blogversewebsite@gmail.com<br>
+              </div>
+            </div>
+          </div>
+          
+          <div class="report-title-wrapper">
+            <h2 class="doc-type">Official Blog Document</h2>
+          </div>
+        </div>
+        
+        <h1 class="title">${blog.Title}</h1>
+        <div class="meta"><strong>Author:</strong> ${blog.Username || "Unknown"}</div>
+        <div class="meta"><strong>Date:</strong> ${new Date(blog.Create_Date).toDateString()}</div>
+        
+        <hr style="border:0; border-top:1px solid #e2e8f0; margin: 20px 0;">
+        
+        <div class="content">
+          ${blog.Content.replace(/\\n/g, '<br>')}
+        </div>
+
+        <div class="footer">
+          Generated on: ${new Date().toLocaleDateString()}
+        </div>
+      </body>
+      </html>
+    `;
+
+    const pdfBuffer = await generatePDF(htmlContent);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    const filename = (blog.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'blog') + '.pdf';
+    res.setHeader('Content-Disposition', 'attachment; filename="' + filename + '"');
+    res.send(pdfBuffer);
+
+  } catch (error) {
+    console.error("Single Blog PDF generation error:", error);
+    res.status(500).json({ message: "Failed to generate PDF" });
   }
 });
 

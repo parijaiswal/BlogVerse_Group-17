@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import jsPDF from "jspdf";
 import "./Payment.css";
 import API_BASE from "../../config";
 
@@ -57,28 +56,35 @@ const Payment = () => {
   }, []);
 
   // Generate PDF for blog
-  const generateBlogPDF = (blog) => {
-    const doc = new jsPDF("p", "mm", "a4");
-    let y = 20;
+  // Request PDF from backend Puppeteer endpoint
+  const generateBlogPDF = async (blog) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/blogs/generate-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blog: blog }),
+      });
 
-    doc.setFontSize(20);
-    doc.text(blog.Title, 105, y, { align: "center" });
-    y += 10;
+      if (!response.ok) throw new Error("Failed to generate PDF");
+      const blob = await response.blob();
 
-    doc.setFontSize(11);
-    doc.text(`Author: ${blog.Username || ""}`, 20, y);
-    y += 6;
-    doc.text(`Date: ${new Date(blog.Create_Date).toDateString()}`, 20, y);
-    y += 10;
-
-    doc.setFontSize(13);
-    const contentLines = doc.splitTextToSize(blog.Content, 170);
-    doc.text(contentLines, 20, y);
-
-    doc.setFontSize(10);
-    doc.text("Downloaded from BlogVerse", 105, 290, { align: "center" });
-
-    doc.save(`${blog.Title}.pdf`);
+      // Create a temporary URL for the received PDF blob and trigger download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      const filename = (blog.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'blog') + '.pdf';
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error generating single blog PDF from backend:", error);
+      alert("Failed to download PDF. Please try again from the blog page.");
+    }
   };
 
   const handlePayment = async () => {

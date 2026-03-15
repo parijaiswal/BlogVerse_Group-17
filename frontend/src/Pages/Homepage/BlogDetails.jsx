@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaHeart, FaRegCommentDots, FaTrashAlt, FaLock } from "react-icons/fa";
-import jsPDF from "jspdf";
+import { FaHeart, FaRegCommentDots, FaTrashAlt, FaLock, FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa";
 import "./BlogDetails.css";
 import API_BASE from "../../config";
@@ -24,8 +23,15 @@ const BlogDetails = () => {
 
   // Get logged-in user info from localStorage
   const userId = localStorage.getItem("userId");
-  const role = localStorage.getItem("role")?.toLowerCase();
+  const role = localStorage.getItem("role"); // Changed: removed ?.toLowerCase()
   const isLoggedIn = !!userId;
+
+  // Format date safely
+  const formatDate = (dateString) => {
+    if (!dateString) return "Unknown Date";
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? "Unknown Date" : date.toLocaleDateString();
+  };
 
   // Fetch blog details
   useEffect(() => {
@@ -34,12 +40,19 @@ const BlogDetails = () => {
         setBlog(res.data);
         setLikes(res.data.Like_count || 0);
 
-         const key = `bookmarks_${userId}`;
-         const bookmarks = JSON.parse(localStorage.getItem(key)) || [];
+        const key = `bookmarks_${userId}`;
+        const bookmarks = JSON.parse(localStorage.getItem(key)) || [];
+        if (bookmarks.includes(res.data.BlogId)) {
+          setBookmarked(true);
+        }
 
-          if (bookmarks.includes(res.data.BlogId)) {
-           setBookmarked(true);
+        // Restore liked state from localStorage
+        if (userId) {
+          const likedBlogs = JSON.parse(localStorage.getItem(`likes_${userId}`)) || [];
+          if (likedBlogs.includes(Number(id) || id)) {
+            setLiked(true);
           }
+        }
       });
     fetchComments();
   }, [id, userId]);
@@ -70,6 +83,10 @@ const BlogDetails = () => {
       .then(() => {
         setLikes(likes + 1);
         setLiked(true);
+        // Persist liked state in localStorage so it survives page refresh
+        const likedBlogs = JSON.parse(localStorage.getItem(`likes_${userId}`)) || [];
+        likedBlogs.push(Number(id) || id);
+        localStorage.setItem(`likes_${userId}`, JSON.stringify(likedBlogs));
       });
   };
 
@@ -123,30 +140,36 @@ const BlogDetails = () => {
     });
   };
 
-  // Generate and download PDF
-  const generatePDF = () => {
-    const doc = new jsPDF("p", "mm", "a4");
-    let y = 20;
+  // Request PDF from backend Puppeteer endpoint
+  const generatePDF = async () => {
+    try {
+      showMessage("Preparing PDF... Please wait.");
+      const response = await axios.post(`${API_BASE}/api/blogs/generate-pdf`, {
+        blog: blog
+      }, {
+        responseType: 'blob' // Force axios to receive as binary blob
+      });
 
-    doc.setFontSize(20);
-    doc.text(blog.Title, 105, y, { align: "center" });
-    y += 10;
-
-    doc.setFontSize(11);
-    doc.text(`Author: ${blog.Username || ""}`, 20, y);
-    y += 6;
-    doc.text(`Date: ${new Date(blog.Create_Date).toDateString()}`, 20, y);
-    y += 10;
-
-    doc.setFontSize(13);
-    const contentLines = doc.splitTextToSize(blog.Content, 170);
-    doc.text(contentLines, 20, y);
-
-    doc.setFontSize(10);
-    doc.text("Downloaded from BlogVerse", 105, 290, { align: "center" });
-
-    doc.save(`${blog.Title}.pdf`);
-    showMessage("PDF downloaded successfully!");
+      // Create a temporary URL for the received PDF blob and trigger download
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      const filename = (blog.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'blog') + '.pdf';
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      showMessage("PDF downloaded successfully!");
+    } catch (error) {
+      console.error("Error generating single blog PDF from backend:", error);
+      showMessage("Failed to generate PDF. Please try again.");
+    }
   };
 
   // Handle PDF download
@@ -327,7 +350,7 @@ const BlogDetails = () => {
 
         <div onClick={handleBookmark} className="icon-wrapper">
           <span style={{ fontSize: "20px" }}>
-            {bookmarked ? "🔖" : "📑"}</span>
+            {bookmarked ? <FaBookmark color="#2563eb" /> : <FaRegBookmark />}</span>
           <span style={{ fontWeight: 500 }}>
              {bookmarked ? "Bookmarked" : "Bookmark"}</span>
        </div>

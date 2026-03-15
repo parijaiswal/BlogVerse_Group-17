@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Contact.css";
 import { FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
+import API_BASE from "../../config";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -9,34 +10,48 @@ const Contact = () => {
     subject: "",
     message: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) {
       setStatus("error");
       return;
     }
     
-    // Construct mailto link
-    const mailtoLink = `mailto:blogversewebsite@gmail.com?subject=${encodeURIComponent(formData.subject || 'New Contact Query')}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    )}`;
-    
-    // Open default mail client
-    window.location.href = mailtoLink;
-    
-    // Clear form
-    setFormData({ name: "", email: "", subject: "", message: "" });
-    setStatus("success");
-    
-    setTimeout(() => {
-      setStatus("");
-    }, 4000);
+    setIsSubmitting(true);
+    setStatus("");
+
+    try {
+      const response = await fetch(`${API_BASE}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setStatus("success");
+      } else {
+        setStatus("api-error");
+        console.error(data.message);
+      }
+    } catch (error) {
+      console.error("Network error submitting contact form:", error);
+      setStatus("network-error");
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => {
+        setStatus("");
+      }, 5000);
+    }
   };
 
   return (
@@ -113,18 +128,28 @@ const Contact = () => {
                 ></textarea>
               </div>
 
-              <button type="submit" className="submit-btn">
-                Send Message
+              <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send Message"}
               </button>
 
               {status === "success" && (
                 <div className="form-message success-message">
-                  Thank you! Your email client should now open to send the message.
+                  Thank you! Your message has been sent successfully. Check your email for a confirmation.
                 </div>
               )}
               {status === "error" && (
                 <div className="form-message error-message">
                   Please fill in all required fields.
+                </div>
+              )}
+              {status === "api-error" && (
+                <div className="form-message error-message">
+                  Failed to send message. Please try again later.
+                </div>
+              )}
+              {status === "network-error" && (
+                <div className="form-message error-message">
+                  Network error. Please check your connection and try again.
                 </div>
               )}
             </form>

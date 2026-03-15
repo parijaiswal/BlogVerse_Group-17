@@ -11,7 +11,7 @@ import ResetPassword from "./Pages/Authenticationpage/ResetPassword";
 import Admin from "./Pages/AdminPage/Admin";
 import Subscription from "./Pages/SubscriptionPage/Subscription";
 
-import MemberProfile from "./Pages/MemberPage/MemberProfile";
+import Member from "./Pages/MemberPage/Member";
 import Client from "./Pages/ClientPage/Client";
 import BlogDetails from "./Pages/Homepage/BlogDetails";
 import Payment from "./Pages/Payment/Payment";
@@ -59,7 +59,7 @@ const AppLayout = () => {
         {/* Dashboards */}
         <Route path="/admin" element={<Admin />} />
         <Route path="/client" element={<Client />} />
-        <Route path="/member" element={<MemberProfile />} />
+        <Route path="/member" element={<Member />} />
 
 
         <Route path="/Subscription" element={<Subscription />} />

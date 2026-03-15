@@ -281,6 +281,55 @@ app.post("/api/reset-password", (req, res) => {
     });
   });
 });
+
+// ==========================================
+// CONTACT US FORM EMAIL (Admin + Auto-Reply)
+// ==========================================
+app.post('/api/contact', async (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ success: false, message: "Name, email, and message are required" });
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    // 1. Email to Admin
+    const adminMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER, // send to ourselves
+      replyTo: email,             // if admin replies, it goes to the user
+      subject: `New Contact Form Submission: ${subject || 'No Subject'}`,
+      text: `You have received a new message from the BlogVerse contact form.\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+    };
+
+    // 2. Auto-reply to User
+    const userMailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,                  // send to the user
+      subject: `Thank you for contacting BlogVerse`,
+      text: `Hi ${name},\n\nThank you for sending your feedback or query. We have received your message and will get back to you shortly.\n\nHere is a copy of what you sent us:\n\nSubject: ${subject || 'No Subject'}\nMessage:\n${message}\n\nBest regards,\nThe BlogVerse Team`
+    };
+
+    // Send both emails simultaneously
+    await Promise.all([
+      transporter.sendMail(adminMailOptions),
+      transporter.sendMail(userMailOptions)
+    ]);
+
+    res.json({ success: true, message: "Emails sent successfully" });
+  } catch (error) {
+    console.error("Error sending contact emails:", error);
+    res.status(500).json({ success: false, message: "Failed to send emails" });
+  }
+});
 //This is the route to get all users for admin view in the admin dashboard
 app.get("/api/admin/users", (req, res) => {
   const sql = "SELECT UserId, Username, Email, User_Role FROM users";
