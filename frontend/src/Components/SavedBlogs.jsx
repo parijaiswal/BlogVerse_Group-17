@@ -6,21 +6,24 @@ function SavedBlogs() {
   const [savedBlogs, setSavedBlogs] = useState([]);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId");
 
-    const bookmarks =
-      JSON.parse(localStorage.getItem(`bookmarks_${userId}`)) || [];
+  const bookmarks =
+    JSON.parse(localStorage.getItem(`bookmarks_${userId}`)) || [];
 
-    axios.get("http://localhost:5000/api/blogs")
-      .then(res => {
-        const filtered = res.data.filter(blog =>
-          bookmarks.includes(blog.BlogId)
-        );
+  axios
+    .get("http://localhost:5000/api/blogs?sort=latest")
+    .then((res) => {
+      const filtered = res.data.filter((blog) =>
+        bookmarks.includes(blog.BlogId)
+      );
 
-        setSavedBlogs(filtered);
-      });
-
-  }, []);
+      setSavedBlogs(filtered);
+    })
+    .catch((err) => {
+      console.error("Error fetching blogs:", err);
+    });
+}, []);
 
   return (
   <div className="saved-blogs-container">
