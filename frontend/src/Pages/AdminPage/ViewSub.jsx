@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import "./AddBlogs.css"; // reuse admin-form styling
+import "./AddBlogs.css";
+import API_BASE from "../../config";
 
 const ViewSub = ({ onEdit }) => {
  const [subs, setSubs] = useState([]);
@@ -7,7 +8,7 @@ const ViewSub = ({ onEdit }) => {
  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/subscriptions")
+    fetch(`${API_BASE}/api/admin/subscriptions`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch subscriptions");
         return res.json();

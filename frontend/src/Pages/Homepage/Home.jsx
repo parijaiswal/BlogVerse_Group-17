@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaPenNib, FaBookOpen, FaRegComments, FaFileDownload } from "react-icons/fa";
+import API_BASE from "../../config";
 
 
 
@@ -21,7 +22,7 @@ function Home() {
   const isLoggedIn = role && validRoles.includes(role.toLowerCase());
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/blogs?sort=${sortOrder}`)
+    axios.get(`${API_BASE}/api/blogs?sort=${sortOrder}`)
       .then((res) => {
       console.log("API response:", res.data); // check here
       setBlogs(res.data);
@@ -203,7 +204,7 @@ const toggleBookmark = (blogId) => {
     >
       <div className="blog-img-container">
         <img
-          src={blog.Image_path ? `http://localhost:5000${blog.Image_path}` : require("../../Images/blog1.webp")}
+          src={blog.Image_path ? `${API_BASE}${blog.Image_path}` : require("../../Images/blog1.webp")}
           alt={blog.Title}
           className="blog-img"
         />

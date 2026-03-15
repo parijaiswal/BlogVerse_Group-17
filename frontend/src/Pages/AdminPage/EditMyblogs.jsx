@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../../config";
 
 const EditMyBlogs = ({ onEdit, filterStatus = "all" }) => {
   const adminId = localStorage.getItem("userId");
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/admin/my-blogs/${adminId}`)
+    fetch(`${API_BASE}/api/admin/my-blogs/${adminId}`)
       .then(res => res.json())
       .then(data => setBlogs(data));
   }, [adminId]);

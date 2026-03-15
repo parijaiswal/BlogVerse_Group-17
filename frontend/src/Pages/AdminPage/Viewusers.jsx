@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../../config";
 
 const ViewUsers = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/users")
+    fetch(`${API_BASE}/api/admin/users`)
       .then((res) => res.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error(err));

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../../config";
 
 const ClientBlogs = () => {
   const userId = 1; // TEMP (replace with login later)
   const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/blogs/user/${userId}`)
+    fetch(`${API_BASE}/api/blogs/user/${userId}`)
       .then((res) => res.json())
       .then((data) => setBlogs(data));
   }, []);

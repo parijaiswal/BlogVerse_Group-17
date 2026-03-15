@@ -5,6 +5,7 @@ import { FaHeart, FaRegCommentDots, FaTrashAlt, FaLock } from "react-icons/fa";
 import jsPDF from "jspdf";
 import { FaDownload } from "react-icons/fa";
 import "./BlogDetails.css";
+import API_BASE from "../../config";
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -28,7 +29,7 @@ const BlogDetails = () => {
 
   // Fetch blog details
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/blogs/${id}`)
+    axios.get(`${API_BASE}/api/blogs/${id}`)
       .then(res => {
         setBlog(res.data);
         setLikes(res.data.Like_count || 0);
@@ -44,7 +45,7 @@ const BlogDetails = () => {
   }, [id, userId]);
 
   const fetchComments = () => {
-    axios.get(`http://localhost:5000/api/blogs/${id}/comments`)
+    axios.get(`${API_BASE}/api/blogs/${id}/comments`)
       .then(res => setComments(res.data));
   };
 
@@ -65,7 +66,7 @@ const BlogDetails = () => {
       return;
     }
     if (liked) return;
-    axios.post(`http://localhost:5000/api/blogs/${id}/like`)
+    axios.post(`${API_BASE}/api/blogs/${id}/like`)
       .then(() => {
         setLikes(likes + 1);
         setLiked(true);
@@ -89,7 +90,7 @@ const BlogDetails = () => {
       return;
     }
     
-    axios.post(`http://localhost:5000/api/blogs/${id}/comment`, {
+    axios.post(`${API_BASE}/api/blogs/${id}/comment`, {
       Userid: userId,
       Comment_text: commentText
     })
@@ -109,7 +110,7 @@ const BlogDetails = () => {
   const handleDeleteComment = (commentId) => {
     if(!window.confirm("Are you sure you want to delete this comment?")) return;
 
-    axios.delete(`http://localhost:5000/api/blogs/comment/${commentId}`, {
+    axios.delete(`${API_BASE}/api/blogs/comment/${commentId}`, {
         data: { userId, blogId: id }
     })
     .then(() => {
@@ -160,7 +161,7 @@ const BlogDetails = () => {
     setShowSubscriptionBtn(false);
 
     // Check if user can download
-    axios.post(`http://localhost:5000/api/blogs/download-pdf/${userId}`, { blogId: id })
+    axios.post(`${API_BASE}/api/blogs/download-pdf/${userId}`, { blogId: id })
       .then((res) => {
         if (!res.data.allowed) {
           setMessage(res.data.message);
@@ -205,7 +206,7 @@ const BlogDetails = () => {
   const handleDeleteBlog = () => {
     if(!window.confirm("Are you sure you want to delete this blog? This cannot be undone.")) return;
 
-    axios.delete(`http://localhost:5000/api/blogs/${id}`, {
+    axios.delete(`${API_BASE}/api/blogs/${id}`, {
         data: { userId }
     })
     .then(() => {
@@ -245,7 +246,7 @@ const BlogDetails = () => {
       {blog.Image_path && (
         <div className="blog-header-img">
           <img 
-            src={`http://localhost:5000${blog.Image_path}`} 
+            src={`${API_BASE}${blog.Image_path}`} 
             alt={blog.Title} 
           />
         </div>

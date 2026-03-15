@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import "./AddBlogs.css"; // reuse admin-form styling
+import "./AddBlogs.css";
+import API_BASE from "../../config";
 
 
 const AddSubscription = ({ editSub, onSuccess }) => {
@@ -25,8 +26,8 @@ const AddSubscription = ({ editSub, onSuccess }) => {
     e.preventDefault();
 
     const url = editSub
-      ? `http://localhost:5000/api/admin/subscriptions/${editSub.SubId}`
-      : "http://localhost:5000/api/admin/add-subscription";
+      ? `${API_BASE}/api/admin/subscriptions/${editSub.SubId}`
+      : `${API_BASE}/api/admin/add-subscription`;
 
     const method = editSub ? "PUT" : "POST";
 

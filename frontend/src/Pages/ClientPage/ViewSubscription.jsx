@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../AdminPage/Admin.css";
+import API_BASE from "../../config";
 
 const ViewSubscription = () => {
   const userId = localStorage.getItem("userId");
@@ -16,7 +17,7 @@ const ViewSubscription = () => {
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`http://localhost:5000/api/admin/client-subscription/${userId}`)
+    fetch(`${API_BASE}/api/admin/client-subscription/${userId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load subscription");
         return res.json();

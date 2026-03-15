@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import "./Authentication.css";
+import API_BASE from "../../config";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -35,7 +36,7 @@ const ResetPassword = () => {
     const loadingToast = toast.loading("Reseting Password...");
 
     try {
-      const response = await fetch("http://localhost:5000/api/reset-password", {
+      const response = await fetch(`${API_BASE}/api/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, newPassword: password }),

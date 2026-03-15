@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import "./Payment.css";
+import API_BASE from "../../config";
 
 const Payment = () => {
   const location = useLocation();
@@ -85,7 +86,7 @@ const Payment = () => {
 
     try {
       // Step 1: Create order on backend
-      const response = await fetch("http://localhost:5000/api/razorpay/createorder", {
+      const response = await fetch(`${API_BASE}/api/razorpay/createorder`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +136,7 @@ const Payment = () => {
                 return;
               }
 
-              const saveResponse = await fetch("http://localhost:5000/api/razorpay/save-subscription", {
+              const saveResponse = await fetch(`${API_BASE}/api/razorpay/save-subscription`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

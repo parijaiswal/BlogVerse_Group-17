@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Admin.css";
+import API_BASE from "../../config";
 
 const AllBlogs = () => {
   const [blogs, setBlogs] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/blogs/all")
+    fetch(`${API_BASE}/api/blogs/all`)
       .then(res => res.json())
       .then(data => setBlogs(data));
   }, []);

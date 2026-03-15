@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./AddBlogs.css";
+import API_BASE from "../../config";
 
 const AddBlog = ({ editBlog, onSuccess, isClient, editEndpoint }) => {
   const [title, setTitle] = useState("");
@@ -29,10 +30,10 @@ const AddBlog = ({ editBlog, onSuccess, isClient, editEndpoint }) => {
     const url = editEndpoint
       ? editEndpoint
       : editBlog
-      ? `http://localhost:5000/api/admin/edit-blog/${editBlog.BlogId}`
+      ? `${API_BASE}/api/admin/edit-blog/${editBlog.BlogId}`
       : isClient
-      ? "http://localhost:5000/api/admin/add-blog"
-      : "http://localhost:5000/api/admin/admin-add-blog";
+      ? `${API_BASE}/api/admin/add-blog`
+      : `${API_BASE}/api/admin/admin-add-blog`;
 
     const method = editBlog ? "PUT" : "POST";
 
@@ -111,7 +112,7 @@ const AddBlog = ({ editBlog, onSuccess, isClient, editEndpoint }) => {
         <div style={{ marginBottom: "15px" }}>
           <p className="current-image-label"><strong>Current Image:</strong></p>
           <img
-  src={`http://localhost:5000${existingImage}`}
+  src={`${API_BASE}${existingImage}`}
   alt="Blog"
   style={{ width: "200px", borderRadius: "8px" }}
 />

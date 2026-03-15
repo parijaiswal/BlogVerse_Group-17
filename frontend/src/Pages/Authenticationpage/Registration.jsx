@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Authentication.css";
+import API_BASE from "../../config";
 
 function Registration() {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ function Registration() {
 
     // 2. Send data to backend
     try {
-      const res = await fetch("http://localhost:5000/api/register", {
+      const res = await fetch(`${API_BASE}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

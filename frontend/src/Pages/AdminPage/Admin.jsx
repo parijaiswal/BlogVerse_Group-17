@@ -17,6 +17,7 @@ import {
   FaHourglassHalf, FaTimesCircle, FaRegEdit,
   FaPlus, FaUsers, FaMoneyCheckAlt, FaPlusSquare, FaListUl, FaChartBar
 } from "react-icons/fa";
+import API_BASE from "../../config";
 
 const AdminDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -42,7 +43,7 @@ const AdminDashboard = () => {
      FETCH ADMIN BLOG STATS
   ============================ */
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/admin-blog-stats")
+    fetch(`${API_BASE}/api/admin/admin-blog-stats`)
       .then((res) => res.json())
       .then((data) => setStats(data))
       .catch((err) => console.error(err));

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./EditProfile.css";
+import API_BASE from "../config";
 
 const EditProfile = () => {
   const userId = localStorage.getItem("userId");
@@ -21,7 +22,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`http://localhost:5000/api/profile/${userId}`)
+    fetch(`${API_BASE}/api/profile/${userId}`)
       .then((res) => res.json())
       .then((data) => {
         setUsername(data.Username || "");
@@ -38,7 +39,7 @@ const EditProfile = () => {
     e.preventDefault();
     setProfileMessage("");
 
-    const res = await fetch(`http://localhost:5000/api/profile/${userId}`, {
+    const res = await fetch(`${API_BASE}/api/profile/${userId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -65,7 +66,7 @@ const EditProfile = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/profile/change-password/${userId}`,
+        `${API_BASE}/api/profile/change-password/${userId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

@@ -9,6 +9,7 @@ import SavedBlogs from "../../Components/SavedBlogs";
 import hello_2 from "../../Images/hello_2.png";
 import { useNavigate } from "react-router-dom";
 import { FaFileAlt, FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaRegEdit, FaPlus, FaMoneyCheckAlt } from "react-icons/fa";
+import API_BASE from "../../config";
 
 const ClientDashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -29,7 +30,7 @@ const ClientDashboard = () => {
   useEffect(() => {
     if (!userId) return;
 
-    fetch(`http://localhost:5000/api/admin/client-blog-stats/${userId}`)
+    fetch(`${API_BASE}/api/admin/client-blog-stats/${userId}`)
       .then((res) => {
         if(res.ok) return res.json();
         throw new Error('Stats fetch failed');
@@ -64,7 +65,7 @@ const ClientDashboard = () => {
           <AddBlog
             editBlog={editBlog}
             isClient={true}
-            editEndpoint={`http://localhost:5000/api/admin/client-edit-blog/${editBlog?.BlogId}`}
+            editEndpoint={`${API_BASE}/api/admin/client-edit-blog/${editBlog?.BlogId}`}
             onSuccess={() => {
               setEditBlog(null);
               setFilterStatus("all");

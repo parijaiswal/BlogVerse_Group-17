@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../../config";
 
 const ViewRejected = () => {
   const [blogs, setBlogs] = useState([]);
 
   const loadBlogs = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/rejected-blogs");
+      const res = await fetch(`${API_BASE}/api/admin/rejected-blogs`);
       const data = await res.json();
 
       if (Array.isArray(data)) {
@@ -25,7 +26,7 @@ const ViewRejected = () => {
 
   const updateStatus = async (id, action) => {
     // Optionally allow re-approving a rejected blog
-    await fetch(`http://localhost:5000/api/admin/${action}-blog/${id}`, {
+    await fetch(`${API_BASE}/api/admin/${action}-blog/${id}`, {
       method: "PUT",
     });
     loadBlogs();

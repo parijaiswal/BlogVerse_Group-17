@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../../config";
 
 const ViewBlogs = () => {
   const [blogs, setBlogs] = useState([]);
 
   const loadBlogs = async () => {
-    const res = await fetch("http://localhost:5000/api/admin/pending-blogs");
+    const res = await fetch(`${API_BASE}/api/admin/pending-blogs`);
     const data = await res.json();
 
     //This is used to handle case when there are no pending blogs
@@ -20,7 +21,7 @@ const ViewBlogs = () => {
   }, []);
 
   const updateStatus = async (id, action) => {
-    await fetch(`http://localhost:5000/api/admin/${action}-blog/${id}`, {
+    await fetch(`${API_BASE}/api/admin/${action}-blog/${id}`, {
       method: "PUT",
     });
     loadBlogs();

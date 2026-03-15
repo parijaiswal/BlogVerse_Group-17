@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API_BASE from "../../config";
 import "../AdminPage/Admin.css";
 
 const MyBlogs = ({ filterStatus = "all", onEdit }) => {
@@ -9,7 +10,7 @@ const MyBlogs = ({ filterStatus = "all", onEdit }) => {
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
-    fetch(`http://localhost:5000/api/admin/client-blogs/${userId}`)
+    fetch(`${API_BASE}/api/admin/client-blogs/${userId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load blogs");
         return res.json();

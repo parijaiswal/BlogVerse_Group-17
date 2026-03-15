@@ -1,28 +1,14 @@
 const express = require("express");
-const mysql = require("mysql2");
 const router = express.Router();
 
-require("dotenv").config();
-
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT
-});
-
-db.connect((err) => {
-  if (err) {
-    console.log("BlogsRoutes DB error:", err);
-  }
-});
+// Use the shared DB pool from Database.js (same as AdminRoutes.js)
+const db = require("../Database");
 
 
 // ===================================================
 // ADD BLOG (already used by admin)
 // ===================================================
-router.post("/add-blog", (req, res) => {
+router.post("/add-blog", async (req, res) => {
   const { title, content, visibility, userId } = req.body;
 
   if (!title || !content || !userId) {
@@ -35,32 +21,24 @@ router.post("/add-blog", (req, res) => {
     VALUES (?, ?, ?, NOW(), ?)
   `;
 
-  db.query(
-    sql,
-    [userId, title, content, visibility || "public"],
-    (err, result) => {
-      if (err) {
-        console.error("Add blog error:", err);
-        return res.status(500).json({ message: "Database error" });
-      }
-
-      res.json({
-        success: true,
-        message: "Blog added successfully",
-        blogId: result.insertId,
-      });
-    }
-  );
+  try {
+    const [result] = await db.query(sql, [userId, title, content, visibility || "public"]);
+    res.json({
+      success: true,
+      message: "Blog added successfully",
+      blogId: result.insertId,
+    });
+  } catch (err) {
+    console.error("Add blog error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
 
 // ===================================================
-// GET ALL BLOGS (Admin + Member)
-// ===================================================
-// ===================================================
 // GET PUBLIC BLOGS (for home page - only public blogs)
 // ===================================================
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   const sortOrder = req.query.sort === "oldest" ? "ASC" : "DESC";
   const sql = `
     SELECT 
@@ -79,22 +57,19 @@ router.get("/", (req, res) => {
     ORDER BY b.Create_Date ${sortOrder}
   `;
 
-  //==============================================================
-
-  db.query(sql, (err, rows) => {
-    if (err) {
-      console.error("Fetch blogs error:", err);
-      return res.status(500).json({ message: "Database error" });
-    }
-
+  try {
+    const [rows] = await db.query(sql);
     res.json(rows);
-  });
+  } catch (err) {
+    console.error("Fetch blogs error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
 // ===================================================
 // GET ALL BLOGS (Admin - includes private blogs)
 // ===================================================
-router.get("/all", (req, res) => {
+router.get("/all", async (req, res) => {
   const sql = `
     SELECT 
       b.BlogId,
@@ -112,145 +87,118 @@ router.get("/all", (req, res) => {
     ORDER BY b.Create_Date DESC
   `;
 
-  db.query(sql, (err, rows) => {
-    if (err) {
-      console.error("Fetch all blogs error:", err);
-      return res.status(500).json({ message: "Database error" });
-    }
-
+  try {
+    const [rows] = await db.query(sql);
     res.json(rows);
-  });
+  } catch (err) {
+    console.error("Fetch all blogs error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
-// ... (likes/comments routes remain changed but I am replacing the block containing GET / and GET /:id)
 
 // ===================================================
 // LIKE BLOG
 // ===================================================
-router.post("/:id/like", (req, res) => {
+router.post("/:id/like", async (req, res) => {
   const blogId = req.params.id;
-
-  db.query(
-    "UPDATE BlogTable SET Like_count = Like_count + 1 WHERE BlogId = ?",
-    [blogId],
-    (err) => {
-      if (err) {
-        console.error("Like error:", err);
-        return res.status(500).json({ message: "Database error" });
-      }
-      res.json({ success: true });
-    }
-  );
+  try {
+    await db.query("UPDATE BlogTable SET Like_count = Like_count + 1 WHERE BlogId = ?", [blogId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Like error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
-router.get("/:id/likes", (req, res) => {
+router.get("/:id/likes", async (req, res) => {
   const blogId = req.params.id;
-
-  db.query(
-    "SELECT Like_count FROM BlogTable WHERE BlogId = ?",
-    [blogId],
-    (err, rows) => {
-      if (err) {
-        console.error("Get likes error:", err);
-        return res.status(500).json({ message: "Database error" });
-      }
-
-      // 🔥 FIX IS HERE
-      if (!rows.length) {
-        return res.json({ likes: 0 });
-      }
-
-      res.json({ likes: rows[0].Like_count || 0 });
+  try {
+    const [rows] = await db.query("SELECT Like_count FROM BlogTable WHERE BlogId = ?", [blogId]);
+    if (!rows.length) {
+      return res.json({ likes: 0 });
     }
-  );
+    res.json({ likes: rows[0].Like_count || 0 });
+  } catch (err) {
+    console.error("Get likes error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
 
 // ===================================================
 // ADD COMMENT
 // ===================================================
-router.post("/:id/comment", (req, res) => {
+router.post("/:id/comment", async (req, res) => {
   const { Userid, Comment_text } = req.body;
 
   if (!Userid || !Comment_text) {
     return res.status(400).json({ message: "Userid or Comment_text missing" });
   }
 
-  db.query(
-    "INSERT INTO comment_table (Blogid, Userid, Comment_text) VALUES (?, ?, ?)",
-    [req.params.id, Userid, Comment_text],
-    (err) => {
-      if (err) {
-        console.error("Insert comment error:", err); // 🔥 check this
-        return res.status(500).json({ message: "Database error" });
-      }
-
-      // Increment comment count in BlogTable
-      db.query(
-        "UPDATE BlogTable SET Comment_count = Comment_count + 1 WHERE Blogid = ?",
-        [req.params.id],
-        (err2) => {
-          if (err2) console.error("Increment comment_count error:", err2);
-          res.json({ success: true });
-        }
-      );
-    }
-  );
+  try {
+    await db.query(
+      "INSERT INTO comment_table (Blogid, Userid, Comment_text) VALUES (?, ?, ?)",
+      [req.params.id, Userid, Comment_text]
+    );
+    await db.query(
+      "UPDATE BlogTable SET Comment_count = Comment_count + 1 WHERE Blogid = ?",
+      [req.params.id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Insert comment error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
 
-router.get("/:id/comments", (req, res) => {
-  db.query(
-    `SELECT c.Commentid, c.Blogid, c.Userid, c.Comment_text, c.Comment_date, 
-            u.Username, u.User_Role 
-     FROM comment_table c 
-     JOIN users u ON c.Userid = u.UserId 
-     WHERE c.Blogid = ? 
-     ORDER BY c.Comment_date DESC`,
-    [req.params.id],
-    (err, rows) => {
-      if (err) {
-        console.error("Fetch comments error:", err);
-        return res.status(500).json({ message: "Database error" });
-      }
-      res.json(rows);
-    }
-  );
+router.get("/:id/comments", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT c.Commentid, c.Blogid, c.Userid, c.Comment_text, c.Comment_date, 
+              u.Username, u.User_Role 
+       FROM comment_table c 
+       JOIN users u ON c.Userid = u.UserId 
+       WHERE c.Blogid = ? 
+       ORDER BY c.Comment_date DESC`,
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("Fetch comments error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
 
 // ===================================================
 // DELETE COMMENT
 // ===================================================
-router.delete("/comment/:commentId", (req, res) => {
+router.delete("/comment/:commentId", async (req, res) => {
   const { commentId } = req.params;
-  const { userId, blogId } = req.body; // Need userId to verify ownership
+  const { userId, blogId } = req.body;
 
-  // 1. Verify ownership (optional but recommended security)
-  db.query("SELECT Userid FROM comment_table WHERE Commentid = ?", [commentId], (err, rows) => {
-    if (err) return res.status(500).json({ message: "Database error" });
+  try {
+    const [rows] = await db.query("SELECT Userid FROM comment_table WHERE Commentid = ?", [commentId]);
     if (rows.length === 0) return res.status(404).json({ message: "Comment not found" });
 
-    // Allow if user matches 
     if (rows[0].Userid != userId) {
       return res.status(403).json({ message: "Unauthorized to delete this comment" });
     }
 
-    // 2. Delete comment
-    db.query("DELETE FROM comment_table WHERE Commentid = ?", [commentId], (err2) => {
-      if (err2) return res.status(500).json({ message: "Delete failed" });
-
-      // 3. Decrement comment count
-      db.query("UPDATE BlogTable SET Comment_count = Comment_count - 1 WHERE BlogId = ?", [blogId], (err3) => {
-        res.json({ success: true, message: "Comment deleted" });
-      });
-    });
-  });
+    await db.query("DELETE FROM comment_table WHERE Commentid = ?", [commentId]);
+    await db.query("UPDATE BlogTable SET Comment_count = Comment_count - 1 WHERE BlogId = ?", [blogId]);
+    res.json({ success: true, message: "Comment deleted" });
+  } catch (err) {
+    console.error("Delete comment error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
 
 // GET single blog by ID
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const blogId = req.params.id;
 
   const sql = `
@@ -260,24 +208,22 @@ router.get("/:id", (req, res) => {
     WHERE b.BlogId = ?
   `;
 
-  db.query(sql, [blogId], (err, rows) => {
-    if (err) {
-      console.error("Fetch single blog error:", err);
-      return res.status(500).json({ message: "Database error" });
-    }
-
+  try {
+    const [rows] = await db.query(sql, [blogId]);
     if (!rows.length) {
       return res.status(404).json({ message: "Blog not found" });
     }
-
     res.json(rows[0]);
-  });
+  } catch (err) {
+    console.error("Fetch single blog error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
 
 // ===================================================
 // UPDATE BLOG (Admin only – frontend controlled)
 // ===================================================
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const blogId = req.params.id;
   const { title, content, visibility } = req.body;
 
@@ -291,118 +237,104 @@ router.put("/:id", (req, res) => {
     WHERE BlogId = ?
   `;
 
-  db.query(
-    sql,
-    [title, content, visibility, blogId],
-    (err) => {
-      if (err) {
-        console.error("Update blog error:", err);
-        return res.status(500).json({ message: "Database error" });
-      }
-
-      res.json({
-        success: true,
-        message: "Blog updated successfully",
-      });
-    }
-  );
+  try {
+    await db.query(sql, [title, content, visibility, blogId]);
+    res.json({ success: true, message: "Blog updated successfully" });
+  } catch (err) {
+    console.error("Update blog error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
 });
-
 
 
 // ===================================================
 // CHECK & INCREMENT PDF DOWNLOAD
 // ===================================================
-router.post("/download-pdf/:userId", (req, res) => {
+router.post("/download-pdf/:userId", async (req, res) => {
   const { userId } = req.params;
-  const { blogId } = req.body; // Optional: for tracking which blog was downloaded
+  const { blogId } = req.body;
 
-  // First get user info
-  db.query(
-    "SELECT User_Role, Pdf_Download_Count FROM users WHERE UserId = ?",
-    [userId],
-    (err, users) => {
-      if (err || users.length === 0) {
-        return res.status(500).json({ allowed: false, message: "User not found" });
-      }
-
-      const user = users[0];
-      const role = user.User_Role?.toLowerCase();
-      const downloadCount = user.Pdf_Download_Count || 0;
-
-      // Admin - unlimited downloads
-      if (role === "admin") {
-        db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
-        return res.json({ allowed: true });
-      }
-
-      // Client - check subscription
-      if (role === "client") {
-        db.query(
-          `SELECT * FROM Sub_Purchase_Table 
-           WHERE Userid = ? AND Status = 'active' AND End_date >= CURDATE() 
-           LIMIT 1`,
-          [userId],
-          (err2, subs) => {
-            if (err2 || subs.length === 0) {
-              return res.json({
-                allowed: false,
-                requiresSubscription: true,
-                message: "You need an active subscription to download"
-              });
-            }
-            db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
-            return res.json({ allowed: true });
-          }
-        );
-        return;
-      }
-
-      // Member - 2 free downloads, then ₹29 per PDF
-      if (role === "member") {
-        if (downloadCount >= 2) {
-          return res.json({
-            allowed: false,
-            requiresPayment: true,
-            pdfPrice: 29,
-            message: "You have used your 2 free downloads. Pay ₹29 to download this PDF."
-          });
-        }
-        db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
-        return res.json({ allowed: true, remaining: 1 - downloadCount });
-      }
-
-      // Unknown role
-      return res.json({ allowed: false, message: "Please login to download" });
+  try {
+    const [users] = await db.query(
+      "SELECT User_Role, Pdf_Download_Count FROM users WHERE UserId = ?",
+      [userId]
+    );
+    if (users.length === 0) {
+      return res.status(500).json({ allowed: false, message: "User not found" });
     }
-  );
+
+    const user = users[0];
+    const role = user.User_Role?.toLowerCase();
+    const downloadCount = user.Pdf_Download_Count || 0;
+
+    // Admin - unlimited downloads
+    if (role === "admin") {
+      await db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
+      return res.json({ allowed: true });
+    }
+
+    // Client - check subscription
+    if (role === "client") {
+      const [subs] = await db.query(
+        `SELECT * FROM Sub_Purchase_Table 
+         WHERE Userid = ? AND Status = 'active' AND End_date >= CURDATE() 
+         LIMIT 1`,
+        [userId]
+      );
+      if (subs.length === 0) {
+        return res.json({
+          allowed: false,
+          requiresSubscription: true,
+          message: "You need an active subscription to download"
+        });
+      }
+      await db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
+      return res.json({ allowed: true });
+    }
+
+    // Member - 2 free downloads, then ₹29 per PDF
+    if (role === "member") {
+      if (downloadCount >= 2) {
+        return res.json({
+          allowed: false,
+          requiresPayment: true,
+          pdfPrice: 29,
+          message: "You have used your 2 free downloads. Pay ₹29 to download this PDF."
+        });
+      }
+      await db.query("UPDATE users SET Pdf_Download_Count = Pdf_Download_Count + 1 WHERE UserId = ?", [userId]);
+      return res.json({ allowed: true, remaining: 1 - downloadCount });
+    }
+
+    // Unknown role
+    return res.json({ allowed: false, message: "Please login to download" });
+  } catch (err) {
+    console.error("Download PDF error:", err);
+    res.status(500).json({ allowed: false, message: "Server error" });
+  }
 });
 
 // ===================================================
 // DELETE BLOG (User deletes their own blog)
 // ===================================================
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
   const blogId = req.params.id;
-  const { userId } = req.body; // Pass userId in body to verify
+  const { userId } = req.body;
 
-  // 1. Verify ownership
-  db.query("SELECT Userid FROM BlogTable WHERE BlogId = ?", [blogId], (err, rows) => {
-    if (err) return res.status(500).json({ message: "Database error" });
+  try {
+    const [rows] = await db.query("SELECT Userid FROM BlogTable WHERE BlogId = ?", [blogId]);
     if (rows.length === 0) return res.status(404).json({ message: "Blog not found" });
 
     if (String(rows[0].Userid) !== String(userId)) {
       return res.status(403).json({ message: "Unauthorized: You can only delete your own blogs" });
     }
 
-    // 2. Delete the blog
-    db.query("DELETE FROM BlogTable WHERE BlogId = ?", [blogId], (err2) => {
-      if (err2) {
-        console.error("Delete blog failed:", err2);
-        return res.status(500).json({ message: "Delete failed" });
-      }
-      res.json({ success: true, message: "Blog deleted successfully" });
-    });
-  });
+    await db.query("DELETE FROM BlogTable WHERE BlogId = ?", [blogId]);
+    res.json({ success: true, message: "Blog deleted successfully" });
+  } catch (err) {
+    console.error("Delete blog failed:", err);
+    res.status(500).json({ message: "Delete failed" });
+  }
 });
 
 module.exports = router;

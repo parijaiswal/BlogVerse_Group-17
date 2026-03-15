@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Subscription.css";
+import API_BASE from "../../config";
 
 const Subscription = () => {
   const [plans, setPlans] = useState([]);
@@ -40,7 +41,7 @@ const Subscription = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/admin/subscriptions")
+    fetch(`${API_BASE}/api/admin/subscriptions`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch subscriptions");
         return res.json();

@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { FaFileDownload, FaChartLine, FaRegMoneyBillAlt, FaUsers } from "react-icons/fa";
 import axios from "axios";
+import API_BASE from "../../config";
 
 const AdminReport = () => {
   const [reportType, setReportType] = useState("top-blogs"); // 'top-blogs' | 'revenue'
@@ -23,7 +24,7 @@ const AdminReport = () => {
       else if (reportType === "revenue") endpoint = "/api/reports/revenue";
       else if (reportType === "top-authors") endpoint = "/api/reports/top-authors";
 
-      const response = await axios.get(`http://localhost:5000${endpoint}`);
+      const response = await axios.get(`${API_BASE}${endpoint}`);
       setReportData(response.data);
     } catch (error) {
       console.error("Error fetching report data:", error);
