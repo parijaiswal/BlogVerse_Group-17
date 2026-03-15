@@ -5,6 +5,7 @@ import AddBlog from "../AdminPage/AddBlogs";
 import EditProfile from "../../Components/EditProfile";
 import ViewSub from "./ViewSubscription";
 import MyBlogs from "./MyBlogs";
+import SavedBlogs from "../../Components/SavedBlogs";
 import hello_2 from "../../Images/hello_2.png";
 import { useNavigate } from "react-router-dom";
 import { FaFileAlt, FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaRegEdit, FaPlus, FaMoneyCheckAlt } from "react-icons/fa";
@@ -80,6 +81,9 @@ const ClientDashboard = () => {
 
       case "ViewSub":
         return <ViewSub />;
+
+      case "savedBlogs":
+       return <SavedBlogs />;
 
       default:
         return (
@@ -208,6 +212,11 @@ const ClientDashboard = () => {
             >
               <FaMoneyCheckAlt style={{ marginRight: "10px" }} /> View Subscription
             </li>
+            <li
+              className={activePage === "savedBlogs" ? "active" : ""}
+              onClick={() => setActivePage("savedBlogs")}>
+              Saved Blogs
+          </li>
           </ul>
         </div>
         {/* MAIN CONTENT */}

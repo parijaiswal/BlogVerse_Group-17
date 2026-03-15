@@ -58,6 +58,25 @@ function Home() {
   const handleSort = () => {
   setSortOrder(prev => prev === "latest" ? "oldest" : "latest");
 };
+const toggleBookmark = (blogId) => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Please login to bookmark blogs");
+    return;
+  }
+
+  const key = `bookmarks_${userId}`;
+  let bookmarks = JSON.parse(localStorage.getItem(key)) || [];
+
+  if (bookmarks.includes(blogId)) {
+    bookmarks = bookmarks.filter(id => id !== blogId);
+  } else {
+    bookmarks.push(blogId);
+  }
+
+  localStorage.setItem(key, JSON.stringify(bookmarks));
+};
 
   return (
     <div>

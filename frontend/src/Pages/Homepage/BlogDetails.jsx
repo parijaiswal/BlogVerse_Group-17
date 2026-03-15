@@ -19,6 +19,7 @@ const BlogDetails = () => {
   const [showPurchase, setShowPurchase] = useState(false);
   const [pdfPrice, setPdfPrice] = useState(50);
   const [showSubscriptionBtn, setShowSubscriptionBtn] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
 
   // Get logged-in user info from localStorage
   const userId = localStorage.getItem("userId");
@@ -31,9 +32,16 @@ const BlogDetails = () => {
       .then(res => {
         setBlog(res.data);
         setLikes(res.data.Like_count || 0);
+
+         const key = `bookmarks_${userId}`;
+         const bookmarks = JSON.parse(localStorage.getItem(key)) || [];
+
+          if (bookmarks.includes(res.data.BlogId)) {
+           setBookmarked(true);
+          }
       });
     fetchComments();
-  }, [id]);
+  }, [id, userId]);
 
   const fetchComments = () => {
     axios.get(`http://localhost:5000/api/blogs/${id}/comments`)
@@ -210,6 +218,27 @@ const BlogDetails = () => {
     });
   };
 
+  const handleBookmark = () => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    alert("Please login to bookmark blogs");
+    return;
+  }
+
+  const key = `bookmarks_${userId}`;
+  let bookmarks = JSON.parse(localStorage.getItem(key)) || [];
+
+  if (bookmarked) {
+    bookmarks = bookmarks.filter(id => id !== blog.BlogId);
+    setBookmarked(false);
+  } else {
+    bookmarks.push(blog.BlogId);
+    setBookmarked(true);
+  }
+
+  localStorage.setItem(key, JSON.stringify(bookmarks));
+};
   return (
     <div className="blog-details-container">
 
@@ -295,6 +324,12 @@ const BlogDetails = () => {
           <span style={{ fontWeight: 500 }}>{comments.length} Comments</span>
         </div>
 
+        <div onClick={handleBookmark} className="icon-wrapper">
+          <span style={{ fontSize: "20px" }}>
+            {bookmarked ? "🔖" : "📑"}</span>
+          <span style={{ fontWeight: 500 }}>
+             {bookmarked ? "Bookmarked" : "Bookmark"}</span>
+       </div>
         <div onClick={handleDownload} className="icon-wrapper" style={{ marginLeft: "auto", color: "#2563eb" }}>
           <FaDownload size={20} /> 
           <span style={{ fontWeight: 600 }}>Download PDF</span>

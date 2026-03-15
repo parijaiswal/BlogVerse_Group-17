@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../AdminPage/Admin.css";
 import "./Member.css";
 import EditProfile from "../../Components/EditProfile";
+import SavedBlogs from "../../Components/SavedBlogs";
 import { useNavigate } from "react-router-dom";
 import hello_2 from "../../Images/hello_2.png";
 
@@ -18,6 +19,8 @@ const MemberDashboard = () => {
     switch (activePage) {
       case "manageProfile":
         return <EditProfile />;
+      case "savedBlogs":
+         return <SavedBlogs />;
 
       default:
         return (
@@ -69,6 +72,12 @@ const MemberDashboard = () => {
             >
               Manage Profile
             </li>
+            <li
+              className={activePage === "savedBlogs" ? "active" : ""}
+              onClick={() => setActivePage("savedBlogs")}
+            >
+              Saved Blogs
+            </li> 
           </ul>
         </div>
 

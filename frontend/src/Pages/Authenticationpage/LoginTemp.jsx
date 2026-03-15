@@ -28,7 +28,7 @@ const Login = () => {
       });
 
       const data = await res.json();
-
+      console.log("LOGIN RESPONSE:", data);
       if (data.success) {
         // SAVE LOGIN INFO
         localStorage.setItem("userId", data.user.id);
