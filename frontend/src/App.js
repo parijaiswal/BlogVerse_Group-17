@@ -1,4 +1,5 @@
 import React from "react";
+import { Toaster } from "react-hot-toast";
 import { BrowserRouter as Router, Routes, Route, useLocation, } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
@@ -10,12 +11,13 @@ import VerifyOtp from "./Pages/Authenticationpage/VerifyOtp";
 import ResetPassword from "./Pages/Authenticationpage/ResetPassword";
 import Admin from "./Pages/AdminPage/Admin";
 import Subscription from "./Pages/SubscriptionPage/Subscription";
-
 import Member from "./Pages/MemberPage/Member";
 import Client from "./Pages/ClientPage/Client";
 import BlogDetails from "./Pages/Homepage/BlogDetails";
 import Payment from "./Pages/Payment/Payment";
 import Contact from "./Pages/Homepage/Contact";
+import AuthorProfile from "./Pages/Homepage/AuthorProfile";
+import AboutUs from "./Pages/Homepage/AboutUs";
 
 // Main App Layout with conditional Navbar
 const AppLayout = () => {
@@ -54,6 +56,8 @@ const AppLayout = () => {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/author/:userId" element={<AuthorProfile />} />
 
 
         {/* Dashboards */}
@@ -73,6 +77,7 @@ const AppLayout = () => {
 const App = () => {
   return (
     <Router>
+      <Toaster position="top-center" reverseOrder={false} />
       <AppLayout />
     </Router>
   );

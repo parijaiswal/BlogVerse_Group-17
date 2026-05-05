@@ -6,6 +6,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaPenNib, FaBookOpen, FaRegComments, FaFileDownload } from "react-icons/fa";
 import API_BASE from "../../config";
+import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
 
 
 
@@ -63,7 +65,19 @@ const toggleBookmark = (blogId) => {
   const userId = localStorage.getItem("userId");
 
   if (!userId) {
-    alert("Please login to bookmark blogs");
+    Swal.fire({
+      title: "Login Required",
+      text: "Please login to bookmark blogs and read them later.",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonColor: "#2563eb",
+      confirmButtonText: "Login Now",
+      cancelButtonColor: "#6b7280",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/login");
+      }
+    });
     return;
   }
 
@@ -184,12 +198,13 @@ const toggleBookmark = (blogId) => {
   onChange={(e) => setSelectedCategory(e.target.value)}
 >
   <option value="All Categories">All Categories</option>
-  <option value="Technology">Technology</option>
-  <option value="Education">Education</option>
-  <option value="Lifestyle">Lifestyle</option>
-  <option value="Health">Health</option>
-  <option value="Business">Business</option>
-  <option value="Entertainment">Entertainment</option>
+  <option value="Technology & AI">Technology & AI</option>
+  <option value="Business & Startups">Business & Startups</option>
+  <option value="Health & Wellness">Health & Wellness</option>
+  <option value="Personal Finance">Personal Finance</option>
+  <option value="Career & Growth">Career & Growth</option>
+  <option value="Travel & Lifestyle">Travel & Lifestyle</option>
+  <option value="Design & Creativity">Design & Creativity</option>
   <option value="General">General</option>
 </select>
 </div>
@@ -232,7 +247,13 @@ const toggleBookmark = (blogId) => {
         </p>
         
         <div className="blog-meta">
-          <span className="blog-author">{blog.Username ? `By ${blog.Username === "Admin user" ? "Admin" : blog.Username}` : ""}</span>
+          <span
+            className="blog-author"
+            onClick={(e) => { e.stopPropagation(); navigate(`/author/${blog.Userid || blog.UserId}`); }}
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            {blog.Username ? `By ${blog.Username === "Admin user" ? "Admin" : blog.Username}` : ""}
+          </span>
           <span className="blog-date">{new Date(blog.Create_Date).toLocaleDateString()}</span>
         </div>
       </div>

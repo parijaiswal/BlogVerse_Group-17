@@ -3,6 +3,8 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { FaHeart, FaRegCommentDots, FaTrashAlt, FaLock, FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa";
+import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
 import "./BlogDetails.css";
 import API_BASE from "../../config";
 
@@ -125,18 +127,28 @@ const BlogDetails = () => {
 
   // Handle delete comment
   const handleDeleteComment = (commentId) => {
-    if(!window.confirm("Are you sure you want to delete this comment?")) return;
-
-    axios.delete(`${API_BASE}/api/blogs/comment/${commentId}`, {
-        data: { userId, blogId: id }
-    })
-    .then(() => {
-        showMessage("Comment deleted successfully!");
-        fetchComments();
-    })
-    .catch((err) => {
-        console.error("Delete Error", err);
-        showMessage("Failed to delete comment");
+    Swal.fire({
+      title: "Delete Comment?",
+      text: "Are you sure you want to remove this comment?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${API_BASE}/api/blogs/comment/${commentId}`, {
+            data: { userId, blogId: id }
+        })
+        .then(() => {
+            showMessage("Comment deleted successfully!");
+            fetchComments();
+        })
+        .catch((err) => {
+            console.error("Delete Error", err);
+            showMessage("Failed to delete comment");
+        });
+      }
     });
   };
 
@@ -150,22 +162,29 @@ const BlogDetails = () => {
         responseType: 'blob' // Force axios to receive as binary blob
       });
 
-      // Create a temporary URL for the received PDF blob and trigger download
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
       
-      const filename = (blog.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'blog') + '.pdf';
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
+      const newTab = window.open(url, '_blank');
       
-      // Cleanup
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      if (!newTab) {
+        // Fallback: If popup was blocked, force a hard download
+        const link = document.createElement('a');
+        link.href = url;
+        const filename = (blog.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'blog') + '.pdf';
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        showMessage("Your PDF has been downloaded!");
+      } else {
+        showMessage("PDF opened in a new tab!");
+      }
       
-      showMessage("PDF downloaded successfully!");
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 10000);
+      
     } catch (error) {
       console.error("Error generating single blog PDF from backend:", error);
       showMessage("Failed to generate PDF. Please try again.");
@@ -225,28 +244,12 @@ const BlogDetails = () => {
     });
   };
 
-  // Handle delete blog
-  const handleDeleteBlog = () => {
-    if(!window.confirm("Are you sure you want to delete this blog? This cannot be undone.")) return;
-
-    axios.delete(`${API_BASE}/api/blogs/${id}`, {
-        data: { userId }
-    })
-    .then(() => {
-        alert("Blog deleted successfully");
-        navigate("/"); // Redirect to home
-    })
-    .catch((err) => {
-        console.error("Delete Blog Error", err);
-        showMessage("Failed to delete blog: " + (err.response?.data?.message || err.message));
-    });
-  };
 
   const handleBookmark = () => {
   const userId = localStorage.getItem("userId");
 
   if (!userId) {
-    alert("Please login to bookmark blogs");
+    showMessage("Please login to bookmark this blog");
     return;
   }
 
@@ -277,20 +280,16 @@ const BlogDetails = () => {
 
       <div className="blog-title-row">
         <h1 className="blog-title">{blog.Title}</h1>
-        {/* Delete Blog Button - Only for blog owner */}
-        {isLoggedIn && String(blog.Userid || blog.UserId) === String(userId) && (
-            <button 
-                className="delete-blog-btn" 
-                onClick={handleDeleteBlog}
-                title="Delete your blog"
-            >
-                <FaTrashAlt size={18} /> Delete Blog
-            </button>
-        )}
       </div>
       
       <div className="blog-info">
-        <span className="blog-author-highlight">{blog.Username}</span> 
+        <span
+          className="blog-author-highlight"
+          style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          onClick={() => navigate(`/author/${blog.Userid || blog.UserId}`)}
+        >
+          {blog.Username}
+        </span>
         <span>|</span>
         <span>{new Date(blog.Create_Date).toDateString()}</span>
       </div>

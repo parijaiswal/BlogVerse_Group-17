@@ -32,6 +32,11 @@ const ResetPassword = () => {
       return toast.error("Passwords do not match!");
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return toast.error("Password must be at least 8 chars, contain 1 uppercase, 1 lowercase, 1 number, and 1 special char.");
+    }
+
     setLoading(true);
     const loadingToast = toast.loading("Reseting Password...");
 

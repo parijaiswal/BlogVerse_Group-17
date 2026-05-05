@@ -2,12 +2,9 @@ const express = require("express");
 const router = express.Router();
 const path = require("path");
 const fs = require("fs");
-
 // Use the shared DB pool from Database.js (same as AdminRoutes.js)
 const db = require("../Database");
 const generatePDF = require('../utils/pdfGenerator');
-
-
 // ===================================================
 // ADD BLOG (already used by admin)
 // ===================================================
@@ -17,7 +14,6 @@ router.post("/add-blog", async (req, res) => {
   if (!title || !content || !userId) {
     return res.status(400).json({ message: "Required fields missing" });
   }
-
   const sql = `
     INSERT INTO BlogTable
     (Userid, Title, Content, Update_Date, Visibility)
@@ -36,8 +32,6 @@ router.post("/add-blog", async (req, res) => {
     res.status(500).json({ message: "Database error" });
   }
 });
-
-
 // ===================================================
 // GET PUBLIC BLOGS (for home page - only public blogs)
 // ===================================================
@@ -46,6 +40,7 @@ router.get("/", async (req, res) => {
   const sql = `
     SELECT 
       b.BlogId,
+      b.Userid,
       b.Title,
       b.Content,
       b.Visibility,
@@ -127,18 +122,14 @@ router.get("/:id/likes", async (req, res) => {
     res.status(500).json({ message: "Database error" });
   }
 });
-
-
 // ===================================================
 // ADD COMMENT
 // ===================================================
 router.post("/:id/comment", async (req, res) => {
   const { Userid, Comment_text } = req.body;
-
   if (!Userid || !Comment_text) {
     return res.status(400).json({ message: "Userid or Comment_text missing" });
   }
-
   try {
     await db.query(
       "INSERT INTO comment_table (Blogid, Userid, Comment_text) VALUES (?, ?, ?)",
@@ -154,8 +145,6 @@ router.post("/:id/comment", async (req, res) => {
     res.status(500).json({ message: "Database error" });
   }
 });
-
-
 router.get("/:id/comments", async (req, res) => {
   try {
     const [rows] = await db.query(
@@ -173,15 +162,12 @@ router.get("/:id/comments", async (req, res) => {
     res.status(500).json({ message: "Database error" });
   }
 });
-
-
 // ===================================================
 // DELETE COMMENT
 // ===================================================
 router.delete("/comment/:commentId", async (req, res) => {
   const { commentId } = req.params;
   const { userId, blogId } = req.body;
-
   try {
     const [rows] = await db.query("SELECT Userid FROM comment_table WHERE Commentid = ?", [commentId]);
     if (rows.length === 0) return res.status(404).json({ message: "Comment not found" });
@@ -189,7 +175,6 @@ router.delete("/comment/:commentId", async (req, res) => {
     if (rows[0].Userid != userId) {
       return res.status(403).json({ message: "Unauthorized to delete this comment" });
     }
-
     await db.query("DELETE FROM comment_table WHERE Commentid = ?", [commentId]);
     await db.query("UPDATE BlogTable SET Comment_count = Comment_count - 1 WHERE BlogId = ?", [blogId]);
     res.json({ success: true, message: "Comment deleted" });
@@ -198,14 +183,12 @@ router.delete("/comment/:commentId", async (req, res) => {
     res.status(500).json({ message: "Database error" });
   }
 });
-
-
 // GET single blog by ID
 router.get("/:id", async (req, res) => {
   const blogId = req.params.id;
 
   const sql = `
-    SELECT b.BlogId, b.Title, b.Content, b.Visibility, b.Category, b.Create_Date, b.Image_path, b.Like_count, u.Username, u.User_Role
+    SELECT b.BlogId, b.Userid, b.Title, b.Content, b.Visibility, b.Category, b.Create_Date, b.Image_path, b.Like_count, u.Username, u.User_Role
     FROM BlogTable b
     JOIN users u ON b.Userid = u.UserId
     WHERE b.BlogId = ?
@@ -222,7 +205,6 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: "Database error" });
   }
 });
-
 // ===================================================
 // UPDATE BLOG (Admin only – frontend controlled)
 // ===================================================
@@ -233,7 +215,6 @@ router.put("/:id", async (req, res) => {
   if (!title || !content) {
     return res.status(400).json({ message: "Required fields missing" });
   }
-
   const sql = `
     UPDATE BlogTable
     SET Title = ?, Content = ?, Visibility = ?, Update_Date = NOW()
@@ -248,8 +229,6 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ message: "Database error" });
   }
 });
-
-
 // ===================================================
 // CHECK & INCREMENT PDF DOWNLOAD
 // ===================================================
@@ -347,7 +326,7 @@ router.delete("/:id", async (req, res) => {
 router.post('/generate-pdf', async (req, res) => {
   try {
     const { blog } = req.body;
-    
+
     if (!blog || !blog.Title || !blog.Content) {
       return res.status(400).json({ message: "Invalid blog data" });
     }
@@ -362,6 +341,23 @@ router.post('/generate-pdf', async (req, res) => {
       }
     } catch (err) {
       console.warn("Could not load logo for single blog PDF:", err);
+    }
+
+    // Read and convert blog image to base64
+    let blogImageBase64 = "";
+    if (blog.Image_path) {
+      try {
+        const cleanPath = blog.Image_path.replace(/^[\/\\]/, '');
+        const imagePath = path.join(process.cwd(), cleanPath);
+        if (fs.existsSync(imagePath)) {
+          const ext = path.extname(imagePath).toLowerCase().replace('.', '');
+          const imgData = fs.readFileSync(imagePath);
+          const mimeType = ext === 'png' ? 'image/png' : ext === 'jpeg' || ext === 'jpg' ? 'image/jpeg' : 'image/webp';
+          blogImageBase64 = `data:${mimeType};base64,${imgData.toString("base64")}`;
+        }
+      } catch (err) {
+        console.warn("Could not load blog image for PDF:", err);
+      }
     }
 
     const htmlContent = `
@@ -471,6 +467,8 @@ router.post('/generate-pdf', async (req, res) => {
         
         <hr style="border:0; border-top:1px solid #e2e8f0; margin: 20px 0;">
         
+        ${blogImageBase64 ? `<div style="text-align: center; margin-bottom: 30px;"><img src="${blogImageBase64}" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" alt="Blog Cover" /></div>` : ``}
+
         <div class="content">
           ${blog.Content.replace(/\\n/g, '<br>')}
         </div>

@@ -58,7 +58,7 @@ const ViewSubscription = () => {
       <div className="client-sub-card">
         <div className="client-sub-header">
           <h3>Current Plan Details</h3>
-          <span className={`status-badge ${subscription.Status === "Active" ? "active" : "expired"}`}>
+          <span className={`status-badge ${subscription.Status?.toLowerCase() === "active" ? "active" : "expired"}`}>
             {subscription.Status}
           </span>
         </div>
@@ -90,12 +90,14 @@ const ViewSubscription = () => {
           </div>
         </div>
 
-        <div className="client-sub-footer">
-            <p className="renewal-text">Need to upgrade? Check out other plans.</p>
-            <button className="button" style={{ background: "#ffffff", color: "#0f4c8a", border: "1px solid #e2e8f0" }} onClick={() => navigate("/Subscription")}>
-                View Plans
-            </button>
-        </div>
+        {subscription.Status?.toLowerCase() !== "active" && (
+          <div className="client-sub-footer">
+              <p className="renewal-text">Need to upgrade? Check out other plans.</p>
+              <button className="button" style={{ background: "#ffffff", color: "#0f4c8a", border: "1px solid #e2e8f0" }} onClick={() => navigate("/Subscription")}>
+                  View Plans
+              </button>
+          </div>
+        )}
       </div>
     </div>
   );

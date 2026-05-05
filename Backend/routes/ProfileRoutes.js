@@ -15,7 +15,8 @@ router.get("/:userId", async (req, res) => {
          Email,
          ContactNo,
          Gender,
-         User_Role
+         User_Role,
+         Bio
        FROM Users
        WHERE UserId = ?`,
       [userId]
@@ -37,7 +38,7 @@ router.get("/:userId", async (req, res) => {
 ====================================================== */
 router.put("/:userId", async (req, res) => {
   const { userId } = req.params;
-  const { username, contact, gender } = req.body;
+  const { username, contact, gender, bio } = req.body;
 
   if (!username || !contact) {
     return res.status(400).json({ message: "Required fields missing" });
@@ -46,9 +47,9 @@ router.put("/:userId", async (req, res) => {
   try {
     await db.query(
       `UPDATE Users
-       SET Username = ?, ContactNo = ?, Gender = ?
+       SET Username = ?, ContactNo = ?, Gender = ?, Bio = ?
        WHERE UserId = ?`,
-      [username, contact, gender, userId]
+      [username, contact, gender, bio || null, userId]
     );
 
     res.json({
@@ -80,6 +81,15 @@ router.put("/change-password/:userId", async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: "Missing fields" });
+  }
+
+  // Password complexity check
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Password must be at least 8 characters, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character" 
+    });
   }
 
   try {

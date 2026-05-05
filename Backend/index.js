@@ -35,12 +35,14 @@ const adminRoutes = require("./routes/AdminRoutes");
 const profileRoutes = require("./routes/ProfileRoutes");
 const razorPayRoutes = require("./routes/razorPayRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const authorRoutes = require("./routes/AuthorRoutes");
 
 app.use("/api/blogs", blogRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/razorpay", razorPayRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/author", authorRoutes);
 app.use("/uploads", express.static("uploads"));// serve static files from 'uploads' directory
 app.get("/favicon.ico", (req, res) => res.status(204));
 
@@ -63,6 +65,15 @@ app.post('/api/register', (req, res) => {
 
   if (!username || !email || !password) {
     return res.json({ success: false, message: "Required fields missing" });
+  }
+
+  // Password complexity check
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    return res.json({ 
+      success: false, 
+      message: "Password must be at least 8 characters, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character" 
+    });
   }
 
   // Hash the password
@@ -244,6 +255,15 @@ app.post("/api/reset-password", (req, res) => {
     return res.status(400).json({ success: false, message: "All fields are required" });
   }
 
+  // Password complexity check
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(newPassword)) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Password must be at least 8 characters, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character" 
+    });
+  }
+
   //it is for checking the otp and email
   const checkSql = "SELECT * FROM users WHERE Email = ? AND otp = ?";
 
@@ -332,7 +352,7 @@ app.post('/api/contact', async (req, res) => {
 });
 //This is the route to get all users for admin view in the admin dashboard
 app.get("/api/admin/users", (req, res) => {
-  const sql = "SELECT UserId, Username, Email, User_Role FROM users";
+  const sql = "SELECT UserId, Username, Email, User_Role FROM users WHERE LOWER(User_Role) != 'admin'";
 
   db.query(sql, (err, rows) => {
     if (err) {

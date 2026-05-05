@@ -1,0 +1,211 @@
+.author-profile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 18px;
+  color: #64748b;
+}
+
+.author-profile-page {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px 60px;
+}
+
+/* ---- HERO CARD ---- */
+.author-hero-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 36px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 2px 16px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 48px;
+}
+
+/* Avatar uses the site's primary blue */
+.author-avatar-circle {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 2px;
+}
+
+.author-hero-info {
+  flex: 1;
+}
+
+.author-name {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 12px 0;
+}
+
+.author-bio {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.7;
+  margin: 0 0 24px 0;
+  max-width: 640px;
+}
+
+.author-stats {
+  display: flex;
+  gap: 32px;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Stats use site's primary blue */
+.stat-number {
+  font-size: 24px;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---- BLOGS SECTION ---- */
+.author-blogs-heading {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 24px;
+  border-left: 4px solid #2563eb;
+  padding-left: 12px;
+}
+
+.no-blogs-msg {
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 40px 0;
+}
+
+/* ---- BLOG GRID ---- */
+.author-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.author-blog-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.author-blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
+}
+
+.author-blog-img-wrapper {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+
+.author-blog-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.author-blog-card:hover .author-blog-img {
+  transform: scale(1.04);
+}
+
+/* Category badge uses site's indigo/blue accent */
+.author-blog-category {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.author-blog-body {
+  padding: 18px;
+}
+
+.author-blog-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.author-blog-snippet {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 14px 0;
+}
+
+.author-blog-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: #94a3b8;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 10px;
+}
+
+.author-blog-date {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 640px) {
+  .author-hero-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .author-stats {
+    justify-content: center;
+  }
+  .author-blog-grid {
+    grid-template-columns: 1fr;
+  }
+}

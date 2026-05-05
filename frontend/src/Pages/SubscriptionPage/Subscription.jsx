@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import "./Subscription.css";
 import API_BASE from "../../config";
 
@@ -7,6 +8,7 @@ const Subscription = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeSub, setActiveSub] = useState(null);
   const navigate = useNavigate();
 
   // Get user role from localStorage
@@ -63,7 +65,20 @@ const Subscription = () => {
         setError("Unable to load subscription plans");
         setLoading(false);
       });
-  }, []);
+
+    // Fetch user's active subscription
+    const userId = localStorage.getItem("userId");
+    if (userId && role === "client") {
+      fetch(`${API_BASE}/api/admin/client-subscription/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.Status?.toLowerCase() === "active") {
+            setActiveSub(data);
+          }
+        })
+        .catch(err => console.error("Error fetching active sub:", err));
+    }
+  }, [role]);
 
   const handleBuyNow = (plan) => {
     const userId = localStorage.getItem("userId");
@@ -72,6 +87,17 @@ const Subscription = () => {
       navigate("/login");
       return;
     }
+
+    if (activeSub) {
+      Swal.fire({
+        title: "Active Subscription",
+        text: `You already have an active ${activeSub.SubName} subscription.`,
+        icon: "info",
+        confirmButtonColor: "#2563eb"
+      });
+      return;
+    }
+
     // Navigate to payment page with plan details
     navigate("/payment", { state: { plan, type: 'subscription' } });
   };
@@ -140,11 +166,14 @@ const Subscription = () => {
                 <li>Unlimited Blog Downloads</li>
                 <li>Like & Comment</li>
                 <li>Access All Blogs</li>
-                {plan.SubDuration == 6 ? <li>Can Publish 10 blogs</li> : null}
+                <li>Publish Your Blogs</li>
               </ul>
               {/* Hide buy button for admin - they can only view */}
               {!isAdmin && (
-                <button className="plan-btn" onClick={() => handleBuyNow(plan)}>
+                <button 
+                  className="plan-btn" 
+                  onClick={() => handleBuyNow(plan)}
+                >
                   Get {plan.SubName}
                 </button>
               )}

@@ -6,7 +6,7 @@ const AddBlog = ({ editBlog, onSuccess, isClient, editEndpoint }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState("public");
-  const [category, setCategory] = useState("Technology");
+  const [category, setCategory] = useState("Technology & AI");
   const [image, setImage] = useState(null);
   const [existingImage, setExistingImage] = useState(null);
   const [message, setMessage] = useState("");
@@ -17,7 +17,7 @@ const AddBlog = ({ editBlog, onSuccess, isClient, editEndpoint }) => {
       setTitle(editBlog.Title || "");
       setContent(editBlog.Content || "");
       setVisibility(editBlog.Visibility || "public");
-      setCategory(editBlog.Category || "Technology");
+      setCategory(editBlog.Category || "Technology & AI");
       setExistingImage(editBlog.Image_path || null);
     }
   }, [editBlog]);
@@ -98,12 +98,13 @@ const AddBlog = ({ editBlog, onSuccess, isClient, editEndpoint }) => {
 
       <label>Category</label>
       <select value={category} onChange={(e) => setCategory(e.target.value)}>
-        <option value="Technology">Technology</option>
-        <option value="Education">Education</option>
-        <option value="Lifestyle">Lifestyle</option>
-        <option value="Health">Health</option>
-        <option value="Business">Business</option>
-        <option value="Entertainment">Entertainment</option>
+        <option value="Technology & AI">Technology & AI</option>
+        <option value="Business & Startups">Business & Startups</option>
+        <option value="Health & Wellness">Health & Wellness</option>
+        <option value="Personal Finance">Personal Finance</option>
+        <option value="Career & Growth">Career & Growth</option>
+        <option value="Travel & Lifestyle">Travel & Lifestyle</option>
+        <option value="Design & Creativity">Design & Creativity</option>
         <option value="General">General</option>
       </select>
 

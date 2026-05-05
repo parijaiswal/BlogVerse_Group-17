@@ -8,7 +8,10 @@ const MemberProfile = () => {
   const username = localStorage.getItem("username") || "Member";
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
     navigate("/login");
   };
 

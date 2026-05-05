@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import "./Authentication.css";
 import API_BASE from "../../config";
 
@@ -16,7 +17,6 @@ function Registration() {
   });
 
   const [errors, setErrors] = useState({});
-  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -30,8 +30,8 @@ function Registration() {
 
     if (!formData.username.trim()) {
       newErrors.username = "Username is required";
-    } else if (formData.username.length < 3 ) {
-      newErrors.username = "Username must be at least 3 characters";
+    } else if (formData.username.length < 2 ) {
+      newErrors.username = "Username must be at least 2 characters";
     } else if (!/^[A-Za-z\s]+$/.test(formData.username)) {
       newErrors.username = "Username can only contain letters";
     }
@@ -53,8 +53,8 @@ function Registration() {
 
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(formData.password)) {
+      newErrors.password = "Password must be at least 8 characters, contain 1 uppercase, 1 lowercase, 1 number, and 1 special character";
     }
 
     if (!formData.confirmPassword) {
@@ -93,7 +93,7 @@ function Registration() {
       const data = await res.json();
 
       if (data.success) {
-        setMessage("Registration successful!");
+        toast.success("Registration successful!");
         // 3. Clear the form after success
         setFormData({
           username: "",
@@ -110,22 +110,23 @@ function Registration() {
           navigate("/login");
         }, 3500);
       } else {
-        setMessage(data.message || "Something went wrong");
+        toast.error(data.message || "Something went wrong");
       }
     } catch (err) {
-      setMessage("Server error. Please try again later.");
+      toast.error("Server error. Please try again later.");
     }
   };
 
   return (
     <div className="auth-page">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="auth-card">
         <h2 className="auth-title">Create Account</h2>
         <p className="auth-subtitle">Join us to start your journey</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label className="auth-label">Username</label>
+            <label className="auth-label">Name</label>
             <input
               type="text"
               name="username"
@@ -221,7 +222,6 @@ function Registration() {
               <p className="error-text">{errors.confirmPassword}</p>
             )}
           </div>
-          {message && <p className="success-text">{message}</p>}
           <button type="submit" className="auth-button">
             Register
           </button>

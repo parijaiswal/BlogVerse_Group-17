@@ -2,12 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./Payment.css";
 import API_BASE from "../../config";
+import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
 
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [paymentType, setPaymentType] = useState('subscription'); // 'subscription' or 'pdf'
   const [paymentData, setPaymentData] = useState(null);
+  const [hasActiveSub, setHasActiveSub] = useState(false);
+  const [checkingSub, setCheckingSub] = useState(false);
 
   // Get data from location state
   useEffect(() => {
@@ -41,6 +45,33 @@ const Payment = () => {
     }
   }, [location.state, navigate]);
 
+  // Check for active subscription if buying a plan
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    const role = localStorage.getItem("role")?.toLowerCase();
+    
+    if (paymentType === 'subscription' && userId && role === 'client') {
+      setCheckingSub(true);
+      fetch(`${API_BASE}/api/admin/client-subscription/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.Status?.toLowerCase() === "active") {
+            setHasActiveSub(true);
+            Swal.fire({
+              title: "Active Subscription Found",
+              text: `You already have an active ${data.SubName} subscription. You cannot purchase another one until it expires.`,
+              icon: "info",
+              confirmButtonText: "View My Subscription",
+            }).then(() => {
+              navigate("/client");
+            });
+          }
+        })
+        .catch(err => console.error("Error checking subscription:", err))
+        .finally(() => setCheckingSub(false));
+    }
+  }, [paymentType, navigate]);
+
   // Load Razorpay script
   useEffect(() => {
     const script = document.createElement("script");
@@ -58,6 +89,11 @@ const Payment = () => {
   // Generate PDF for blog
   // Request PDF from backend Puppeteer endpoint
   const generateBlogPDF = async (blog) => {
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.document.write("<h2 style='font-family:sans-serif; text-align:center; margin-top:50px; color:#334155;'>Generating your PDF... Please wait.</h2>");
+    }
+
     try {
       const response = await fetch(`${API_BASE}/api/blogs/generate-pdf`, {
         method: "POST",
@@ -68,27 +104,35 @@ const Payment = () => {
       if (!response.ok) throw new Error("Failed to generate PDF");
       const blob = await response.blob();
 
-      // Create a temporary URL for the received PDF blob and trigger download
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
       
-      const filename = (blog.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'blog') + '.pdf';
-      link.setAttribute('download', filename);
-      document.body.appendChild(link);
-      link.click();
+      if (newWindow) {
+        newWindow.location.href = url;
+      } else {
+        // Fallback: If popup was blocked (very common after Razorpay iframe), force a hard download
+        const link = document.createElement('a');
+        link.href = url;
+        const filename = (blog.Title.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'blog') + '.pdf';
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      }
       
-      // Cleanup
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 10000);
     } catch (error) {
+      if (newWindow) newWindow.close();
       console.error("Error generating single blog PDF from backend:", error);
-      alert("Failed to download PDF. Please try again from the blog page.");
+      toast.error("Failed to download PDF. Please try again.", {
+        duration: 5000,
+      });
     }
   };
 
   const handlePayment = async () => {
-    if (!paymentData) return;
+    if (!paymentData || hasActiveSub) return;
 
     try {
       // Step 1: Create order on backend
@@ -108,7 +152,7 @@ const Payment = () => {
       const data = await response.json();
 
       if (!data.success) {
-        alert("Failed to create order: " + data.msg);
+        toast.error("Failed to create order: " + data.msg);
         return;
       }
 
@@ -123,12 +167,17 @@ const Payment = () => {
         handler: async function (response) {
           // Payment successful
           if (paymentType === 'pdf') {
-            alert("Payment Successful! Your PDF will download now.");
-            // Download the PDF after successful payment
+            // Critical: Window.open MUST be called immediately before alert blocks thread
             if (paymentData.blog) {
-              generateBlogPDF(paymentData.blog);
+              await generateBlogPDF(paymentData.blog);
             }
-            navigate("/");
+            toast.success("Payment Successful! Your PDF has been downloaded.", {
+              duration: 6000,
+            });
+            // Navigate after a delay to ensure download starts
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
           } else {
             // Save subscription to database
             try {
@@ -136,7 +185,7 @@ const Payment = () => {
               const subId = paymentData.plan?.SubId;
               
               if (!userId || !subId) {
-                alert("Payment successful but could not save subscription. Please contact support.");
+                toast.error("Payment successful but could not save subscription. Please contact support.");
                 console.error("Missing userId or subId:", { userId, subId });
                 navigate("/");
                 return;
@@ -158,16 +207,16 @@ const Payment = () => {
               const saveData = await saveResponse.json();
 
               if (saveData.success) {
-                alert("Subscription purchased successfully! You can now publish blogs.");
+                toast.success("Subscription purchased successfully!", { duration: 5000 });
                 navigate("/client");
               } else {
-                alert("Payment successful! " + (saveData.message || "Subscription activated."));
+                toast("Payment successful! " + (saveData.message || "Subscription activated."));
                 console.error("Save subscription response:", saveData);
                 navigate("/client");
               }
             } catch (saveError) {
               console.error("Error saving subscription:", saveError);
-              alert("Payment successful! Your subscription will be activated shortly.");
+              toast("Payment successful! Your subscription will be activated shortly.");
               navigate("/client");
             }
           }
@@ -189,24 +238,28 @@ const Payment = () => {
 
       const razorpay = new window.Razorpay(options);
       razorpay.on("payment.failed", function (response) {
-        alert("Payment Failed: " + response.error.description);
+        toast.error(response.error.description);
         console.log("Payment Failed:", response.error);
       });
       razorpay.open();
     } catch (error) {
       console.error("Payment Error:", error);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
-  if (!paymentData) {
+  if (!paymentData || checkingSub) {
     return (
       <div className="pdf-payment-container">
         <div className="left-box">
-          <h2>Loading...</h2>
+          <h2>{checkingSub ? "Checking subscription..." : "Loading..."}</h2>
         </div>
       </div>
     );
+  }
+
+  if (hasActiveSub) {
+      return null; // The Swal alert will handle the redirect
   }
 
   return (

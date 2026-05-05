@@ -36,9 +36,10 @@ function Navbar() {
 
       <div className="nav-links">
         <Link to="/">Home</Link>
-        <a href="#latest-cards">Blogs</a>
-        <a href="#publish-cta">For Brands</a>
+        <a href="/#latest-cards">Blogs</a>
+        <a href="/#publish-cta">Start Writing</a>
         <Link to="/contact">Contact</Link>
+        <Link to="/about">About Us</Link>
         {showSubscriptionLink && (
           <Link to="/subscription">Subscription</Link>
         )}

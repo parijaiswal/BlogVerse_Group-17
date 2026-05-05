@@ -58,20 +58,9 @@ const Contact = () => {
     <div className="contact-page-container">
       <div className="contact-header">
         <h1>Contact Us</h1>
-        <p>Have a question, feedback, or just want to say hi? We'd love to hear from you!</p>
+        <p>Have a question, feedback, or just want to send your query? We'd love to hear from you!</p>
       </div>
-
       <div className="contact-content">
-        <div className="contact-info-cards">
-          <div className="info-card">
-            <div className="icon-wrapper">
-              <FaEnvelope size={24} />
-            </div>
-            <h3>Email Us</h3>
-            <p>blogversewebsite@gmail.com</p>
-          </div>
-        </div>
-
         <div className="contact-form-section">
           <div className="form-wrapper">
             <h2>Send us a Message</h2>

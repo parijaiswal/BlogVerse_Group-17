@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../Database");
-
 const multer = require("multer");
 const path = require("path");
 
@@ -52,7 +51,7 @@ router.post("/admin-add-blog", upload.single("image"), async (req, res) => {
 router.get("/subscriptions", async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT SubId, SubName, SubDuration, SubPrice, Visibility
+      `SELECT SubId, SubName, SubDuration, SubPrice, Description, Visibility
        FROM SubscriptionTable
        ORDER BY SubId DESC`
     );
@@ -75,9 +74,9 @@ router.post("/add-subscription", async (req, res) => {
   try {
     await db.query(
       `INSERT INTO SubscriptionTable
-       (SubName, SubDuration, SubPrice, Visibility)
-       VALUES (?, ?, ?, ?)`,
-      [subName, subDuration, subPrice, visibility || "active"]
+       (SubName, SubDuration, SubPrice, Description, Visibility)
+       VALUES (?, ?, ?, ?, ?)`,
+      [subName, subDuration, subPrice, description || null, visibility || "active"]
     );
     // Note: If Description column exists, add it. For now sticking to known columns from ViewSub.
     // If user insists on description, we'd need to alter table. 
@@ -103,9 +102,9 @@ router.put("/subscriptions/:subId", async (req, res) => {
   try {
     await db.query(
       `UPDATE SubscriptionTable
-       SET SubName=?, SubDuration=?, SubPrice=?, Visibility=?
+       SET SubName=?, SubDuration=?, SubPrice=?, Description=?, Visibility=?
        WHERE SubId=?`,
-      [subName, subDuration, subPrice, visibility, subId]
+      [subName, subDuration, subPrice, description || null, visibility, subId]
     );
 
     res.json({ success: true, message: "Subscription updated successfully" });
@@ -205,6 +204,26 @@ router.get("/pending-blogs", async (req, res) => {
 });
 
 /* ======================================================
+   ADMIN → VIEW ALL DRAFTS
+====================================================== */
+router.get("/all-drafts", async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT b.BlogId, b.Title, b.Content, b.Visibility, b.Status, b.Update_Date, b.Category, b.Image_path,
+              u.Username, u.User_Role
+       FROM BlogTable b
+       JOIN users u ON b.Userid = u.UserId
+       WHERE b.Status='draft'
+       ORDER BY b.Update_Date DESC`
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error("All drafts error:", err);
+    res.status(500).json({ message: "Database error" });
+  }
+});
+
+/* ======================================================
    ADMIN → VIEW REJECTED BLOGS
 ====================================================== */
 router.get("/rejected-blogs", async (req, res) => {
@@ -241,7 +260,7 @@ router.get("/my-blogs/:adminId", async (req, res) => {
 
   try {
     const [rows] = await db.query(
-      `SELECT BlogId, Title, Content, Visibility, Status, Update_Date, Image_path
+      `SELECT BlogId, Title, Content, Visibility, Category, Status, Update_Date, Image_path
        FROM BlogTable WHERE Userid=?
        ORDER BY Update_Date DESC`,
       [adminId]

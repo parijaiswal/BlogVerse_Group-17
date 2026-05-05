@@ -14,11 +14,17 @@ const AddSubscription = ({ editSub, onSuccess }) => {
 
   useEffect(() => {
     if (editSub) {
-      setSubName(editSub.SubName);
-      setSubDuration(editSub.SubDuration);
-      setSubPrice(editSub.SubPrice);
+      setSubName(editSub.SubName || "");
+      setSubDuration(editSub.SubDuration || "");
+      setSubPrice(editSub.SubPrice || "");
       setDescription(editSub.Description || "");
-      setVisibility(editSub.Visibility);
+      setVisibility(editSub.Visibility || "active");
+    } else {
+      setSubName("");
+      setSubDuration("");
+      setSubPrice("");
+      setDescription("");
+      setVisibility("active");
     }
   }, [editSub]);
 

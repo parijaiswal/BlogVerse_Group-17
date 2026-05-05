@@ -9,11 +9,11 @@ const EditProfile = () => {
   const [contact, setContact] = useState("");
   const [gender, setGender] = useState("");
   const [role, setRole] = useState("");
+  const [bio, setBio] = useState("");
 
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   
-  // Separate message states for each form
   const [profileMessage, setProfileMessage] = useState("");
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -30,6 +30,7 @@ const EditProfile = () => {
         setContact(data.ContactNo || "");
         setGender(data.Gender || "");
         setRole(data.User_Role || "");
+        setBio(data.Bio || "");
       })
       .catch((err) => console.error(err));
   }, [userId]);
@@ -39,18 +40,27 @@ const EditProfile = () => {
     e.preventDefault();
     setProfileMessage("");
 
-    const res = await fetch(`${API_BASE}/api/profile/${userId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        contact,
-        gender,
-      }),
-    });
+    try {
+      const res = await fetch(`${API_BASE}/api/profile/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username,
+          contact,
+          gender,
+          bio,
+        }),
+      });
 
-    const data = await res.json();
-    setProfileMessage(data.message);
+      const data = await res.json();
+      if(res.ok || data.success) {
+        setProfileMessage(data.message || "Profile updated successfully!");
+      } else {
+        setProfileMessage(data.message || "Failed to update profile.");
+      }
+    } catch(err) {
+      setProfileMessage("Network error. Please try again.");
+    }
   };
 
   /* ================= CHANGE PASSWORD ================= */
@@ -61,6 +71,12 @@ const EditProfile = () => {
 
     if (!oldPassword || !newPassword) {
       setPasswordError("Please fill in both fields");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      setPasswordError("Password must be at least 8 chars, have 1 uppercase, 1 lowercase, 1 number, and 1 special char.");
       return;
     }
 
@@ -77,7 +93,7 @@ const EditProfile = () => {
       const data = await res.json();
 
       if (data.success) {
-        setPasswordMessage(data.message);
+        setPasswordMessage(data.message || "Password updated successfully");
         setOldPassword("");
         setNewPassword("");
       } else {
@@ -111,8 +127,23 @@ const EditProfile = () => {
             <option value="Female">Female</option>
           </select>
 
+          {role && role.toLowerCase() !== "member" && (
+            <textarea
+              value={bio || ""}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Write a short bio about yourself... (It will appear on your public Author Profile)"
+              rows={4}
+              style={{
+                width: "100%", padding: "12px 14px", borderRadius: "8px", 
+                border: "1px solid #e2e8f0", marginBottom: "16px",
+                fontSize: "14px", color: "#334155", resize: "vertical",
+                fontFamily: "inherit"
+              }}
+            />
+          )}
+
           <input value={role} disabled />
-          {profileMessage && <p className="success-message">{profileMessage}</p>}
+          {profileMessage && <p className={profileMessage.toLowerCase().includes("failed") || profileMessage.toLowerCase().includes("error") ? "error-message" : "success-message"}>{profileMessage}</p>}
           <button type="submit">Save Profile</button>
         </form>
       </div>
@@ -137,7 +168,6 @@ const EditProfile = () => {
           />
           {passwordMessage && <p className="success-message">{passwordMessage}</p>}
           {passwordError && <p className="error-message">{passwordError}</p>}
-          
           <button type="submit">Change Password</button>
         </form>
       </div>

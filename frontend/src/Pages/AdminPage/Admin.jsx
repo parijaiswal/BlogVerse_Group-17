@@ -12,6 +12,7 @@ import hello_2 from "../../Images/hello_2.png";
 import EditMyBlogs from "./EditMyblogs";
 import ViewRejected from "./ViewRejected";
 import AdminReport from "./AdminReport";
+import ViewAllDrafts from "./ViewAllDrafts";
 import { 
   FaChevronDown, FaChevronUp, FaFileAlt, FaCheckCircle, 
   FaHourglassHalf, FaTimesCircle, FaRegEdit,
@@ -29,7 +30,10 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
     navigate("/login");
   };
   const [stats, setStats] = useState({
@@ -105,7 +109,7 @@ const resetSubForm = () => {
       case "myBlogs":
       return <EditMyBlogs onEdit={handleEditBlog} filterStatus="all" />;
       case "viewDrafts":
-      return <EditMyBlogs onEdit={handleEditBlog} filterStatus="draft" />;
+      return <ViewAllDrafts onEdit={handleEditBlog} />;
       case "viewReports":
         return <AdminReport />;
       default:
@@ -241,7 +245,10 @@ const resetSubForm = () => {
             <ul style={{ paddingLeft: "15px", marginTop: "5px", marginBottom: "5px", borderLeft: "2px solid rgba(255,255,255,0.2)" }}>
               <li 
                 className={activePage === "addSubscription" ? "active" : ""}
-                onClick={() => setActivePage("addSubscription")}
+                onClick={() => {
+                  setEditSub(null);
+                  setActivePage("addSubscription");
+                }}
               >
                 <FaPlusSquare style={{ marginRight: "10px" }} /> Add Subscription
               </li>

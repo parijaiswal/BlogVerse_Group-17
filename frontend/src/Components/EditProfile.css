@@ -50,13 +50,25 @@
 }
 
 .success-message {
-  color: green;
-  margin-top: 10px;
+  color: #065f46;
+  background-color: #d1fae5;
+  border: 1px solid #10b981;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 14px;
   font-weight: 600;
+  font-size: 14.5px;
+  text-align: center;
 }
 
 .error-message {
-  color: red;
-  margin-top: 10px;
+  color: #991b1b;
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 14px;
   font-weight: 600;
+  font-size: 14.5px;
+  text-align: center;
 }
